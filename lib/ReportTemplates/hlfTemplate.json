@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Mannschaftskabine",
+    "items": ["item1","item2","item3","item4","item5","item6","item7"]
+  },
+  {
+    "name": "Pumpe",
+    "items": ["item1","item2","item3","item4","item5","item6","item7"],
+
+  },
+  {
+    "name": "Rettungssatz",
+    "items": ["item1","item2","item3","item4","item5","item6","item7"]
+
+  },
+  {
+    "name": "Stromaggregat",
+    "items": ["item1","item2","item3","item4","item5","item6","item7"]
+
+  }
+]

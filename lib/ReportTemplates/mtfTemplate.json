@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Beleuchtung",
+    "items":{
+      "Abblendlicht": false,
+      "Rücklicht": false,
+      "Warnblinker" : false
+    }
+  },
+  {
+    "name": "Heckregal",
+    "items":{
+      "Scheinwerfer": false
+    }
+  }
+]
