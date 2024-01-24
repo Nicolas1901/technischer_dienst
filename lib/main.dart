@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Startseite'),
     );
   }
 }
@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String trackerData =
       '[{"templateName": "HLF","filename": "hlfTemplate.json"},{"templateName": "MTF","filename": "mtfTemplate.json"},{"templateName": "StLF","filename": "mtfTemplate.json"}]';
 
-  late List templatePaths;
+  List templatePaths = List.empty();
 
   @override
   void initState() {
@@ -71,6 +71,50 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> buildDialog() {
+    TextEditingController _addController = TextEditingController();
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Berichtstitel"),
+            content: TextFormField(
+              controller: _addController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Titel darf nicht leer sein";
+                }
+                return null;
+              },
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('erstellen'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) =>
+                        EditReportsPage(templateFilename: null, title: _addController.text,),
+                  ));
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('abbrechen'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,11 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => EditReportsPage(templateData: null),
-            ),
-          );
+          buildDialog();
         },
         tooltip: 'Berichtsvorlage erstellen',
         child: const Icon(Icons.add),

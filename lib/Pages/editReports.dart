@@ -1,108 +1,144 @@
 import 'package:accordion/accordion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:technischer_dienst/Controller/FileHandler.dart';
+
+import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
-  EditReportsPage({super.key, this.templateData});
+  EditReportsPage({super.key, this.templateFilename, this.title = "Berichtsvorlage erstellen"});
 
   @override
   State<StatefulWidget> createState() => _EditReportsPageState();
 
-  final String title = "Berichtsvorlage erstellen";
-  List? templateData;
+  final String title;
+  String? templateFilename;
 }
 
 class _EditReportsPageState extends State<EditReportsPage> {
   late TextEditingController titleTextController;
+  List<dynamic> templateData = List.empty(growable: true);
+  List<CategoryDataModel> tabs = List.empty(growable: true);
 
-  /*@override
+  @override
   void initState() {
     super.initState();
-    titleTextController = TextEditingController(text: "Berichtstitel");
-  }*/
 
-  List<FormFieldData> formFields = [];
+    if (widget.templateFilename != null) {
+      getJsonFileData(widget.templateFilename!).then((value) {
+        if (value != null) {
+          value.forEach((element) {
+              tabs.add(CategoryDataModel(categoryName: element['name'], items: element['items']));
+          });
+          setState(() {
+           tabs;
+          });
+        }
+      });
+    }
+  }
+
+  Future<void> buildDialog(){
+    TextEditingController _addController = TextEditingController();
+    return showDialog<void>(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        title: Text("Kategorie hinzufügen"),
+        content: TextFormField(
+          controller: _addController,
+          validator: (value){
+            if(value == null || value.isEmpty){
+              return "Kategoriename eingeben";
+            }
+            return null;
+          },
+        ),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            ),
+            child: const Text('hinzufügen'),
+            onPressed: () {
+              addCategory(_addController.text);
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              textStyle: Theme.of(context).textTheme.labelLarge,
+            ),
+            child: const Text('abbrechen'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    });
+  }
+
+  void addCategory(String name){
+      setState(() {
+        tabs.add(CategoryDataModel(categoryName: name, items: []));
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dynamic Form Example'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: formFields.length,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: formFields[index].buildFormField(),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          setState(() {
-                            formFields.removeAt(index);
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                },
+        body: DefaultTabController(
+          length: tabs.length +1,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+              bottom: TabBar(
+                isScrollable: true,
+                tabs: [
+                  for (CategoryDataModel categotry in tabs) ...{
+                    Tab(
+                      text: categotry.categoryName,
+                    ),
+                  }, Tab(
+                  child: TextButton(
+                    child: Text("Kategorie hinzufügen +"),
+                    onPressed: () {
+                      buildDialog();
+                    },
+                  ),
+                ),
+                ],
               ),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  formFields.add(FormFieldData());
-                });
-              },
-              child: Text('Add Field'),
+            body: TabBarView(
+              children: [
+                for (CategoryDataModel categotry in tabs) ...{
+                  dynamic_form(templateData: categotry.items,),
+                },
+                TextButton(
+                  child: Text("Kategorie hinzufügen +"),
+                  onPressed: () {
+                    buildDialog();
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
+            floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.save),
               onPressed: () {
-                // Handle form submission
-                // You can access the entered values from formFields list
-                for (var field in formFields) {
-                  print('Field Name: ${field.name}, Value: ${field.controller.text}');
-                }
+                Navigator.of(context).pop();
               },
-              child: Text('Submit'),
+
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
 
-class FormFieldData {
-  late TextEditingController controller;
-  late String name;
+class CategoryDataModel{
+  CategoryDataModel({required this.categoryName, required this.items});
 
-  FormFieldData() {
-    controller = TextEditingController();
-    name = 'Field ${DateTime
-        .now()
-        .microsecondsSinceEpoch}';
-  }
+  String categoryName;
+  List<String> items;
 
-  Widget buildFormField() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: name,
-        ),
-
-      ),
-    );
-  }
 }
+
