@@ -1,27 +1,26 @@
-import 'package:accordion/accordion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+typedef void StringCallback(String val);
+typedef void IntCallback(int index);
+
 class dynamic_form extends StatefulWidget {
-  dynamic_form({super.key, this.templateData});
+  dynamic_form({super.key, this.templateData, required this.onAddedItem,required this.onDeletedItem});
 
   @override
   State<StatefulWidget> createState() => _dynamic_formState();
 
   final String title = "Berichtsvorlage erstellen";
-  List? templateData;
+  List<String>? templateData;
+  final StringCallback onAddedItem;
+  final IntCallback onDeletedItem;
 }
 
-class _dynamic_formState extends State<dynamic_form> {
-  late TextEditingController titleTextController;
-
-  /*@override
-  void initState() {
-    super.initState();
-    titleTextController = TextEditingController(text: "Berichtstitel");
-  }*/
-
+class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClientMixin<dynamic_form>{
   List<FormFieldData> formFields = [];
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +43,7 @@ class _dynamic_formState extends State<dynamic_form> {
                         onPressed: () {
                           setState(() {
                             formFields.removeAt(index);
+                            widget.onDeletedItem(index);
                           });
                         },
                       ),
@@ -57,9 +57,10 @@ class _dynamic_formState extends State<dynamic_form> {
               onPressed: () {
                 setState(() {
                   formFields.add(FormFieldData());
+                  widget.onAddedItem("ItemName");
                 });
               },
-              child: Text('Add Field'),
+              child: const Text('Add Field'),
             ),
             SizedBox(height: 16),
             ElevatedButton(
@@ -70,7 +71,7 @@ class _dynamic_formState extends State<dynamic_form> {
                   print('Field Name: ${field.name}, Value: ${field.controller.text}');
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),

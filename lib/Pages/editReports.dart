@@ -6,7 +6,10 @@ import 'package:technischer_dienst/Controller/FileHandler.dart';
 import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
-  EditReportsPage({super.key, this.templateFilename, this.title = "Berichtsvorlage erstellen"});
+  EditReportsPage(
+      {super.key,
+      this.templateFilename,
+      this.title = "Berichtsvorlage erstellen"});
 
   @override
   State<StatefulWidget> createState() => _EditReportsPageState();
@@ -16,8 +19,6 @@ class EditReportsPage extends StatefulWidget {
 }
 
 class _EditReportsPageState extends State<EditReportsPage> {
-  late TextEditingController titleTextController;
-  List<dynamic> templateData = List.empty(growable: true);
   List<CategoryDataModel> tabs = List.empty(growable: true);
 
   @override
@@ -28,117 +29,130 @@ class _EditReportsPageState extends State<EditReportsPage> {
       getJsonFileData(widget.templateFilename!).then((value) {
         if (value != null) {
           value.forEach((element) {
-              tabs.add(CategoryDataModel(categoryName: element['name'], items: element['items']));
+            tabs.add(CategoryDataModel(
+                categoryName: element['name'], items: element['items']));
           });
           setState(() {
-           tabs;
+            tabs;
           });
         }
       });
     }
   }
 
-  Future<void> buildDialog(){
+  Future<void> buildDialog() {
     TextEditingController _addController = TextEditingController();
-    return showDialog<void>(context: context, builder: (BuildContext context){
-      return AlertDialog(
-        title: Text("Kategorie hinzufügen"),
-        content: TextFormField(
-          controller: _addController,
-          validator: (value){
-            if(value == null || value.isEmpty){
-              return "Kategoriename eingeben";
-            }
-            return null;
-          },
-        ),
-        actions: [
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Kategorie hinzufügen"),
+            content: TextFormField(
+              controller: _addController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Kategoriename eingeben";
+                }
+                return null;
+              },
             ),
-            child: const Text('hinzufügen'),
-            onPressed: () {
-              addCategory(_addController.text);
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              textStyle: Theme.of(context).textTheme.labelLarge,
-            ),
-            child: const Text('abbrechen'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    });
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('hinzufügen'),
+                onPressed: () {
+                  addCategory(_addController.text);
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('abbrechen'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
   }
 
-  void addCategory(String name){
-      setState(() {
-        tabs.add(CategoryDataModel(categoryName: name, items: []));
-      });
+  void addCategory(String name) {
+    setState(() {
+      tabs.add(CategoryDataModel(categoryName: name, items: []));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: DefaultTabController(
-          length: tabs.length +1,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text(widget.title),
-              bottom: TabBar(
-                isScrollable: true,
-                tabs: [
-                  for (CategoryDataModel categotry in tabs) ...{
-                    Tab(
-                      text: categotry.categoryName,
-                    ),
-                  }, Tab(
-                  child: TextButton(
-                    child: Text("Kategorie hinzufügen +"),
-                    onPressed: () {
-                      buildDialog();
-                    },
-                  ),
+      length: tabs.length + 1,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          bottom: TabBar(
+            isScrollable: true,
+            tabs: [
+              for (CategoryDataModel category in tabs) ...{
+                Tab(
+                  text: category.categoryName,
                 ),
-                ],
-              ),
-            ),
-            body: TabBarView(
-              children: [
-                for (CategoryDataModel categotry in tabs) ...{
-                  dynamic_form(templateData: categotry.items,),
-                },
-                TextButton(
+              },
+              Tab(
+                child: TextButton(
                   child: Text("Kategorie hinzufügen +"),
                   onPressed: () {
                     buildDialog();
                   },
                 ),
-              ],
-            ),
-            floatingActionButton: FloatingActionButton(
-              child: Icon(Icons.save),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+        body: TabBarView(
+          children: [
+            for (CategoryDataModel category in tabs) ...{
+              dynamic_form(
+                templateData: category.items,
+                onAddedItem: (String val) {
+                  setState(() {
+                    category.items.add(val);
+                  });
+                },
+                onDeletedItem: (int index) {
+                  setState(() {
+                    category.items.removeAt(index);
+                  });
+                },
+              ),
+            },
+            TextButton(
+              child: Text("Kategorie hinzufügen +"),
+              onPressed: () {
+                buildDialog();
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.save),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    ));
   }
 }
 
-class CategoryDataModel{
+class CategoryDataModel {
   CategoryDataModel({required this.categoryName, required this.items});
 
   String categoryName;
   List<String> items;
-
 }
-
