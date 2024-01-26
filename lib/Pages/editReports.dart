@@ -9,18 +9,19 @@ class EditReportsPage extends StatefulWidget {
   const EditReportsPage(
       {super.key,
       this.templateFilename,
-      this.title = "Berichtsvorlage erstellen"});
+      this.title = "Berichtsvorlage erstellen",
+      this.templateExists = false});
 
   @override
   State<StatefulWidget> createState() => _EditReportsPageState();
 
   final String title;
   final String? templateFilename;
+  final bool templateExists;
 }
 
 class _EditReportsPageState extends State<EditReportsPage> {
   List<CategoryDataModel> tabs = List.empty(growable: true);
-  bool TemplateExists = false;
 
   @override
   void initState() {
@@ -29,12 +30,10 @@ class _EditReportsPageState extends State<EditReportsPage> {
     if (widget.templateFilename != null) {
       getJsonFileData(widget.templateFilename!).then((value) {
         if (value != null) {
-          TemplateExists = true;
           for (var element in value) {
             List<dynamic> tmp = element['items'];
             tabs.add(CategoryDataModel(
                 categoryName: element['name'], items: tmp.cast<String>()));
-            print(element['name']);
           }
           setState(() {
             tabs;
@@ -95,8 +94,8 @@ class _EditReportsPageState extends State<EditReportsPage> {
     String filename = '${widget.title}Template';
     debugPrint('Tabs: ${jsonEncode(tabs)}');
     writeToJson(jsonEncode(tabs), filename);
-    if(!TemplateExists){
-      await appendToJson( '{"templateName": "${widget.title}", "filename": "$filename.json"}', 'TemplateTracker');
+    if(!widget.templateExists){
+      await appendToJson( '\n{"templateName": "${widget.title}", "filename": "$filename.json"}', 'TemplateTracker');
     }
   }
 
@@ -141,7 +140,9 @@ class _EditReportsPageState extends State<EditReportsPage> {
                   setState(() {
                     category.items.removeAt(index);
                   });
-                },
+                }, onUpdateItem: (int index, String val) {
+                  category.items[index] = val;
+              },
               ),
             },
             TextButton(

@@ -11,7 +11,10 @@ Future<List?> getJsonFileData(String filename) async {
     print(parsedJson);
 
     return parsedJson;
+  } else{
+    return List.empty();
   }
+  //return null when file is empty
   return null;
 }
 
@@ -45,10 +48,11 @@ Future<void> removeFile(String filename) async {
     file.delete();
   }
   getJsonFileData('templateTracker.json').then((value) => {
-        if (value != null)
+        if (value != null && value.isNotEmpty)
           {
             value.removeWhere(
-                (element) => element['filename'].toString() == filename)
+                (element) => element['filename'].toString() == filename),
+            writeToJson(value.toString(), 'templateTracker')
           }
       });
 }
@@ -56,7 +60,13 @@ Future<void> removeFile(String filename) async {
 Future<File> appendToJson(String jsonData, String filename) async {
   final path = await _localPath;
   final file = File('$path/$filename.json');
-  String trackerData = await file.readAsString();
-  trackerData = trackerData.replaceFirst(RegExp('}]'), '},$jsonData]');
-  return file.writeAsString(trackerData);
+  return await readFile('$filename.json').then((trackerData) {
+    if(trackerData.isEmpty){
+      debugPrint("file is empty");
+      return file.writeAsString('[$jsonData]');
+    }
+    trackerData = trackerData.replaceFirst(RegExp('}]'), '},$jsonData]');
+    return file.writeAsString(trackerData);
+  });
+
 }

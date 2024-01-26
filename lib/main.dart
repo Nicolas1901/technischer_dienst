@@ -34,14 +34,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List templatePaths = List.empty();
+  List templatePaths = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
-    writeToJson(
-        '[{"templateName": "HLF","filename": "hlfTemplate.json"},{"templateName": "MTF","filename": "mtfTemplate.json"},{"templateName": "StLF","filename": "mtfTemplate.json"},{"templateName": "Titel", "filename": "TitelTemplate"}]',
-        "TemplateTracker");
+
     getJsonFileData("TemplateTracker.json").then((value) {
       if (value != null) {
         setState(() {
@@ -94,18 +92,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => EditReportsPage(
-                        templateFilename: null,
-                        title: addController.text,),
-                      )).then((value) {
-                        getJsonFileData("TemplateTracker.json").then((value) {
-                          setState(() {
-                            if (value != null) {
-                            templatePaths = value;
-                            }
-                          });
-                        });
+                      .push(MaterialPageRoute(
+                    builder: (context) => EditReportsPage(
+                      templateFilename: null,
+                      title: addController.text,
+                    ),
+                  ))
+                      .then((value) {
+                    getJsonFileData("TemplateTracker.json").then((value) {
+                      setState(() {
+                        if (value != null) {
+                          templatePaths = value;
+                        }
                       });
+                    });
+                  });
                 },
               ),
               TextButton(
@@ -134,14 +135,17 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             for (var template in templatePaths) ...{
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   print(template['filename']);
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) => EditReportsPage(
-                        templateFilename: template['filename'],
-                        title: template['templateName'] )),
-                    );
-                  },
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => EditReportsPage(
+                              templateFilename: template['filename'],
+                              title: template['templateName'],
+                              templateExists: true,
+                            )),
+                  );
+                },
                 child: CardExample(
                   reportTitle: template['templateName'],
                 ),

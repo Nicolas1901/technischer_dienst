@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 
 typedef void StringCallback(String val);
 typedef void IntCallback(int index);
+typedef void IntStringCallback(int index, String val);
 
 class dynamic_form extends StatefulWidget {
-  dynamic_form({super.key, this.templateData, required this.onAddedItem,required this.onDeletedItem});
+  dynamic_form({super.key, this.templateData, required this.onAddedItem,required this.onDeletedItem, required this.onUpdateItem});
 
   @override
   State<StatefulWidget> createState() => _dynamic_formState();
@@ -14,6 +15,7 @@ class dynamic_form extends StatefulWidget {
   List<String>? templateData;
   final StringCallback onAddedItem;
   final IntCallback onDeletedItem;
+  final IntStringCallback onUpdateItem;
 }
 
 class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClientMixin<dynamic_form>{
@@ -21,6 +23,50 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
 
   @override
   bool get wantKeepAlive => true;
+
+  Future<void> buildDialog() {
+    TextEditingController addController = TextEditingController();
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title:const Text("Item hinzufügen"),
+            content: TextFormField(
+              controller: addController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Itemname eingeben";
+                }
+                return null;
+              },
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('hinzufügen'),
+                onPressed: () {
+                  setState(() {
+                    formFields.add(FormFieldData(name: addController.text));
+                    widget.onAddedItem("ItemName");
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('abbrechen'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +82,14 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
                   return Row(
                     children: [
                       Expanded(
-                        child: formFields[index].buildFormField(),
+                        child: Focus(
+                            onFocusChange: (hasFocus){
+                              if(!hasFocus){
+                                widget.onUpdateItem(index, formFields[index].controller.text);
+                              }
+                            },
+                            child: formFields[index].buildFormField()
+                        ),
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
@@ -55,23 +108,9 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  formFields.add(FormFieldData());
-                  widget.onAddedItem("ItemName");
-                });
+                buildDialog();
               },
               child: const Text('Add Field'),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Handle form submission
-                // You can access the entered values from formFields list
-                for (var field in formFields) {
-                  print('Field Name: ${field.name}, Value: ${field.controller.text}');
-                }
-              },
-              child: const Text('Submit'),
             ),
           ],
         ),
@@ -82,13 +121,14 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
 
 class FormFieldData {
   late TextEditingController controller;
-  late String name;
 
-  FormFieldData() {
+  FormFieldData({required String name}) {
     controller = TextEditingController();
-    name = 'Field ${DateTime
-        .now()
-        .microsecondsSinceEpoch}';
+    controller.text = name;
+  }
+
+  String getValue(){
+    return controller.text;
   }
 
   Widget buildFormField() {
@@ -96,10 +136,6 @@ class FormFieldData {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: name,
-        ),
-
       ),
     );
   }
