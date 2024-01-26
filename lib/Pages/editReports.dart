@@ -87,11 +87,11 @@ class _EditReportsPageState extends State<EditReportsPage> {
     });
   }
 
-  void createTemplateJson(){
+  Future<void> createTemplateJson() async {
     String filename = '${widget.title}Template';
     print(jsonEncode(tabs));
     writeToJson(jsonEncode(tabs), filename);
-    appendToJson( '{"templateName": "${widget.title}", "filename": "$filename"}', 'TemplateTracker');
+    await appendToJson( '{"templateName": "${widget.title}", "filename": "$filename"}', 'TemplateTracker');
 
   }
 
@@ -150,8 +150,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.save),
           onPressed: () {
-            createTemplateJson();
-            Navigator.of(context).pop();
+            createTemplateJson().then((value) => Navigator.of(context).pop());
           },
         ),
       ),
