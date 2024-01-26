@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Startseite'),
+      home: const MyHomePage(title: 'Vorlagen'),
     );
   }
 }
@@ -70,14 +70,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> buildDialog() {
-    TextEditingController _addController = TextEditingController();
+    TextEditingController addController = TextEditingController();
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Berichtstitel"),
+            title: const Text("Berichtstitel"),
             content: TextFormField(
-              controller: _addController,
+              controller: addController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Titel darf nicht leer sein";
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) => EditReportsPage(
                         templateFilename: null,
-                        title: _addController.text,),
+                        title: addController.text,),
                       )).then((value) {
                         getJsonFileData("TemplateTracker.json").then((value) {
                           setState(() {
@@ -133,9 +133,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           children: [
             for (var template in templatePaths) ...{
-              Listener(
-                onPointerDown: (PointerDownEvent details) =>
-                    printLink(template['filename']),
+              GestureDetector(
+                onTap: (){
+                  print(template['filename']);
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => EditReportsPage(
+                        templateFilename: template['filename'],
+                        title: template['templateName'] )),
+                    );
+                  },
                 child: CardExample(
                   reportTitle: template['templateName'],
                 ),

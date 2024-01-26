@@ -20,6 +20,7 @@ class EditReportsPage extends StatefulWidget {
 
 class _EditReportsPageState extends State<EditReportsPage> {
   List<CategoryDataModel> tabs = List.empty(growable: true);
+  bool TemplateExists = false;
 
   @override
   void initState() {
@@ -28,9 +29,12 @@ class _EditReportsPageState extends State<EditReportsPage> {
     if (widget.templateFilename != null) {
       getJsonFileData(widget.templateFilename!).then((value) {
         if (value != null) {
+          TemplateExists = true;
           for (var element in value) {
+            List<dynamic> tmp = element['items'];
             tabs.add(CategoryDataModel(
-                categoryName: element['name'], items: element['items']));
+                categoryName: element['name'], items: tmp.cast<String>()));
+            print(element['name']);
           }
           setState(() {
             tabs;
@@ -89,10 +93,11 @@ class _EditReportsPageState extends State<EditReportsPage> {
 
   Future<void> createTemplateJson() async {
     String filename = '${widget.title}Template';
-    print(jsonEncode(tabs));
+    debugPrint('Tabs: ${jsonEncode(tabs)}');
     writeToJson(jsonEncode(tabs), filename);
-    await appendToJson( '{"templateName": "${widget.title}", "filename": "$filename"}', 'TemplateTracker');
-
+    if(!TemplateExists){
+      await appendToJson( '{"templateName": "${widget.title}", "filename": "$filename.json"}', 'TemplateTracker');
+    }
   }
 
   @override
