@@ -1,12 +1,12 @@
-import 'package:accordion/accordion.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Controller/FileHandler.dart';
 
 import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
-  EditReportsPage(
+  const EditReportsPage(
       {super.key,
       this.templateFilename,
       this.title = "Berichtsvorlage erstellen"});
@@ -15,7 +15,7 @@ class EditReportsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _EditReportsPageState();
 
   final String title;
-  String? templateFilename;
+  final String? templateFilename;
 }
 
 class _EditReportsPageState extends State<EditReportsPage> {
@@ -28,10 +28,10 @@ class _EditReportsPageState extends State<EditReportsPage> {
     if (widget.templateFilename != null) {
       getJsonFileData(widget.templateFilename!).then((value) {
         if (value != null) {
-          value.forEach((element) {
+          for (var element in value) {
             tabs.add(CategoryDataModel(
                 categoryName: element['name'], items: element['items']));
-          });
+          }
           setState(() {
             tabs;
           });
@@ -41,14 +41,14 @@ class _EditReportsPageState extends State<EditReportsPage> {
   }
 
   Future<void> buildDialog() {
-    TextEditingController _addController = TextEditingController();
+    TextEditingController addController = TextEditingController();
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Kategorie hinzufügen"),
+            title:const Text("Kategorie hinzufügen"),
             content: TextFormField(
-              controller: _addController,
+              controller: addController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Kategoriename eingeben";
@@ -63,7 +63,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
                 ),
                 child: const Text('hinzufügen'),
                 onPressed: () {
-                  addCategory(_addController.text);
+                  addCategory(addController.text);
                   Navigator.of(context).pop();
                 },
               ),
@@ -87,6 +87,14 @@ class _EditReportsPageState extends State<EditReportsPage> {
     });
   }
 
+  void createTemplateJson(){
+    String filename = '${widget.title}Template';
+    print(jsonEncode(tabs));
+    writeToJson(jsonEncode(tabs), filename);
+    appendToJson( '{"templateName": "${widget.title}", "filename": "$filename"}', 'TemplateTracker');
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +113,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
               },
               Tab(
                 child: TextButton(
-                  child: Text("Kategorie hinzufügen +"),
+                  child: const Text("Kategorie hinzufügen +"),
                   onPressed: () {
                     buildDialog();
                   },
@@ -132,7 +140,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
               ),
             },
             TextButton(
-              child: Text("Kategorie hinzufügen +"),
+              child: const Text("Kategorie hinzufügen +"),
               onPressed: () {
                 buildDialog();
               },
@@ -140,8 +148,9 @@ class _EditReportsPageState extends State<EditReportsPage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.save),
+          child: const Icon(Icons.save),
           onPressed: () {
+            createTemplateJson();
             Navigator.of(context).pop();
           },
         ),
@@ -155,4 +164,13 @@ class CategoryDataModel {
 
   String categoryName;
   List<String> items;
+
+  CategoryDataModel.fromJson(Map<String, dynamic> json)
+                : categoryName = json['name'],
+                  items = json['items'];
+
+   Map<String,dynamic> toJson() {
+     return {'name' : categoryName, 'items' : items };
+   }
+
 }

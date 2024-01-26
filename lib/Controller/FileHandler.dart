@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<List?> getJsonFileData(String filename) async {
@@ -33,6 +34,7 @@ Future<String> get _localPath async {
 Future<File> writeToJson(String jsonData, String filename) async {
   final path = await _localPath;
   final file = File('$path/$filename.json');
+  debugPrint("Wrote to file: $filename");
   return file.writeAsString(jsonData);
 }
 
@@ -49,4 +51,12 @@ Future<void> removeFile(String filename) async {
                 (element) => element['filename'].toString() == filename)
           }
       });
+}
+
+Future<File> appendToJson(String jsonData, String filename) async {
+  final path = await _localPath;
+  final file = File('$path/$filename.json');
+  String trackerData = await file.readAsString();
+  trackerData = trackerData.replaceFirst(RegExp('}]'), '},$jsonData]');
+  return file.writeAsString(trackerData);
 }

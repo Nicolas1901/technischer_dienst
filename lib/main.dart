@@ -34,16 +34,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String trackerData =
-      '[{"templateName": "HLF","filename": "hlfTemplate.json"},{"templateName": "MTF","filename": "mtfTemplate.json"},{"templateName": "StLF","filename": "mtfTemplate.json"}]';
-
   List templatePaths = List.empty();
 
   @override
   void initState() {
     super.initState();
     writeToJson(
-        trackerData, "TemplateTracker"); //TODO remove this when App is complete
+        '[{"templateName": "HLF","filename": "hlfTemplate.json"},{"templateName": "MTF","filename": "mtfTemplate.json"},{"templateName": "StLF","filename": "mtfTemplate.json"},{"templateName": "Titel", "filename": "TitelTemplate"}]',
+        "TemplateTracker");
     getJsonFileData("TemplateTracker.json").then((value) {
       if (value != null) {
         setState(() {
@@ -95,10 +93,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: const Text('erstellen'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        EditReportsPage(templateFilename: null, title: _addController.text,),
-                  ));
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) => EditReportsPage(
+                        templateFilename: null,
+                        title: _addController.text,),
+                      )).then((value) {
+                        getJsonFileData("TemplateTracker.json").then((value) {
+                          setState(() {
+                            if (value != null) {
+                            templatePaths = value;
+                            }
+                          });
+                        });
+                      });
                 },
               ),
               TextButton(
@@ -123,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Column(
+        child: ListView(
           children: [
             for (var template in templatePaths) ...{
               Listener(
