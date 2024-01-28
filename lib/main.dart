@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
 import 'package:technischer_dienst/Controller/FileHandler.dart';
 import 'package:technischer_dienst/Pages/editReports.dart';
+import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,18 +37,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _fileRepo = FileRepository();
   List templatePaths = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
-
-    getJsonFileData("TemplateTracker.json").then((value) {
-      if (value != null) {
-        setState(() {
-          templatePaths = value;
-        });
-      }
+    _fileRepo.writeFile("TemplateTracker.json", "[]");
+    _fileRepo.readFile("TemplateTracker.json").then((value){
+      setState(() {
+        templatePaths = jsonDecode(value);
+      });
     });
   }
 
@@ -94,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.of(context)
                       .push(MaterialPageRoute(
                     builder: (context) => EditReportsPage(
-                      templateFilename: null,
+                      templateFilename: addController.text,
                       title: addController.text,
                     ),
                   ))

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Controller/FileHandler.dart';
+import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
 import '../Components/dynamicForm.dart';
 
@@ -23,22 +24,23 @@ class EditReportsPage extends StatefulWidget {
 class _EditReportsPageState extends State<EditReportsPage> {
   List<CategoryDataModel> tabs = List.empty(growable: true);
 
+  final FileRepository _fileRepository = FileRepository();
+
   @override
   void initState() {
     super.initState();
 
-    if (widget.templateFilename != null) {
-      getJsonFileData(widget.templateFilename!).then((value) {
-        if (value != null) {
-          for (var element in value) {
-            List<dynamic> tmp = element['items'];
-            tabs.add(CategoryDataModel(
-                categoryName: element['name'], items: tmp.cast<String>()));
-          }
-          setState(() {
-            tabs;
-          });
+    if (widget.templateExists) {
+      _fileRepository.readFile(widget.templateFilename!).then((value) {
+        List<dynamic> jsonData = jsonDecode(value);
+        for (var category in jsonData) {
+          List<dynamic> items = category['items'];
+          tabs.add(CategoryDataModel(
+              categoryName: category['name'], items: items.cast<String>()));
         }
+        setState(() {
+          tabs;
+        });
       });
     }
   }
@@ -49,7 +51,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title:const Text("Kategorie hinzufügen"),
+            title: const Text("Kategorie hinzufügen"),
             content: TextFormField(
               controller: addController,
               validator: (value) {
@@ -91,11 +93,22 @@ class _EditReportsPageState extends State<EditReportsPage> {
   }
 
   Future<void> createTemplateJson() async {
-    String filename = '${widget.title}Template';
+    String filename = '${widget.title}Template.json';
     debugPrint('Tabs: ${jsonEncode(tabs)}');
-    writeToJson(jsonEncode(tabs), filename);
-    if(!widget.templateExists){
-      await appendToJson( '\n{"templateName": "${widget.title}", "filename": "$filename.json"}', 'TemplateTracker');
+
+    _fileRepository.writeFile(filename,jsonEncode(tabs));
+
+    //if template is new then write template name and path to TemplateTracker.json
+    if (!widget.templateExists) {
+      String trackerData = '{"templateName": "${widget.templateFilename}","filename": "$filename"}';
+     await _fileRepository.readFile('TemplateTracker.json').then((value) async {
+       if(value.isEmpty || value == "[]"){
+         debugPrint("file is empty");
+         return await _fileRepository.writeFile('TemplateTracker.json','[$trackerData]');
+       }
+       value = value.replaceFirst(RegExp('}]'), '},$trackerData]');
+       return await _fileRepository.writeFile('TemplateTracker.json', value);
+     });
     }
   }
 
@@ -140,9 +153,10 @@ class _EditReportsPageState extends State<EditReportsPage> {
                   setState(() {
                     category.items.removeAt(index);
                   });
-                }, onUpdateItem: (int index, String val) {
+                },
+                onUpdateItem: (int index, String val) {
                   category.items[index] = val;
-              },
+                },
               ),
             },
             TextButton(
@@ -171,11 +185,10 @@ class CategoryDataModel {
   List<String> items;
 
   CategoryDataModel.fromJson(Map<String, dynamic> json)
-                : categoryName = json['name'],
-                  items = json['items'];
+      : categoryName = json['name'],
+        items = json['items'];
 
-   Map<String,dynamic> toJson() {
-     return {'name' : categoryName, 'items' : items };
-   }
-
+  Map<String, dynamic> toJson() {
+    return {'name': categoryName, 'items': items};
+  }
 }
