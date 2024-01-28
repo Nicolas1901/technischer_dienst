@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
 class CardExample extends StatelessWidget {
-  const CardExample({super.key, required this.reportTitle,} );
+  const CardExample({
+    super.key,
+    required this.reportTitle,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   final String reportTitle;
+
+  final Function() onEdit;
+  final Function() onDelete;
 
   final double height = 200;
   final double width = 300;
@@ -44,8 +52,13 @@ class CardExample extends StatelessWidget {
                     ),
                     PopupMenuButton(
                         itemBuilder: (context) => [
-                              const PopupMenuItem(child: Text("Bearbeiten")),
-                              PopupMenuItem(child: const Text("Löschen"),
+                              PopupMenuItem(
+                                child: Text("Bearbeiten"),
+                                onTap: onEdit,
+                              ),
+                              PopupMenuItem(
+                                child: const Text("Löschen"),
+                                onTap: onDelete,
                               ),
                             ])
                   ],

@@ -42,25 +42,42 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _fileRepo.readFile("TemplateTracker.json").then((value){
+    if (!_fileRepo.fileExists("TemplateTracker.json")) {
+      _fileRepo.writeFile("TemplateTracker.json", "[]");
+    }
+    _fileRepo.readFile("TemplateTracker.json").then((value) {
       setState(() {
         templatePaths = jsonDecode(value);
       });
     });
   }
 
-  void getFileData() {
-    //debugPrint(templatePaths[1]['templateName']); //TODO berichtvorlage erstellen Ansicht erstellen
-  }
-
-  void printLink(String link) {
-    //TODO berichtansicht erstellen und da hin navigieren
-    debugPrint(link);
+  void openEditReportPage(String filename, String templateName) {
+    debugPrint(filename);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => EditReportsPage(
+                templateFilename: filename,
+                title: templateName,
+                templateExists: true,
+              )),
+    );
   }
 
   //Delete Function for popupmenu
   void deleteTemplate(String filename) {
-
+    _fileRepo.removeFile(filename);
+    _fileRepo.readFile('TemplateTracker.json').then((value) {
+      List<dynamic> templates = jsonDecode(value);
+      templates.removeWhere((element) {
+        return element['filename'] == filename;
+      });
+      debugPrint(templates.toString());
+      _fileRepo.writeFile('TemplateTracker.json', jsonEncode(templates));
+      setState(() {
+        templatePaths = templates;
+      });
+    });
   }
 
   Future<void> buildDialog() {
@@ -98,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       .then((value) {
                     _fileRepo.readFile("TemplateTracker.json").then((value) {
                       setState(() {
-                          templatePaths = jsonDecode(value);
+                        templatePaths = jsonDecode(value);
                       });
                     });
                   });
@@ -131,18 +148,19 @@ class _MyHomePageState extends State<MyHomePage> {
             for (var template in templatePaths) ...{
               GestureDetector(
                 onTap: () {
-                  debugPrint(template['filename']);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => EditReportsPage(
-                              templateFilename: template['filename'],
-                              title: template['templateName'],
-                              templateExists: true,
-                            )),
-                  );
+                  debugPrint("Bericht erstellen");
                 },
                 child: CardExample(
                   reportTitle: template['templateName'],
+                  onEdit: () {
+                    debugPrint("bearbeiten: ${template['templateName']}");
+                    openEditReportPage(
+                        template['filename'], template['templateName']);
+                  },
+                  onDelete: () {
+                    debugPrint("löschen: ${template['templateName']}");
+                    deleteTemplate(template['filename']);
+                  },
                 ),
               ),
             }
