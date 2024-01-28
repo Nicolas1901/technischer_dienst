@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
-import 'package:technischer_dienst/Controller/FileHandler.dart';
 import 'package:technischer_dienst/Pages/editReports.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
@@ -62,11 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Delete Function for popupmenu
   void deleteTemplate(String filename) {
-    removeFile(filename);
-    setState(() {
-      templatePaths
-          .removeWhere((element) => element['filename'].toString() == filename);
-    });
+
   }
 
   Future<void> buildDialog() {
@@ -101,11 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ))
                       .then((value) {
-                    getJsonFileData("TemplateTracker.json").then((value) {
+                    _fileRepo.readFile("TemplateTracker.json").then((value) {
                       setState(() {
-                        if (value != null) {
-                          templatePaths = value;
-                        }
+                          templatePaths = jsonDecode(value);
                       });
                     });
                   });
