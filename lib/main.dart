@@ -42,7 +42,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _fileRepo.writeFile("TemplateTracker.json", "[]");
     _fileRepo.readFile("TemplateTracker.json").then((value){
       setState(() {
         templatePaths = jsonDecode(value);
@@ -73,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: const Text("Berichtstitel"),
             content: TextFormField(
               controller: addController,
+              autofocus: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Titel darf nicht leer sein";
@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
             for (var template in templatePaths) ...{
               GestureDetector(
                 onTap: () {
-                  print(template['filename']);
+                  debugPrint(template['filename']);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                         builder: (context) => EditReportsPage(

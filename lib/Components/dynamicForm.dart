@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 typedef void StringCallback(String val);
@@ -6,13 +5,13 @@ typedef void IntCallback(int index);
 typedef void IntStringCallback(int index, String val);
 
 class dynamic_form extends StatefulWidget {
-  dynamic_form({super.key, this.templateData, required this.onAddedItem,required this.onDeletedItem, required this.onUpdateItem});
+  dynamic_form({super.key, required this.templateData, required this.onAddedItem,required this.onDeletedItem, required this.onUpdateItem});
 
   @override
   State<StatefulWidget> createState() => _dynamic_formState();
 
   final String title = "Berichtsvorlage erstellen";
-  List<String>? templateData;
+  List<String> templateData;
   final StringCallback onAddedItem;
   final IntCallback onDeletedItem;
   final IntStringCallback onUpdateItem;
@@ -24,6 +23,14 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
   @override
   bool get wantKeepAlive => true;
 
+  @override
+  void initState(){
+    super.initState();
+    for(String item in widget.templateData){
+      formFields.add(FormFieldData(name: item));
+    }
+  }
+
   Future<void> buildDialog() {
     TextEditingController addController = TextEditingController();
     return showDialog<void>(
@@ -33,6 +40,7 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
             title:const Text("Item hinzufügen"),
             content: TextFormField(
               controller: addController,
+              autofocus: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Itemname eingeben";
@@ -49,7 +57,7 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
                 onPressed: () {
                   setState(() {
                     formFields.add(FormFieldData(name: addController.text));
-                    widget.onAddedItem("ItemName");
+                    widget.onAddedItem(addController.text);
                   });
                   Navigator.of(context).pop();
                 },
@@ -92,7 +100,7 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           setState(() {
                             formFields.removeAt(index);
@@ -105,7 +113,7 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
                 },
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 buildDialog();

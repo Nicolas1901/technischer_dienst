@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
-
 import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
@@ -53,6 +51,7 @@ class _EditReportsPageState extends State<EditReportsPage> {
             title: const Text("Kategorie hinzufügen"),
             content: TextFormField(
               controller: addController,
+              autofocus: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Kategoriename eingeben";
