@@ -94,19 +94,23 @@ class _EditReportsPageState extends State<EditReportsPage> {
     String filename = '${widget.title}Template.json';
     debugPrint('Tabs: ${jsonEncode(tabs)}');
 
-    _fileRepository.writeFile(filename,jsonEncode(tabs));
+    _fileRepository.writeFile(filename, jsonEncode(tabs));
 
     //if template is new then write template name and path to TemplateTracker.json
     if (!widget.templateExists) {
-      String trackerData = '{"templateName": "${widget.templateFilename}","filename": "$filename"}';
-     await _fileRepository.readFile('TemplateTracker.json').then((value) async {
-       if(value.isEmpty || value == "[]"){
-         debugPrint("file is empty");
-         return await _fileRepository.writeFile('TemplateTracker.json','[$trackerData]');
-       }
-       value = value.replaceFirst(RegExp('}]'), '},$trackerData]');
-       return await _fileRepository.writeFile('TemplateTracker.json', value);
-     });
+      String trackerData =
+          '{"templateName": "${widget.templateFilename}","filename": "$filename"}';
+      await _fileRepository
+          .readFile('TemplateTracker.json')
+          .then((value) async {
+        if (value.isEmpty || value == "[]") {
+          debugPrint("file is empty");
+          return await _fileRepository.writeFile(
+              'TemplateTracker.json', '[$trackerData]');
+        }
+        value = value.replaceFirst(RegExp('}]'), '},$trackerData]');
+        return await _fileRepository.writeFile('TemplateTracker.json', value);
+      });
     }
   }
 

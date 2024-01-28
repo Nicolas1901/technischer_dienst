@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/Controller/FileHandler.dart';
-//TODO Check if this works
+import 'package:technischer_dienst/Repositories/FileRepository.dart';
+
+//TODO Check if this works ... it does'nt ... surprise
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage(
       {super.key, required this.title, required this.filename});
@@ -13,79 +16,70 @@ class CreateReportPage extends StatefulWidget {
 }
 
 class _CreateReportPageState extends State<CreateReportPage> {
-  late List<ReportCategory> _reportData;
+  final FileRepository _fileRepo = FileRepository();
+  final List<ReportCategory> _reportData = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
-
-    getJsonFileData(widget.filename).then((value) {
-      if (value != null) {
-        List<dynamic> reportData = value;
-        _reportData = List<ReportCategory>.generate(reportData.length, (index) {
-          return ReportCategory(
-              categoryName: reportData[index]['name'],
-              //converting JSON array to map key: e, value: false
-              items: {for (var e in reportData[index]['items']) e: false});
-        });
+    _fileRepo.readFile(widget.filename).then((value){
+      List<dynamic> jsonValue = jsonDecode(value);
+      for(var category in jsonValue){
+        _reportData.add(ReportCategory(categoryName: category['name'], itemData: category['items']));
       }
+      setState(() {
+        _fileRepo;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-          child: ExpansionPanelList(
-        expansionCallback: (int index, bool isExpanded) {
-          setState(() {
-            _reportData[index].isExpanded = isExpanded;
-          });
-        },
-        children: _reportData.map<ExpansionPanel>((ReportCategory category) {
-          return ExpansionPanel(
-            canTapOnHeader: true,
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return ListTile(
-                title: Text(category.categoryName),
-              );
-            },
-            body: ListView.builder(
-              itemCount: category.items.length,
-              itemBuilder: (context, index){
-                return ListTile(
-                  title: Text(category.items.keys.elementAt(index)),
-                  trailing: Checkbox(
-                    value: category.items.values.elementAt(index),
-                    onChanged: (newValue){
-                        setState(() {
-                          category.items.update(category.items.keys.elementAt(index), (value) => newValue!);
-                        });
-                    },
+      body: DefaultTabController(
+        length: _reportData.length,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(widget.title),
+            bottom: TabBar(
+              isScrollable: true,
+              tabs: [
+                for (ReportCategory category in _reportData) ...{
+                  Tab(
+                    text: category.categoryName,
                   ),
-                );
-              },
+                }
+              ],
             ),
-            isExpanded: category.isExpanded,
-          );
-        }).toList(),
-      )),
+          ),
+        ),
+      ),
+
     );
   }
 }
 
 class ReportCategory {
   String categoryName;
-  Map<String, bool> items;
-  bool isExpanded;
+  List<CategoryItem> items = List.empty(growable: true);
 
   ReportCategory({
     required this.categoryName,
-    required this.items,
-    this.isExpanded = false,
+    required List<dynamic> itemData,
+  }){
+    for(String item in itemData){
+      items.add(CategoryItem(itemName: item, isChecked: false));
+    }
+  }
+}
+
+class CategoryItem {
+  String itemName;
+  bool isChecked;
+
+  CategoryItem({
+    required this.itemName,
+    required this.isChecked,
   });
 }

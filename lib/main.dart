@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
+import 'package:technischer_dienst/Pages/CreateReports.dart';
 import 'package:technischer_dienst/Pages/editReports.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
@@ -149,6 +150,11 @@ class _MyHomePageState extends State<MyHomePage> {
               GestureDetector(
                 onTap: () {
                   debugPrint("Bericht erstellen");
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreateReportPage(
+                        title: template['templateName'],
+                        filename: template['filename']),
+                  ));
                 },
                 child: CardExample(
                   reportTitle: template['templateName'],
