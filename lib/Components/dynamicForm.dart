@@ -11,7 +11,7 @@ class dynamic_form extends StatefulWidget {
   State<StatefulWidget> createState() => _dynamic_formState();
 
   final String title = "Berichtsvorlage erstellen";
-  List<String> templateData;
+  final List<String> templateData;
   final StringCallback onAddedItem;
   final IntCallback onDeletedItem;
   final IntStringCallback onUpdateItem;
@@ -133,10 +133,6 @@ class FormFieldData {
   FormFieldData({required String name}) {
     controller = TextEditingController();
     controller.text = name;
-  }
-
-  String getValue(){
-    return controller.text;
   }
 
   Widget buildFormField() {

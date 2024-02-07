@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-
+//TODO if platform is Windows erstelle einen Ordner für Templates und Reports
 class FileRepository {
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -39,8 +39,7 @@ class FileRepository {
   }
 
   bool fileExists(String filename){
-    final file = File('$_localPath/$filename');
-    if(file.existsSync()){
+    if(File('$_localPath/$filename').existsSync()){
       return true;
     }
     return false;

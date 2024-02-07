@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
@@ -43,14 +44,16 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    if (!_fileRepo.fileExists("TemplateTracker.json")) {
-      _fileRepo.writeFile("TemplateTracker.json", "[]");
-    }
-    _fileRepo.readFile("TemplateTracker.json").then((value) {
-      setState(() {
-        templatePaths = jsonDecode(value);
+    try {
+      _fileRepo.readFile("TemplateTracker.json").then((value) {
+        setState(() {
+          templatePaths = jsonDecode(value);
+        });
       });
-    });
+    } on PathNotFoundException catch (e) {
+      _fileRepo.writeFile("TemplateTracker.json", '[]');
+      debugPrint("TemplateTracker.json does not exist");
+    }
   }
 
   void openEditReportPage(String filename, String templateName) {
