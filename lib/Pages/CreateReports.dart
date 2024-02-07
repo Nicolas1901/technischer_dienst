@@ -35,6 +35,90 @@ class _CreateReportPageState extends State<CreateReportPage> {
     });
   }
 
+  Future<void> buildDialog() {
+    TextEditingController reportNameController = TextEditingController();
+    TextEditingController inspectorNameController = TextEditingController();
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Bericht speichern"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  decoration: const InputDecoration(
+                      labelText: "Berichtname"
+                  ),
+                  controller: reportNameController,
+                  autofocus: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Name eingeben";
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  decoration: const InputDecoration(
+                      labelText: "Prüfer"
+                  ),
+                  controller: inspectorNameController,
+                  autofocus: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Name eingeben";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
+                ),
+                child: const Text('abbrechen'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
+                ),
+                child: const Text('speichern'),
+                onPressed: () {
+                  createReport(reportNameController.text, inspectorNameController.text);
+                  Navigator.of(context).pop();
+                },
+              ),
+
+            ],
+          );
+        });
+  }
+
+
+  void createReport(String reportName, String inspector) {
+    Map<String, dynamic> report = {
+      'id': 2,
+      'reportName': reportName,
+      'inspector': inspector,
+      'categoryList': _reportData,
+    };
+
+    String json = jsonEncode(report);
+    debugPrint(json);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +126,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
         length: _reportData.length,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .inversePrimary,
             title: Text(widget.title),
             bottom: TabBar(
               isScrollable: true,
@@ -76,8 +163,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.save),
             onPressed: () {
-              debugPrint(jsonEncode(_reportData));
-              // Navigator.of(context).pop();
+              buildDialog();
             },
           ),
         ),
@@ -100,8 +186,8 @@ class ReportCategory {
   }
 
 
-  Map<String, dynamic> toJson(){
-    return{'categoryName': categoryName, 'itemList': jsonEncode(items)};
+  Map<String, dynamic> toJson() {
+    return {"categoryName": categoryName, "itemList": jsonEncode(items)};
   }
 }
 
@@ -115,11 +201,11 @@ class CategoryItem {
   });
 
   CategoryItem.fromJson(Map<String, dynamic> json)
-    : itemName = json['name'],
-      isChecked = json['isChecked'];
+      : itemName = json['name'],
+        isChecked = json['isChecked'];
 
 
   Map<String, dynamic> toJson() {
-    return {'name': itemName, 'isChecked': isChecked};
+    return {"name": itemName, "isChecked": isChecked};
   }
 }
