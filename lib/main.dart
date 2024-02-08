@@ -44,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    _fileRepo.createFile('reports.json');
+    _fileRepo.createFile('TemplateTracker.json');
     try {
       _fileRepo.readFile("TemplateTracker.json").then((value) {
         setState(() {
