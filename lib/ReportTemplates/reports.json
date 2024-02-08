@@ -1,0 +1,121 @@
+[
+  {
+    "id": "1",
+    "reportName": "Template+Datum",
+    "date": "01-01-1970",
+    "inspector": "name",
+    "categoryList": [
+      {
+        "categoryName": "name",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      },
+      {
+        "categoryName": "name2",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      },
+      {
+        "categoryName": "name3",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "reportName": "Template+Datum",
+    "date": "01-01-1970",
+    "inspector": "name",
+    "categoryList": [
+      {
+        "categoryName": "name",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      },
+      {
+        "categoryName": "name2",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      },
+      {
+        "categoryName": "name3",
+        "itemList": [
+          {
+            "name": "Item1",
+            "isChecked": true
+          },
+          {
+            "name": "Item2",
+            "isChecked": false
+          },
+          {
+            "name": "Item3",
+            "isChecked": true
+          }
+        ]
+      }
+    ]
+  }
+]
+
