@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/Pages/CreateReports.dart';
+import '../Models/report.dart';
+
 //Todo checklistView ausprobieren
 class ReportChecklist extends StatefulWidget {
   ReportChecklist({super.key, required this.items, required this.valueChanged, this.readonly = false});

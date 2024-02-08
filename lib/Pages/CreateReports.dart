@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
+import '../Models/report.dart';
+
 //TODO add Support for Maps from existing reports
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage(
@@ -47,9 +49,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFormField(
-                  decoration: const InputDecoration(
-                      labelText: "Berichtname"
-                  ),
+                  decoration: const InputDecoration(labelText: "Berichtname"),
                   controller: reportNameController,
                   autofocus: true,
                   validator: (value) {
@@ -60,9 +60,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
                   },
                 ),
                 TextFormField(
-                  decoration: const InputDecoration(
-                      labelText: "Prüfer"
-                  ),
+                  decoration: const InputDecoration(labelText: "Prüfer"),
                   controller: inspectorNameController,
                   autofocus: true,
                   validator: (value) {
@@ -77,10 +75,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme
-                      .of(context)
-                      .textTheme
-                      .labelLarge,
+                  textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
                 child: const Text('abbrechen'),
                 onPressed: () {
@@ -89,31 +84,27 @@ class _CreateReportPageState extends State<CreateReportPage> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme
-                      .of(context)
-                      .textTheme
-                      .labelLarge,
+                  textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
                 child: const Text('speichern'),
                 onPressed: () {
-                  createReport(reportNameController.text, inspectorNameController.text);
+                  createReport(
+                      reportNameController.text, inspectorNameController.text);
                   Navigator.of(context).pop();
                 },
               ),
-
             ],
           );
         });
   }
 
-
   void createReport(String reportName, String inspector) {
-    Map<String, dynamic> report = {
-      'id': 2,
-      'reportName': reportName,
-      'inspector': inspector,
-      'categoryList': _reportData,
-    };
+    Report report = Report(
+        id: 2,
+        reportName: reportName,
+        inspector: inspector,
+        from: DateTime.now(),
+        categories: _reportData);
 
     String json = jsonEncode(report);
     debugPrint(json);
@@ -126,10 +117,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
         length: _reportData.length,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme
-                .of(context)
-                .colorScheme
-                .inversePrimary,
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             title: Text(widget.title),
             bottom: TabBar(
               isScrollable: true,
@@ -156,8 +144,9 @@ class _CreateReportPageState extends State<CreateReportPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 50,),
-
+              const SizedBox(
+                height: 50,
+              ),
             ],
           ),
           floatingActionButton: FloatingActionButton(
@@ -169,43 +158,5 @@ class _CreateReportPageState extends State<CreateReportPage> {
         ),
       ),
     );
-  }
-}
-
-class ReportCategory {
-  String categoryName;
-  List<CategoryItem> items = List.empty(growable: true);
-
-  ReportCategory({
-    required this.categoryName,
-    required List<dynamic> itemData,
-  }) {
-    for (String item in itemData) {
-      items.add(CategoryItem(itemName: item, isChecked: false));
-    }
-  }
-
-
-  Map<String, dynamic> toJson() {
-    return {"categoryName": categoryName, "itemList": jsonEncode(items)};
-  }
-}
-
-class CategoryItem {
-  String itemName;
-  bool isChecked;
-
-  CategoryItem({
-    required this.itemName,
-    required this.isChecked,
-  });
-
-  CategoryItem.fromJson(Map<String, dynamic> json)
-      : itemName = json['name'],
-        isChecked = json['isChecked'];
-
-
-  Map<String, dynamic> toJson() {
-    return {"name": itemName, "isChecked": isChecked};
   }
 }
