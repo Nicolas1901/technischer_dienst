@@ -7,9 +7,11 @@ class FileRepository {
     return directory.path;
   }
 
-  Future<File> createFile(String filename) async{
+  void createFile(String filename) async{
     final path = await _localPath;
-    return File('$path/$filename').create();
+    return File('$path/$filename').create(exclusive: true).then((value){
+      writeFile(filename, "[]");
+    }).catchError((e)=>{});
   }
 
   Future<File> writeFile(String filename, String data,

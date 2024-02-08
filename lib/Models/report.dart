@@ -50,7 +50,7 @@ class ReportCategory {
         items = List<dynamic>.from(json['itemList']).map((e) => CategoryItem.fromJson(e)).toList();
 
   Map<String, dynamic> toJson() {
-    return {"categoryName": categoryName, "itemList": jsonEncode(items)};
+    return {"categoryName": categoryName, "itemList": items};
   }
 }
 

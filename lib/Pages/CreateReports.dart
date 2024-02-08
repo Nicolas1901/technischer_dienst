@@ -91,6 +91,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
                   createReport(
                       reportNameController.text, inspectorNameController.text);
                   Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -98,7 +99,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
         });
   }
 
-  void createReport(String reportName, String inspector) {
+  Future<void> createReport(String reportName, String inspector) async {
     Report report = Report(
         id: 2,
         reportName: reportName,
@@ -108,8 +109,12 @@ class _CreateReportPageState extends State<CreateReportPage> {
 
     String json = jsonEncode(report);
 
-    _fileRepo.writeFile('reports.json', json, append: true);
-    debugPrint(json);
+     await _fileRepo.readFile("reports.json").then((value){
+       List tmp = jsonDecode(value);
+       tmp.add(report);
+       _fileRepo.writeFile('reports.json', jsonEncode(tmp));
+     });
+
   }
 
   @override

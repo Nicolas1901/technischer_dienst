@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
 import 'package:technischer_dienst/Pages/CreateReports.dart';
+import 'package:technischer_dienst/Pages/ReportList.dart';
 import 'package:technischer_dienst/Pages/editReports.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _fileRepo.createFile('reports.json');
-    _fileRepo.createFile('TemplateTracker.json');
+    //_fileRepo.createFile('TemplateTracker.json');
     try {
       _fileRepo.readFile("TemplateTracker.json").then((value) {
         setState(() {
@@ -147,6 +148,21 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children:  [
+            const DrawerHeader(child: Text("Technischer Dienst")),
+            ListTile(
+              title: const Text("Berichte"),
+              leading: const Icon(Icons.file_copy),
+              onTap:(){
+                Navigator.pop(context);
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ReportList()));
+              }
+            )
+          ],
+        ),
       ),
       body: Center(
         child: ListView(
