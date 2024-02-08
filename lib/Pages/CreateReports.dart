@@ -107,6 +107,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
         categories: _reportData);
 
     String json = jsonEncode(report);
+
+    _fileRepo.writeFile('reports.json', json, append: true);
     debugPrint(json);
   }
 
