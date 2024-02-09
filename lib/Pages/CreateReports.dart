@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
+import '../Models/ReportCategory.dart';
 import '../Models/report.dart';
 
 //TODO add Support for Maps from existing reports
@@ -100,17 +101,17 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   Future<void> createReport(String reportName, String inspector) async {
-    Report report = Report(
-        id: 2,
-        reportName: reportName,
-        inspector: inspector,
-        from: DateTime.now(),
-        categories: _reportData);
-
-    String json = jsonEncode(report);
-
      await _fileRepo.readFile("reports.json").then((value){
        List tmp = jsonDecode(value);
+       
+       Report report = Report(
+           id: tmp.last['id'] +1,
+           reportName: reportName,
+           inspector: inspector,
+           from: DateTime.now(),
+           categories: _reportData);
+
+       String json = jsonEncode(report);
        tmp.add(report);
        _fileRepo.writeFile('reports.json', jsonEncode(tmp));
      });

@@ -46,14 +46,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _fileRepo.createFile('reports.json');
-    //_fileRepo.createFile('TemplateTracker.json');
+    _fileRepo.createFile('TemplateTracker.json');
     try {
       _fileRepo.readFile("TemplateTracker.json").then((value) {
         setState(() {
           templatePaths = jsonDecode(value);
         });
       });
-    } on PathNotFoundException catch (e) {
+    } on PathNotFoundException {
       _fileRepo.writeFile("TemplateTracker.json", '[]');
       debugPrint("TemplateTracker.json does not exist");
     }
@@ -151,16 +151,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         child: ListView(
-          children:  [
-            const DrawerHeader(child: Text("Technischer Dienst")),
+          padding: EdgeInsets.zero,
+          children: [
+             DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: const Text("Technischer Dienst"),
+            ),
             ListTile(
-              title: const Text("Berichte"),
-              leading: const Icon(Icons.file_copy),
-              onTap:(){
-                Navigator.pop(context);
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ReportList()));
-              }
-            )
+                title: const Text("Berichte"),
+                leading: const Icon(Icons.file_copy),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ReportList()));
+                })
           ],
         ),
       ),
@@ -170,7 +176,6 @@ class _MyHomePageState extends State<MyHomePage> {
             for (var template in templatePaths) ...{
               GestureDetector(
                 onTap: () {
-                  debugPrint("Bericht erstellen");
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => CreateReportPage(
                         title: template['templateName'],
@@ -180,12 +185,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: CardExample(
                   reportTitle: template['templateName'],
                   onEdit: () {
-                    debugPrint("bearbeiten: ${template['templateName']}");
-                    openEditReportPage(
-                        template['filename'], template['templateName']);
+                    openEditReportPage(template['filename'], template['templateName']);
                   },
                   onDelete: () {
-                    debugPrint("löschen: ${template['templateName']}");
                     deleteTemplate(template['filename']);
                   },
                 ),

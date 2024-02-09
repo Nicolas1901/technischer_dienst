@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
+import 'package:technischer_dienst/main.dart';
 
 import '../Models/report.dart';
 
@@ -37,6 +38,27 @@ class _ReportListState extends State<ReportList> {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Berichte"),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: const Text("Technischer Dienst"),
+              ),
+              ListTile(
+                  title: const Text("Vorlagen"),
+                  leading: const Icon(Icons.file_copy),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const MyHomePage(title: "Vorlagen")));
+                  })
+            ],
+          ),
         ),
         body: Center(
           child: ListView.builder(
