@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:technischer_dienst/Pages/ShowReport.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import 'package:technischer_dienst/main.dart';
 
@@ -24,7 +25,8 @@ class _ReportListState extends State<ReportList> {
     _fileRepo.readFile("reports.json").then((value) {
       List<dynamic> json = jsonDecode(value);
       debugPrint(json.toString());
-      _reports = List<dynamic>.from(json).map((e) =>Report.fromJson(e)).toList();
+      _reports =
+          List<dynamic>.from(json).map((e) => Report.fromJson(e)).toList();
 
       setState(() {
         _reports;
@@ -55,7 +57,8 @@ class _ReportListState extends State<ReportList> {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: "Vorlagen")));
+                        builder: (context) =>
+                            const MyHomePage(title: "Vorlagen")));
                   })
             ],
           ),
@@ -66,9 +69,15 @@ class _ReportListState extends State<ReportList> {
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
                 title: Text(_reports[index].reportName),
-                subtitle: Text(_reports[index].from.toString().replaceRange(19, null, "")),
+                subtitle: Text(
+                    _reports[index].from.toString().replaceRange(19, null, "")),
                 leading: const Icon(Icons.file_copy),
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ShowReport(
+                          report: _reports[index],
+                          title: _reports[index].reportName)));
+                },
               );
             },
           ),

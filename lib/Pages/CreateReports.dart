@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
+import 'package:technischer_dienst/Helper/mailer.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
 import '../Models/ReportCategory.dart';
@@ -41,6 +42,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   Future<void> buildDialog() {
     TextEditingController reportNameController = TextEditingController();
     TextEditingController inspectorNameController = TextEditingController();
+
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
@@ -90,7 +92,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 child: const Text('speichern'),
                 onPressed: () {
                   createReport(
-                      reportNameController.text, inspectorNameController.text);
+                      reportNameController.text,
+                      inspectorNameController.text
+                  );
+                  SendMail.send();
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
@@ -103,13 +108,17 @@ class _CreateReportPageState extends State<CreateReportPage> {
   Future<void> createReport(String reportName, String inspector) async {
      await _fileRepo.readFile("reports.json").then((value){
        List tmp = jsonDecode(value);
-       
+       int id;
+
+       tmp.isEmpty? id =1 : id = tmp.last['id'] +1;
+
        Report report = Report(
-           id: tmp.last['id'] +1,
-           reportName: reportName,
-           inspector: inspector,
-           from: DateTime.now(),
-           categories: _reportData);
+             id: id,
+             reportName: reportName,
+             inspector: inspector,
+             ofTemplate: widget.filename,
+             from: DateTime.now(),
+             categories: _reportData);
 
        String json = jsonEncode(report);
        tmp.add(report);
