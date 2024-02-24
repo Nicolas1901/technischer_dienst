@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
 import 'package:technischer_dienst/Models/ReportCategory.dart';
+import '../Helper/pdfHelper.dart';
 import '../Models/report.dart';
 
 class ShowReport extends StatefulWidget {
@@ -86,6 +87,13 @@ class _ShowReportState extends State<ShowReport> {
                 )
               }
             ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              PdfHelper.createPdfFromReport(widget.report);
+            },
+            tooltip: 'Berichtsvorlage erstellen',
+            child: const Icon(Icons.add),
           ),
         ),
       ),
