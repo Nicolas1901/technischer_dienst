@@ -6,20 +6,18 @@ import 'package:technischer_dienst/Models/ReportCategory.dart';
 import '../Models/report.dart';
 
 class PdfHelper {
+  static const approvedStyle = pw.TextStyle(
+    color: PdfColors.green500,
+  );
+  static const disapprovedStyle = pw.TextStyle(
+    color: PdfColors.red500,
+  );
+
+  static const categoryTitleStyle = pw.TextStyle(fontSize: 20);
+  static final tableHeaderTextStyle = pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold );
+
   static void createPdfFromReport(Report report) {
     final pdf = pw.Document();
-    const approvedStyle = pw.TextStyle(
-      color: PdfColors.green500,
-    );
-    const disapprovedStyle = pw.TextStyle(
-      color: PdfColors.red500,
-    );
-
-    final pw.TableRow header =
-        pw.TableRow(children: [pw.Text("Name"), pw.Text("Status")]);
-    pw.Text approved = pw.Text("OK", style: approvedStyle);
-    pw.Text disapproved = pw.Text("nicht OK", style: disapprovedStyle);
-
     final List<ReportCategory> categories = report.categories;
 
     pdf.addPage(pw.Page(
@@ -27,27 +25,69 @@ class PdfHelper {
         build: (pw.Context context) {
           return pw.Center(
               child: pw.Column(children: [
+            _createHeader(report.reportName, report.ofTemplate.split(".")[0],
+                report.from.toString(), report.inspector),
+           pw.SizedBox(height: 10),
             for (ReportCategory c in categories) ...{
-              pw.Column(children: [
-                pw.Text(c.categoryName),
-                pw.Table(border: pw.TableBorder.all(), children: [
-                  pw.TableRow(children: [pw.Text("Name"), pw.Text("Status")]),
-                  for (CategoryItem item in c.items) ...{
-                    pw.TableRow(children: [
-                      pw.Text(item.itemName),
-                      if (item.isChecked)
-                        pw.Text("OK", style: approvedStyle)
-                      else if (!item.isChecked)
-                        pw.Text("nicht OK", style: disapprovedStyle),
+              pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(c.categoryName, style: categoryTitleStyle),
+                    pw.SizedBox(height: 5),
+                    pw.Table(border: pw.TableBorder.all(), children: [
+                      pw.TableRow(
+
+                          children: [pw.Text("Name", style: tableHeaderTextStyle), pw.Text("Status", style: tableHeaderTextStyle)]),
+                      for (CategoryItem item in c.items) ...{
+                        pw.TableRow(children: [
+                          pw.Text(item.itemName),
+                          if (item.isChecked)
+                            pw.Text("OK", style: approvedStyle)
+                          else if (!item.isChecked)
+                            pw.Text("nicht OK", style: disapprovedStyle)
+                          else
+                            pw.Text("-"),
+                        ]),
+                      }
                     ]),
-                  }
-                ]),
-              ]),
+                    pw.SizedBox(height: 15),
+                  ]),
             },
           ]));
         }));
 
     _savePdf(pdf, "test.pdf");
+  }
+
+  static pw.Widget _createHeader(
+      String name, String templateName, String date, String inspector) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+      pw.Column(children: [
+        pw.Table(
+          children: [
+            pw.TableRow(
+              children: [pw.Text("Bericht: "), pw.Text(name)],
+            ),
+            pw.TableRow(
+              children: [pw.Text("Vorlage: "), pw.Text(templateName)],
+            ),
+            pw.TableRow(
+              children: [pw.Text("Prüfer: "), pw.Text(inspector)],
+            ),
+          ],
+        )
+      ]),
+      pw.Column(
+          mainAxisAlignment: pw.MainAxisAlignment.start,
+          children: [
+        pw.Table(children: [
+          pw.TableRow(children: [pw.Text("Datum: "), pw.Text(date.split(" ")[0])]),
+        ])
+      ]),
+    ]);
   }
 
   static Future<void> _savePdf(pw.Document pdf, String pdfName) async {
