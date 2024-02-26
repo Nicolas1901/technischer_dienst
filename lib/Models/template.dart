@@ -1,6 +1,6 @@
 import 'ReportCategory.dart';
 
-class Template {
+class Template implements Comparable<Template> {
 
   final int id;
   final String name;
@@ -27,5 +27,15 @@ class Template {
       'image': image,
       'categoryList': categories
     };
+  }
+
+  @override
+  int compareTo(Template other) {
+    if(id < other.id){
+      return -1;
+    } else if(id > other.id){
+      return 1;
+    }
+    return 0;
   }
 }

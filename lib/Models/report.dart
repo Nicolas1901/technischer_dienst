@@ -1,8 +1,6 @@
-import 'dart:convert';
-
 import 'ReportCategory.dart';
 
-class Report {
+class Report implements Comparable<Report>{
   final int id;
   final String reportName;
   final String inspector;
@@ -37,5 +35,15 @@ class Report {
       "date": from.toString().replaceRange(19, null, ""),
       "categoryList": categories
     };
+  }
+
+  @override
+  int compareTo(Report other) {
+    if(id < other.id){
+      return -1;
+    } else if(id > other.id){
+      return 1;
+    }
+    return 0;
   }
 }
