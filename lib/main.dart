@@ -2,14 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
+import 'package:technischer_dienst/Models/template.dart';
+import 'package:technischer_dienst/Models/templatesModel.dart';
 import 'package:technischer_dienst/Pages/CreateReports.dart';
 import 'package:technischer_dienst/Pages/ReportList.dart';
 import 'package:technischer_dienst/Pages/editReports.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => TemplatesModel(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -47,10 +53,17 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _fileRepo.createFile('reports.json');
     _fileRepo.createFile('TemplateTracker.json');
+    _fileRepo.createFile('templates.json');
     try {
+      //TODO change to Template object to remove TemplateTracker.json
       _fileRepo.readFile("TemplateTracker.json").then((value) {
         setState(() {
           templatePaths = jsonDecode(value);
+        });
+      });
+      _fileRepo.readFile('templates.json').then((value) {
+        setState(() {
+          context.read<TemplatesModel>().setup(jsonDecode(value));
         });
       });
     } on PathNotFoundException {
@@ -153,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-             DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -185,7 +198,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: CardExample(
                   reportTitle: template['templateName'],
                   onEdit: () {
-                    openEditReportPage(template['filename'], template['templateName']);
+                    openEditReportPage(
+                        template['filename'], template['templateName']);
                   },
                   onDelete: () {
                     deleteTemplate(template['filename']);

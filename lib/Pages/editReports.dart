@@ -1,5 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:technischer_dienst/Models/ReportCategory.dart';
+import 'package:technischer_dienst/Models/template.dart';
+import 'package:technischer_dienst/Models/templatesModel.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import '../Components/dynamicForm.dart';
 
@@ -91,6 +95,15 @@ class _EditReportsPageState extends State<EditReportsPage> {
   }
 
   Future<void> createTemplateJson() async {
+    List<ReportCategory> categories = List.empty(growable: true);
+
+    for(CategoryDataModel c in tabs){
+      categories.add(ReportCategory(categoryName: c.categoryName, itemData: c.items));
+    }
+    Template tmp = Template(id: 0, name: widget.title, image: "", categories: categories);
+    Provider.of<TemplatesModel>(context, listen: false).add(tmp);
+
+    //TODO refactor method so that everything after this can be removed
     String filename = '${widget.title}Template.json';
     debugPrint('Tabs: ${jsonEncode(tabs)}');
 

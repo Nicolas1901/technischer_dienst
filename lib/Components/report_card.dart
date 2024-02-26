@@ -53,12 +53,12 @@ class CardExample extends StatelessWidget {
                     PopupMenuButton(
                         itemBuilder: (context) => [
                               PopupMenuItem(
-                                child: Text("Bearbeiten"),
                                 onTap: onEdit,
+                                child: const Text("Bearbeiten"),
                               ),
                               PopupMenuItem(
-                                child: const Text("Löschen"),
                                 onTap: onDelete,
+                                child: const Text("Löschen"),
                               ),
                             ])
                   ],

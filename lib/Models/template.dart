@@ -18,7 +18,7 @@ class Template implements Comparable<Template> {
       : id = json['id'],
         name = json['name'],
         image = json['image'],
-        categories = List<dynamic>.from(json['categorieList']).map((e) => ReportCategory.fromJson(e)).toList();
+        categories = List<dynamic>.from(json['categoryList']).map((e) => ReportCategory.fromJson(e)).toList();
 
   Map<String, dynamic> toJson(){
     return{
