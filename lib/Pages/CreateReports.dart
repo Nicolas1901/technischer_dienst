@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
+import 'package:technischer_dienst/Constants/Filenames.dart';
 import 'package:technischer_dienst/Helper/mailer.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 
@@ -106,7 +107,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   Future<void> createReport(String reportName, String inspector) async {
-     await _fileRepo.readFile("reports.json").then((value){
+     await _fileRepo.readFile(Filenames.REPORTS).then((value){
        List tmp = jsonDecode(value);
        int id;
 

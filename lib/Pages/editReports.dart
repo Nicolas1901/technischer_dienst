@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:technischer_dienst/Constants/Filenames.dart';
 import 'package:technischer_dienst/Models/ReportCategory.dart';
 import 'package:technischer_dienst/Models/template.dart';
 import 'package:technischer_dienst/Models/templatesModel.dart';
@@ -10,20 +11,17 @@ import '../Components/dynamicForm.dart';
 class EditReportsPage extends StatefulWidget {
   const EditReportsPage(
       {super.key,
-      this.templateFilename,
-      this.title = "Berichtsvorlage erstellen",
-      this.templateExists = false});
+      this.templateExists = false, required this.template});
 
   @override
   State<StatefulWidget> createState() => _EditReportsPageState();
 
-  final String title;
-  final String? templateFilename;
   final bool templateExists;
+  final Template template;
 }
 
 class _EditReportsPageState extends State<EditReportsPage> {
-  List<CategoryDataModel> tabs = List.empty(growable: true);
+  List<ReportCategory> tabs = List.empty(growable: true);
 
   final FileRepository _fileRepository = FileRepository();
 
@@ -31,19 +29,9 @@ class _EditReportsPageState extends State<EditReportsPage> {
   void initState() {
     super.initState();
 
-    if (widget.templateExists) {
-      _fileRepository.readFile(widget.templateFilename!).then((value) {
-        List<dynamic> jsonData = jsonDecode(value);
-        for (var category in jsonData) {
-          List<dynamic> items = category['items'];
-          tabs.add(CategoryDataModel(
-              categoryName: category['name'], items: items.cast<String>()));
-        }
-        setState(() {
-          tabs;
-        });
-      });
-    }
+    setState(() {
+      tabs = widget.template.categories;
+    });
   }
 
   Future<void> buildDialog() {
@@ -90,41 +78,16 @@ class _EditReportsPageState extends State<EditReportsPage> {
 
   void addCategory(String name) {
     setState(() {
-      tabs.add(CategoryDataModel(categoryName: name, items: []));
+      tabs.add(ReportCategory(categoryName: name, itemData: []));
     });
   }
 
   Future<void> createTemplateJson() async {
-    List<ReportCategory> categories = List.empty(growable: true);
+    TemplatesModel model = context.read<TemplatesModel>();
+    Template tmp = Template(id: model.setId, name: widget.template.name, image: widget.template.image, categories: widget.template.categories);
+    model.update(tmp);
+    _fileRepository.writeFile(Filenames.TEMPLATES, jsonEncode(model.templates));
 
-    for(CategoryDataModel c in tabs){
-      categories.add(ReportCategory(categoryName: c.categoryName, itemData: c.items));
-    }
-    Template tmp = Template(id: 0, name: widget.title, image: "", categories: categories);
-    Provider.of<TemplatesModel>(context, listen: false).add(tmp);
-
-    //TODO refactor method so that everything after this can be removed
-    String filename = '${widget.title}Template.json';
-    debugPrint('Tabs: ${jsonEncode(tabs)}');
-
-    _fileRepository.writeFile(filename, jsonEncode(tabs));
-
-    //if template is new then write template name and path to TemplateTracker.json
-    if (!widget.templateExists) {
-      String trackerData =
-          '{"templateName": "${widget.templateFilename}","filename": "$filename"}';
-      await _fileRepository
-          .readFile('TemplateTracker.json')
-          .then((value) async {
-        if (value.isEmpty || value == "[]") {
-          debugPrint("file is empty");
-          return await _fileRepository.writeFile(
-              'TemplateTracker.json', '[$trackerData]');
-        }
-        value = value.replaceFirst(RegExp('}]'), '},$trackerData]');
-        return await _fileRepository.writeFile('TemplateTracker.json', value);
-      });
-    }
   }
 
   @override
@@ -134,11 +97,11 @@ class _EditReportsPageState extends State<EditReportsPage> {
       length: tabs.length + 1,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(widget.template.name),
           bottom: TabBar(
             isScrollable: true,
             tabs: [
-              for (CategoryDataModel category in tabs) ...{
+              for (ReportCategory category in tabs) ...{
                 Tab(
                   text: category.categoryName,
                 ),
@@ -156,12 +119,12 @@ class _EditReportsPageState extends State<EditReportsPage> {
         ),
         body: TabBarView(
           children: [
-            for (CategoryDataModel category in tabs) ...{
+            for (ReportCategory category in tabs) ...{
               dynamic_form(
-                templateData: category.items,
-                onAddedItem: (String val) {
+                templateData: category.items.map((e) => e.itemName).toList(),
+                onAddedItem: (String itemName) {
                   setState(() {
-                    category.items.add(val);
+                    category.items.add(CategoryItem(itemName: itemName, isChecked: false));
                   });
                 },
                 onDeletedItem: (int index) {
@@ -169,8 +132,8 @@ class _EditReportsPageState extends State<EditReportsPage> {
                     category.items.removeAt(index);
                   });
                 },
-                onUpdateItem: (int index, String val) {
-                  category.items[index] = val;
+                onUpdateItem: (int index, String itemName) {
+                  category.items[index].itemName = itemName;
                 },
               ),
             },
@@ -185,7 +148,9 @@ class _EditReportsPageState extends State<EditReportsPage> {
         floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.save),
           onPressed: () {
-            createTemplateJson().then((value) => Navigator.of(context).pop());
+            createTemplateJson().then((value) {
+              Navigator.of(context).pop();
+            });
           },
         ),
       ),
