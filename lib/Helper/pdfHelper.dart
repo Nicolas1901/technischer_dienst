@@ -16,7 +16,7 @@ class PdfHelper {
   static const categoryTitleStyle = pw.TextStyle(fontSize: 20);
   static final tableHeaderTextStyle = pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold );
 
-  static void createPdfFromReport(Report report) {
+  static Future<File> createPdfFromReport(Report report) async {
     final pdf = pw.Document();
     final List<ReportCategory> categories = report.categories;
 
@@ -56,7 +56,7 @@ class PdfHelper {
           ]));
         }));
 
-    _savePdf(pdf, "test.pdf");
+    return await _savePdf(pdf, "test.pdf");
   }
 
   static pw.Widget _createHeader(
@@ -90,10 +90,11 @@ class PdfHelper {
     ]);
   }
 
-  static Future<void> _savePdf(pw.Document pdf, String pdfName) async {
+  static Future<File> _savePdf(pw.Document pdf, String pdfName) async {
     final path = await getTemporaryDirectory();
 
     final file = File("${path.path}/$pdfName");
     await file.writeAsBytes(await pdf.save());
+    return file;
   }
 }

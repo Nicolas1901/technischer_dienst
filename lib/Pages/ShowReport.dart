@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/Components/report_checklist.dart';
+import 'package:technischer_dienst/Helper/mailer.dart';
 import 'package:technischer_dienst/Models/ReportCategory.dart';
 import '../Helper/pdfHelper.dart';
 import '../Models/report.dart';
@@ -89,8 +92,9 @@ class _ShowReportState extends State<ShowReport> {
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              PdfHelper.createPdfFromReport(widget.report);
+            onPressed: () async {
+              File file = await PdfHelper.createPdfFromReport(widget.report);
+              SendMail.send(file.path);
             },
             tooltip: 'Berichtsvorlage erstellen',
             child: const Icon(Icons.add),

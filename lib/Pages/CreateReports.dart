@@ -95,7 +95,6 @@ class _CreateReportPageState extends State<CreateReportPage> {
                       reportNameController.text,
                       inspectorNameController.text
                   );
-                  SendMail.send();
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
