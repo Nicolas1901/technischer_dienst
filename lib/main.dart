@@ -66,12 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void openEditReportPage(int index) {
-    debugPrint(index.toString());
+  void openEditReportPage(int id) {
+    debugPrint(id.toString());
     Navigator.of(context).push(
       MaterialPageRoute(
           builder: (context) => EditReportsPage(
-                template: context.read<TemplatesModel>().templates[index],
+                template: context.read<TemplatesModel>().getWhere(id),
                 templateExists: true,
               )),
     );
@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
-                          CreateReportPage(title: tmp.name, filename: tmp.name),
+                          CreateReportPage(template: tmp,),
                     ));
                   },
                   child: CardExample(

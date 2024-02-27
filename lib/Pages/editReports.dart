@@ -10,8 +10,7 @@ import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
   const EditReportsPage(
-      {super.key,
-      this.templateExists = false, required this.template});
+      {super.key, this.templateExists = false, required this.template});
 
   @override
   State<StatefulWidget> createState() => _EditReportsPageState();
@@ -84,10 +83,22 @@ class _EditReportsPageState extends State<EditReportsPage> {
 
   Future<void> createTemplateJson() async {
     TemplatesModel model = context.read<TemplatesModel>();
-    Template tmp = Template(id: model.setId, name: widget.template.name, image: widget.template.image, categories: widget.template.categories);
+    Template tmp;
+    if (widget.templateExists) {
+       tmp = Template(
+          id: widget.template.id,
+          name: widget.template.name,
+          image: widget.template.image,
+          categories: widget.template.categories);
+    } else{
+      tmp = Template(
+          id: model.setId,
+          name: widget.template.name,
+          image: widget.template.image,
+          categories: widget.template.categories);
+    }
     model.update(tmp);
     _fileRepository.writeFile(Filenames.TEMPLATES, jsonEncode(model.templates));
-
   }
 
   @override
@@ -124,7 +135,8 @@ class _EditReportsPageState extends State<EditReportsPage> {
                 templateData: category.items.map((e) => e.itemName).toList(),
                 onAddedItem: (String itemName) {
                   setState(() {
-                    category.items.add(CategoryItem(itemName: itemName, isChecked: false));
+                    category.items.add(
+                        CategoryItem(itemName: itemName, isChecked: false));
                   });
                 },
                 onDeletedItem: (int index) {
