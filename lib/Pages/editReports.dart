@@ -6,6 +6,7 @@ import 'package:technischer_dienst/Models/ReportCategory.dart';
 import 'package:technischer_dienst/Models/template.dart';
 import 'package:technischer_dienst/Models/templatesModel.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
+import '../Components/dialog.dart';
 import '../Components/dynamicForm.dart';
 
 class EditReportsPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class EditReportsPage extends StatefulWidget {
 
 class _EditReportsPageState extends State<EditReportsPage> {
   List<ReportCategory> tabs = List.empty(growable: true);
+  final formKey = GlobalKey<FormState>();
 
   final FileRepository _fileRepository = FileRepository();
 
@@ -38,39 +40,30 @@ class _EditReportsPageState extends State<EditReportsPage> {
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Kategorie hinzufügen"),
-            content: TextFormField(
-              controller: addController,
-              autofocus: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Kategoriename eingeben";
-                }
-                return null;
-              },
+          return CustomDialog(
+            title: "Kategorie hinzufügen",
+            child: Form(
+              key: formKey,
+              child: TextFormField(
+                controller: addController,
+                autofocus: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Kategoriename darf nicht leer sein";
+                  }
+                  return null;
+                },
+              ),
             ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('hinzufügen'),
-                onPressed: () {
-                  addCategory(addController.text);
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('abbrechen'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+            onAbort: (){
+              Navigator.of(context).pop();
+            },
+            onSave: (){
+              if (formKey.currentState!.validate()) {
+                addCategory(addController.text);
+                Navigator.of(context).pop();
+              }
+            },
           );
         });
   }

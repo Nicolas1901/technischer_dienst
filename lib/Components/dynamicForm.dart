@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'dialog.dart';
+
 typedef void StringCallback(String val);
 typedef void IntCallback(int index);
 typedef void IntStringCallback(int index, String val);
 
 class dynamic_form extends StatefulWidget {
-  dynamic_form({super.key, required this.templateData, required this.onAddedItem,required this.onDeletedItem, required this.onUpdateItem});
+  dynamic_form(
+      {super.key,
+      required this.templateData,
+      required this.onAddedItem,
+      required this.onDeletedItem,
+      required this.onUpdateItem});
 
   @override
   State<StatefulWidget> createState() => _dynamic_formState();
@@ -17,16 +24,19 @@ class dynamic_form extends StatefulWidget {
   final IntStringCallback onUpdateItem;
 }
 
-class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClientMixin<dynamic_form>{
+class _dynamic_formState extends State<dynamic_form>
+    with AutomaticKeepAliveClientMixin<dynamic_form> {
   List<FormFieldData> formFields = [];
+
+  final formKey = GlobalKey<FormState>();
 
   @override
   bool get wantKeepAlive => true;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    for(String item in widget.templateData){
+    for (String item in widget.templateData) {
       formFields.add(FormFieldData(name: item));
     }
   }
@@ -36,42 +46,33 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title:const Text("Item hinzufügen"),
-            content: TextFormField(
-              controller: addController,
-              autofocus: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Itemname eingeben";
-                }
-                return null;
-              },
+          return CustomDialog(
+            title: "Item hinzufügen",
+            child: Form(
+              key: formKey,
+              child: TextFormField(
+                controller: addController,
+                autofocus: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Feld darf nicht leer sein";
+                  }
+                  return null;
+                },
+              ),
             ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('hinzufügen'),
-                onPressed: () {
-                  setState(() {
-                    formFields.add(FormFieldData(name: addController.text));
-                    widget.onAddedItem(addController.text);
-                  });
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('abbrechen'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+            onSave: () {
+              if (formKey.currentState!.validate()) {
+                setState(() {
+                  formFields.add(FormFieldData(name: addController.text));
+                  widget.onAddedItem(addController.text);
+                });
+                Navigator.of(context).pop();
+              }
+            },
+            onAbort: () {
+              Navigator.of(context).pop();
+            },
           );
         });
   }
@@ -91,13 +92,13 @@ class _dynamic_formState extends State<dynamic_form> with AutomaticKeepAliveClie
                     children: [
                       Expanded(
                         child: Focus(
-                            onFocusChange: (hasFocus){
-                              if(!hasFocus){
-                                widget.onUpdateItem(index, formFields[index].controller.text);
+                            onFocusChange: (hasFocus) {
+                              if (!hasFocus) {
+                                widget.onUpdateItem(
+                                    index, formFields[index].controller.text);
                               }
                             },
-                            child: formFields[index].buildFormField()
-                        ),
+                            child: formFields[index].buildFormField()),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),

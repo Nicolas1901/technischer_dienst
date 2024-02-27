@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:technischer_dienst/Components/dialog.dart';
 import 'package:technischer_dienst/Components/report_card.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
 import 'package:technischer_dienst/Models/template.dart';
@@ -48,6 +49,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _fileRepo = FileRepository();
   List templatePaths = List.empty(growable: true);
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -79,8 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   deleteTemplateNew(Template template) {
     Provider.of<TemplatesModel>(context, listen: false).delete(template);
-    _fileRepo.writeFile(Filenames.TEMPLATES,
-        jsonEncode(Provider.of<TemplatesModel>(context, listen: false).templates));
+    _fileRepo.writeFile(
+        Filenames.TEMPLATES,
+        jsonEncode(
+            Provider.of<TemplatesModel>(context, listen: false).templates));
   }
 
   //TODO refactor delete Method
@@ -91,25 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Berichtstitel"),
-            content: TextFormField(
-              controller: addController,
-              autofocus: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Titel darf nicht leer sein";
-                }
-                return null;
-              },
-            ),
-            actions: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
-                ),
-                child: const Text('erstellen'),
-                onPressed: () {
+          return CustomDialog(
+              onSave: () {
+                if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => EditReportsPage(
@@ -121,19 +109,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ));
-                },
-              ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+                }
+              },
+              onAbort: () {
+                Navigator.of(context).pop();
+              },
+              title: "Neue Vorlage",
+              child: Form(
+                key: formKey,
+                child: TextFormField(
+                  controller: addController,
+                  autofocus: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Titel darf nicht leer sein";
+                    }
+                    return null;
+                  },
                 ),
-                child: const Text('abbrechen'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
+              ));
         });
   }
 
@@ -175,8 +169,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          CreateReportPage(template: tmp,),
+                      builder: (context) => CreateReportPage(
+                        template: tmp,
+                      ),
                     ));
                   },
                   child: CardExample(

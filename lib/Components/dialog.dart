@@ -31,7 +31,7 @@ class CustomDialog extends StatelessWidget {
             textStyle: Theme.of(context).textTheme.labelLarge,
           ),
           onPressed: onAbort,
-          child: const Text('erstellen'),
+          child: const Text('abbrechen'),
         ),
       ],
     );
