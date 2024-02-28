@@ -3,8 +3,8 @@ import 'ReportCategory.dart';
 class Template implements Comparable<Template> {
 
   final int id;
-  final String name;
-  final String image;
+  String name;
+  String image;
   final List<ReportCategory> categories;
 
   Template({

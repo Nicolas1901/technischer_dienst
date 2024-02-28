@@ -79,6 +79,7 @@ class _dynamic_formState extends State<dynamic_form>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),

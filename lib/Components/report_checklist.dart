@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../Models/ReportCategory.dart';
 
 class ReportChecklist extends StatefulWidget {
-  ReportChecklist({super.key, required this.items, required this.valueChanged, this.readonly = false});
+  const ReportChecklist({super.key, required this.items, required this.valueChanged, this.readonly = false});
 
   final List<CategoryItem> items;
   final Function(int index, bool isChecked) valueChanged;
-  bool readonly;
+  final bool readonly;
 
   @override
   State<ReportChecklist> createState() => _ReportChecklistState();
