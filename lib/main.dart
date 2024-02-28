@@ -122,10 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _imageRepo.get(template.image).then((file) {
           image = FileImage(file);
         });
-      } catch(e){
+      } catch (e) {
         debugPrint(e.toString());
       }
-
+    }
     debugPrint("resolveImage: ${image.toString()}");
     return image;
   }
