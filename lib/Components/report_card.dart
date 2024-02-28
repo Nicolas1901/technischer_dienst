@@ -5,7 +5,9 @@ class CardExample extends StatelessWidget {
     super.key,
     required this.reportTitle,
     required this.onEdit,
-    required this.onDelete, required this.pickImage, required this.image,
+    required this.onDelete,
+    required this.pickImage,
+    required this.image,
   });
 
   final String reportTitle;
@@ -17,8 +19,6 @@ class CardExample extends StatelessWidget {
 
   final double height = 200;
   final double width = 300;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +32,7 @@ class CardExample extends StatelessWidget {
             height: height,
             alignment: Alignment.bottomCenter,
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: image)),
+                image: DecorationImage(fit: BoxFit.cover, image: image)),
             child: SizedBox(
               height: height * 0.15,
               width: width,
@@ -64,9 +62,9 @@ class CardExample extends StatelessWidget {
                                 onTap: onDelete,
                                 child: const Text("Löschen"),
                               ),
-                          PopupMenuItem(
-                              onTap: pickImage,
-                              child: const Text("Bild hinzufügen"))
+                              PopupMenuItem(
+                                  onTap: pickImage,
+                                  child: const Text("Bild hinzufügen"))
                             ])
                   ],
                 ),

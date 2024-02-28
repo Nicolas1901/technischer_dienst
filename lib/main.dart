@@ -125,7 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
       } catch(e){
         debugPrint(e.toString());
       }
-    }
+
+    debugPrint("resolveImage: ${image.toString()}");
     return image;
   }
 
