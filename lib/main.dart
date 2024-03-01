@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:provider/provider.dart';
 import 'package:technischer_dienst/Constants/DbConnection.dart';
+import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/showTemplates.dart';
 
 import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
 
+final getIt = GetIt.instance;
 
 void main() {
-  final pb = PocketBase(DbConnectionString.url);
-  pb.collection('user').authWithPassword("Rothemann", 'rothemann');
+  WidgetsFlutterBinding.ensureInitialized();
+
+  getIt.registerSingleton<PocketBase>(PocketBase(DbConnectionString.url));
+  getIt.registerSingleton<TemplateRepository>(TemplateRepository(pb: getIt<PocketBase>()));
+
   runApp(ChangeNotifierProvider(
     create: (context) => TemplatesModel(),
     child: const MyApp(),

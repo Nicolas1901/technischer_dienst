@@ -5,17 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
+import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
-
+import 'package:technischer_dienst/main.dart';
 import '../../../Repositories/ImageRepository.dart';
 import '../../../Constants/assestImages.dart';
 import '../../../Repositories/FileRepository.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../reports/presentation/CreateReports.dart';
 import '../../reports/presentation/ReportList.dart';
+import '../application/templateController.dart';
 import 'components/report_card.dart';
-import 'editTemplate.dart';
+import 'editTemplatePage.dart';
 
 class ShowTemplates extends StatefulWidget {
   const ShowTemplates({super.key, required this.title});
@@ -27,6 +29,8 @@ class ShowTemplates extends StatefulWidget {
 }
 
 class _ShowTemplatesState extends State<ShowTemplates> {
+  final TemplateController controller = TemplateController(repository: getIt<TemplateRepository>());
+
   final _fileRepo = FileRepository();
   final _imageRepo = ImageRepository();
   List templatePaths = List.empty(growable: true);
