@@ -1,56 +1,32 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:technischer_dienst/shared/presentation/components/dialog.dart';
-import 'package:technischer_dienst/features/templates/presentation/components/report_card.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
-import 'package:technischer_dienst/Constants/assestImages.dart';
-import 'package:technischer_dienst/features/templates/domain/template.dart';
 import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
-import 'package:technischer_dienst/features/reports/presentation/CreateReports.dart';
-import 'package:technischer_dienst/features/reports/presentation/ReportList.dart';
-import 'package:technischer_dienst/features/templates/presentation/editTemplate.dart';
-import 'package:technischer_dienst/Repositories/FileRepository.dart';
-import 'package:technischer_dienst/Repositories/ImageRepository.dart';
+import 'package:technischer_dienst/features/templates/domain/template.dart';
 
-void main() {
-  runApp(ChangeNotifierProvider(
-    create: (context) => TemplatesModel(),
-    child: const MyApp(),
-  ));
-}
+import '../../../Repositories/ImageRepository.dart';
+import '../../../Constants/assestImages.dart';
+import '../../../Repositories/FileRepository.dart';
+import '../../../shared/presentation/components/dialog.dart';
+import '../../reports/presentation/CreateReports.dart';
+import '../../reports/presentation/ReportList.dart';
+import 'components/report_card.dart';
+import 'editTemplate.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Vorlagen'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class ShowTemplates extends StatefulWidget {
+  const ShowTemplates({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ShowTemplates> createState() => _ShowTemplatesState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _ShowTemplatesState extends State<ShowTemplates> {
   final _fileRepo = FileRepository();
   final _imageRepo = ImageRepository();
   List templatePaths = List.empty(growable: true);
@@ -79,9 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute(
           builder: (context) => EditTemplatePage(
-                template: context.read<TemplatesModel>().getWhere(id),
-                templateExists: true,
-              )),
+            template: context.read<TemplatesModel>().getWhere(id),
+            templateExists: true,
+          )),
     );
   }
 
@@ -111,8 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<XFile?> _pickImage() async {
-      XFile? pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-      return pickedImage;
+    XFile? pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    return pickedImage;
   }
 
   ImageProvider resolveImage(Template template){
@@ -205,34 +181,34 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Consumer<TemplatesModel>(
           builder:
               (BuildContext context, TemplatesModel model, Widget? child) =>
-                  ListView(
-            children: [
-              for (Template tmp in model.templates) ...{
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => CreateReportPage(
-                        template: tmp,
+              ListView(
+                children: [
+                  for (Template tmp in model.templates) ...{
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CreateReportPage(
+                            template: tmp,
+                          ),
+                        ));
+                      },
+                      child: CardExample(
+                        reportTitle: tmp.name,
+                        image: resolveImage(tmp),
+                        onEdit: () {
+                          openEditReportPage(tmp.id);
+                        },
+                        onDelete: () {
+                          deleteTemplate(tmp);
+                        },
+                        pickImage: (){
+                          setImage(tmp);
+                        },
                       ),
-                    ));
-                  },
-                  child: CardExample(
-                    reportTitle: tmp.name,
-                    image: resolveImage(tmp),
-                    onEdit: () {
-                      openEditReportPage(tmp.id);
-                    },
-                    onDelete: () {
-                      deleteTemplate(tmp);
-                    },
-                    pickImage: (){
-                      setImage(tmp);
-                    },
-                  ),
-                ),
-              }
-            ],
-          ),
+                    ),
+                  }
+                ],
+              ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

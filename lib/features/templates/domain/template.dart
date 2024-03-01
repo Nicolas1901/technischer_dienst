@@ -1,4 +1,4 @@
-import 'ReportCategory.dart';
+import '../../../shared/domain/ReportCategory.dart';
 
 class Template implements Comparable<Template> {
 

@@ -1,4 +1,4 @@
-import 'ReportCategory.dart';
+import '../../../shared/domain/ReportCategory.dart';
 
 class Report implements Comparable<Report>{
   final int id;

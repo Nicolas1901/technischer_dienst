@@ -2,25 +2,25 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
-import 'package:technischer_dienst/Models/ReportCategory.dart';
-import 'package:technischer_dienst/Models/template.dart';
-import 'package:technischer_dienst/Models/templatesModel.dart';
+import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import 'package:technischer_dienst/features/templates/domain/template.dart';
+import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
-import '../Components/dialog.dart';
-import '../Components/dynamicForm.dart';
+import '../../../shared/presentation/components/dialog.dart';
+import 'components/dynamicForm.dart';
 
-class EditReportsPage extends StatefulWidget {
-  const EditReportsPage(
+class EditTemplatePage extends StatefulWidget {
+  const EditTemplatePage(
       {super.key, this.templateExists = false, required this.template});
 
   @override
-  State<StatefulWidget> createState() => _EditReportsPageState();
+  State<StatefulWidget> createState() => _EditTemplatePageState();
 
   final bool templateExists;
   final Template template;
 }
 
-class _EditReportsPageState extends State<EditReportsPage> {
+class _EditTemplatePageState extends State<EditTemplatePage> {
   List<ReportCategory> tabs = List.empty(growable: true);
   final formKey = GlobalKey<FormState>();
 

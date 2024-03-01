@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'dialog.dart';
+import '../../../../shared/presentation/components/dialog.dart';
 
 typedef void StringCallback(String val);
 typedef void IntCallback(int index);

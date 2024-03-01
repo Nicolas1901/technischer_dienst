@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/Components/report_checklist.dart';
+import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
-import '../Models/ReportCategory.dart';
-import '../Models/report.dart';
-import '../Models/template.dart';
+import '../../../shared/domain/ReportCategory.dart';
+import '../domain/report.dart';
+import '../../templates/domain/template.dart';
 
 //TODO add Support for Maps from existing reports
 class CreateReportPage extends StatefulWidget {

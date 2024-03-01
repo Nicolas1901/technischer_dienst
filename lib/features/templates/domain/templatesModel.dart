@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:technischer_dienst/Models/template.dart';
+import 'package:technischer_dienst/features/templates/domain/template.dart';
 
 class TemplatesModel with ChangeNotifier {
   int _maxId = 0;

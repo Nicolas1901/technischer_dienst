@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/Pages/ShowReport.dart';
+import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import 'package:technischer_dienst/main.dart';
 
-import '../Models/report.dart';
+import '../domain/report.dart';
 
 class ReportList extends StatefulWidget {
   const ReportList({super.key});

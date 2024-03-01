@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/Components/report_checklist.dart';
+import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
 import 'package:technischer_dienst/Helper/mailer.dart';
-import 'package:technischer_dienst/Models/ReportCategory.dart';
-import '../Helper/pdfHelper.dart';
-import '../Models/report.dart';
+import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import '../../../Helper/pdfHelper.dart';
+import '../domain/report.dart';
 
 class ShowReport extends StatefulWidget {
   final Report report;
