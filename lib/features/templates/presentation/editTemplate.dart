@@ -85,7 +85,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
           categories: widget.template.categories);
     } else{
       tmp = Template(
-          id: model.setId,
+          id: "",
           name: widget.template.name,
           image: widget.template.image,
           categories: widget.template.categories);

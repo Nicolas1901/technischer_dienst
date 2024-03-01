@@ -50,7 +50,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     }
   }
 
-  void openEditReportPage(int id) {
+  void openEditReportPage(String id) {
     debugPrint(id.toString());
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -79,7 +79,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
 
       pickedImage.readAsBytes().then((bytes){
         _imageRepo.write(path, bytes);
-        template.image = path;
+        template = template.setImage(path);
         Provider.of<TemplatesModel>(context, listen: false).update(template);
       });
     });
@@ -93,11 +93,10 @@ class _ShowTemplatesState extends State<ShowTemplates> {
 
   ImageProvider resolveImage(Template template){
     ImageProvider image = const AssetImage(AssetImages.placeholder);
-    if(template.image.isNotEmpty) {
+    if(template.image != null) {
       try {
-        _imageRepo.get(template.image).then((file) {
-          image = FileImage(file);
-        });
+          image = NetworkImage(template.image);
+
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -120,9 +119,8 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => EditTemplatePage(
                       template: Template(
-                        id: 0,
+                        id: "",
                         name: addController.text,
-                        image: "",
                         categories: [],
                       ),
                     ),

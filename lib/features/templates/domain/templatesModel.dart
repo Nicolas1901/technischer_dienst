@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 
@@ -13,9 +15,6 @@ class TemplatesModel with ChangeNotifier {
   void setup(List<Template> list) {
     templates = list;
     templates.sort();
-    if (templates.isNotEmpty) {
-      _maxId = templates.last.id;
-    }
     notifyListeners();
   }
 
@@ -24,10 +23,10 @@ class TemplatesModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Template getWhere(int id) {
+  Template getWhere(String id) {
     return templates.singleWhere((e) => e.id == id,
         orElse: () =>
-            Template(id: setId, name: "NeueVorlage", categories: [], image: ""));
+            Template(id: "", name: "NeueVorlage", categories: [], image: ""));
   }
 
   void delete(Template template) {

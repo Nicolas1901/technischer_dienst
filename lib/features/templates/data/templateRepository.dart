@@ -1,31 +1,61 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
-import 'package:technischer_dienst/Constants/Filenames.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
+import 'package:http/http.dart';
 
-class TemplateRepository{
-  final String filename = Filenames.TEMPLATES;
+class TemplateRepository {
+  final PocketBase pb;
+  final String tableName = 'templates';
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return "${directory.path}/$filename";
+  TemplateRepository({
+    required this.pb,
+  });
+
+  void add(Template template) {
+    if(template.image.isEmpty){
+      pb.collection(tableName).create(body: template.toJson(),);
+    } else{
+      final File image = File(template.image);
+      pb.collection(tableName).create(body: template.toJson(), files: [
+        MultipartFile.fromBytes('image', image.readAsBytesSync()),
+      ]);
+    }
+
   }
 
-  Future<List<Template>> retrieveData() async {
-    String path = await _localPath;
+  void update(Template template) {
+    if(template.image.isEmpty){
+      pb.collection(tableName).update(template.id, body: template.toJson(),);
+    }else{
+      final File image = File(template.image);
+      pb.collection(tableName).update(template.id, body: template.toJson(), files: [
+        MultipartFile.fromBytes('image', image.readAsBytesSync(),),
+      ]);
+    }
 
-    final File file = File(path);
-    List<Template> templates = jsonDecode(file.readAsStringSync());
+  }
 
+  void delete(String id) {
+    pb.collection(tableName).delete(id);
+  }
+
+  Future<Template> get(String id) async {
+    final record = (await pb.collection(tableName).getOne(id));
+    final String url = pb.files.getUrl(record, record.getStringValue('image')).path;
+
+    Template tmp = Template.fromRecord(record, url);
+
+    return tmp;
+  }
+
+  Future<List<Template>> getAll() async {
+    final List<RecordModel> record =
+        (await pb.collection(tableName).getFullList());
+
+    List<Template> templates = List<RecordModel>.from(record)
+        .map((e) => Template.fromRecord(e, pb.files.getUrl(e, e.getStringValue('image')).path))
+        .toList();
     return templates;
-  }
-
-  Future<void> writeData(List<Template> templates) async {
-    String path = await _localPath;
-    final File file = File(path);
-
-    file.writeAsString(jsonEncode(templates));
   }
 }

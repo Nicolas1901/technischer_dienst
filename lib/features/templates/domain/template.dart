@@ -1,16 +1,20 @@
+import 'dart:convert';
+
+import 'package:pocketbase/pocketbase.dart';
+
 import '../../../shared/domain/ReportCategory.dart';
 
-class Template implements Comparable<Template> {
+class Template{
 
-  final int id;
-  String name;
-  String image;
+  final String id;
+  final String name;
+  final String image;
   final List<ReportCategory> categories;
 
   Template({
     required this.id,
     required this.name,
-    required this.image,
+    this.image = "",
     required this.categories,
   });
 
@@ -29,13 +33,17 @@ class Template implements Comparable<Template> {
     };
   }
 
-  @override
-  int compareTo(Template other) {
-    if(id < other.id){
-      return -1;
-    } else if(id > other.id){
-      return 1;
-    }
-    return 0;
+  factory Template.fromRecord(RecordModel record, url){
+    return Template(
+        id: record.getStringValue('id'),
+        name: record.getStringValue('name'),
+        categories: List.from(jsonDecode(record.getStringValue('categories'))).map((e) => ReportCategory.fromJson(e)).toList(),
+        image: url
+    );
   }
+
+  setImage(String url){
+    Template(id: this.id, name: this.name, categories: this.categories, image: url);
+  }
+
 }
