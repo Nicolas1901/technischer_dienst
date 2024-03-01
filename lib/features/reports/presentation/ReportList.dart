@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
-import 'package:technischer_dienst/main.dart';
+import 'package:technischer_dienst/features/templates/presentation/showTemplates.dart';
 
 import '../domain/report.dart';
 
@@ -58,7 +58,7 @@ class _ReportListState extends State<ReportList> {
                     Navigator.pop(context);
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            const MyHomePage(title: "Vorlagen")));
+                            const ShowTemplates(title: "Vorlagen")));
                   })
             ],
           ),
