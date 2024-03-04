@@ -24,13 +24,13 @@ class TemplateRepository {
 
   }
 
-  void update(Template template) {
-    if(template.image.isEmpty){
+  void update(Template template, {File? file}) {
+    if(file == null){
       pb.collection(tableName).update(template.id, body: template.toJson(),);
     }else{
       final File image = File(template.image);
       pb.collection(tableName).update(template.id, body: template.toJson(), files: [
-        MultipartFile.fromBytes('image', image.readAsBytesSync(),),
+        MultipartFile.fromBytes('image', file.readAsBytesSync(),),
       ]);
     }
 

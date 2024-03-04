@@ -2,20 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:technischer_dienst/Constants/Filenames.dart';
+import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import 'package:technischer_dienst/main.dart';
-import '../../../Repositories/ImageRepository.dart';
 import '../../../Constants/assestImages.dart';
 import '../../../Repositories/FileRepository.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../reports/presentation/CreateReports.dart';
 import '../../reports/presentation/ReportList.dart';
-import '../application/templateController.dart';
 import 'components/report_card.dart';
 import 'editTemplatePage.dart';
 
@@ -29,10 +28,7 @@ class ShowTemplates extends StatefulWidget {
 }
 
 class _ShowTemplatesState extends State<ShowTemplates> {
-  final TemplateController controller = TemplateController(repository: getIt<TemplateRepository>());
-
   final _fileRepo = FileRepository();
-  final _imageRepo = ImageRepository();
   List templatePaths = List.empty(growable: true);
   final formKey = GlobalKey<FormState>();
 
@@ -59,48 +55,17 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     Navigator.of(context).push(
       MaterialPageRoute(
           builder: (context) => EditTemplatePage(
-            template: context.read<TemplatesModel>().getWhere(id),
-            templateExists: true,
-          )),
+                template: context.read<TemplatesModel>().getWhere(id),
+                templateExists: true,
+              )),
     );
   }
 
-  //Delete Function for popupmenu
-  deleteTemplate(Template template) {
-    Provider.of<TemplatesModel>(context, listen: false).delete(template);
-    _fileRepo.writeFile(
-        Filenames.TEMPLATES,
-        jsonEncode(
-            Provider.of<TemplatesModel>(context, listen: false).templates));
-  }
-
-  setImage(Template template){
-    _pickImage().then((value){
-      final XFile? pickedImage = value;
-      if(pickedImage == null) return;
-
-      final String path = "${Filenames.IMAGE_DIR}/${pickedImage.name}";
-
-      pickedImage.readAsBytes().then((bytes){
-        _imageRepo.write(path, bytes);
-        template = template.setImage(path);
-        Provider.of<TemplatesModel>(context, listen: false).update(template);
-      });
-    });
-
-  }
-
-  Future<XFile?> _pickImage() async {
-    XFile? pickedImage = await ImagePicker().pickImage(source: ImageSource.camera);
-    return pickedImage;
-  }
-
-  ImageProvider resolveImage(Template template){
+  ImageProvider resolveImage(Template template) {
     ImageProvider image = const AssetImage(AssetImages.placeholder);
-    if(template.image != null) {
+    if (template.image.isNotEmpty) {
       try {
-          image = NetworkImage(template.image);
-
+        image = NetworkImage(template.image);
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -108,8 +73,6 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     debugPrint("resolveImage: ${image.toString()}");
     return image;
   }
-
-
 
   Future<void> buildDialog() {
     TextEditingController addController = TextEditingController();
@@ -153,39 +116,53 @@ class _ShowTemplatesState extends State<ShowTemplates> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: const Text("Technischer Dienst"),
-            ),
-            ListTile(
-                title: const Text("Berichte"),
-                leading: const Icon(Icons.file_copy),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ReportList()));
-                })
-          ],
+    return BlocProvider(
+      create: (context) =>
+          TemplateBloc(getIt<TemplateRepository>())..add(const LoadTemplates()),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
         ),
-      ),
-      body: Center(
-        child: Consumer<TemplatesModel>(
-          builder:
-              (BuildContext context, TemplatesModel model, Widget? child) =>
-              ListView(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: const Text("Technischer Dienst"),
+              ),
+              ListTile(
+                  title: const Text("Berichte"),
+                  leading: const Icon(Icons.file_copy),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ReportList()));
+                  })
+            ],
+          ),
+        ),
+        body:
+            BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
+          if (state is TemplatesLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is TemplatesLoaded) {
+            if (state is TemplateActionFailed) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(state.message),
+                duration: const Duration(seconds: 3),
+              ));
+            }
+
+            return Center(
+              child: ListView(
                 children: [
-                  for (Template tmp in model.templates) ...{
+                  for (Template tmp in state.templates) ...{
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -201,25 +178,37 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                           openEditReportPage(tmp.id);
                         },
                         onDelete: () {
-                          deleteTemplate(tmp);
+                          context
+                              .read<TemplateBloc>()
+                              .add(DeleteTemplate(template: tmp));
                         },
-                        pickImage: (){
-                          setImage(tmp);
+                        pickImage: () {
+                          context
+                              .read<TemplateBloc>()
+                              .add(AddImage(template: tmp));
                         },
                       ),
                     ),
                   }
                 ],
               ),
-        ),
+            );
+          }
+
+          if (state is TemplatesError) {
+            return Center(child: Text(state.message));
+          } else {
+            return const Center(child: Text('Etwas ist schief gelaufen'));
+          }
+        }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            buildDialog();
+          },
+          tooltip: 'Berichtsvorlage erstellen',
+          child: const Icon(Icons.add),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          buildDialog();
-        },
-        tooltip: 'Berichtsvorlage erstellen',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
