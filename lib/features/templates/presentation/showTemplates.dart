@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import '../../../Repositories/FileRepository.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../reports/presentation/CreateReports.dart';
 import '../../reports/presentation/ReportList.dart';
+import '../application/templateBloc/mockTemplates.dart';
 import 'components/report_card.dart';
 import 'editTemplatePage.dart';
 
@@ -28,34 +30,14 @@ class ShowTemplates extends StatefulWidget {
 }
 
 class _ShowTemplatesState extends State<ShowTemplates> {
-  final _fileRepo = FileRepository();
-  List templatePaths = List.empty(growable: true);
   final formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _fileRepo.createFile(Filenames.REPORTS);
-    _fileRepo.createFile(Filenames.TEMPLATES);
-    _fileRepo.createDirectory(Filenames.IMAGE_DIR);
-    try {
-      _fileRepo.readFile(Filenames.TEMPLATES).then((value) {
-        List<Template> tmpList = List<dynamic>.from(jsonDecode(value))
-            .map((e) => Template.fromJson(e))
-            .toList();
-        context.read<TemplatesModel>().setup(tmpList);
-      });
-    } on PathNotFoundException {
-      debugPrint("TemplateTracker.json does not exist");
-    }
-  }
 
-  void openEditReportPage(String id) {
-    debugPrint(id.toString());
+  void openEditReportPage(Template template) {
     Navigator.of(context).push(
       MaterialPageRoute(
           builder: (context) => EditTemplatePage(
-                template: context.read<TemplatesModel>().getWhere(id),
+                template: template,
                 templateExists: true,
               )),
     );
@@ -64,11 +46,11 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   ImageProvider resolveImage(Template template) {
     ImageProvider image = const AssetImage(AssetImages.placeholder);
     if (template.image.isNotEmpty) {
-      try {
+      /*try {
         image = NetworkImage(template.image);
       } catch (e) {
         debugPrint(e.toString());
-      }
+      }*/
     }
     debugPrint("resolveImage: ${image.toString()}");
     return image;
@@ -86,7 +68,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => EditTemplatePage(
                       template: Template(
-                        id: "",
+                        id: Random().nextInt(10000).toString(),
                         name: addController.text,
                         categories: [],
                       ),
@@ -118,7 +100,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          TemplateBloc(getIt<TemplateRepository>())..add(const LoadTemplates()),
+          TemplateBloc(getIt<TemplateRepository>())..add(LoadTemplates(templates: MockTemplates.generate())),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -175,7 +157,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                         reportTitle: tmp.name,
                         image: resolveImage(tmp),
                         onEdit: () {
-                          openEditReportPage(tmp.id);
+                          openEditReportPage(tmp);
                         },
                         onDelete: () {
                           context

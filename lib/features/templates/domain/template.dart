@@ -19,7 +19,7 @@ class Template {
   });
 
   Template.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
+      : id = json['id'].toString(),
         name = json['name'],
         image = json['image'],
         categories = List<dynamic>.from(json['categoryList']).map((e) =>

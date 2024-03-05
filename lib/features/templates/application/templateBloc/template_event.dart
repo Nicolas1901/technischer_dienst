@@ -8,8 +8,9 @@ abstract class TemplateEvent extends Equatable {
 }
 
 class LoadTemplates extends TemplateEvent{
+  final List<Template> templates;
 
-  const LoadTemplates();
+  const LoadTemplates({this.templates = const <Template>[]});
 
   @override
   List<Object> get props => [];

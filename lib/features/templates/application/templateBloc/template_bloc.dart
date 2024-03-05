@@ -25,9 +25,9 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   Future<FutureOr<void>> _onLoadTemplates(
       LoadTemplates event, Emitter<TemplateState> emit) async {
     try {
-      final List<Template> templates = await templateRepository.getAll();
+    //  final List<Template> templates = await templateRepository.getAll();
       emit(
-        TemplatesLoaded(templates: templates),
+        TemplatesLoaded(templates: event.templates),
       );
     } catch (e) {
       emit(TemplatesError(message: e.toString()));
@@ -40,7 +40,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     if (state is TemplatesLoaded) {
 
       try{
-        templateRepository.add(event.template);
+       // templateRepository.add(event.template);
 
         emit(
           TemplatesLoaded(
@@ -61,7 +61,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
 
     if (state is TemplatesLoaded) {
       try{
-        templateRepository.update(event.template);
+       // templateRepository.update(event.template);
 
         List<Template> templates = (state.templates.map((template) {
           return template.id == event.template.id ? event.template : template;
@@ -87,7 +87,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
 
     if (state is TemplatesLoaded) {
       try{
-        templateRepository.delete(event.template.id);
+        //templateRepository.delete(event.template.id);
 
         emit(
           TemplatesLoaded(
@@ -110,7 +110,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
       if(file != null){
        final Template template = event.template.copyWith(image: file.path);
         try {
-          templateRepository.update(template, file: file);
+         // templateRepository.update(template, file: file);
 
           _onUpdateTemplate(UpdateTemplate(template: template), emit);
         } catch (e) {

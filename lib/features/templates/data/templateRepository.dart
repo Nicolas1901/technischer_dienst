@@ -4,6 +4,8 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import 'package:http/http.dart';
 
+//Todo Cache Images
+
 class TemplateRepository {
   final PocketBase pb;
   final String tableName = 'templates';

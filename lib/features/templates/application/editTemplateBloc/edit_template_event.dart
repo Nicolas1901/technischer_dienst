@@ -4,13 +4,13 @@ abstract class EditTemplateEvent extends Equatable {
   const EditTemplateEvent();
 }
 
-class UpdateTemplate extends EditTemplateEvent{
+class EditTemplateLoad extends EditTemplateEvent{
   final Template template;
 
-  const UpdateTemplate({required this.template});
+  const EditTemplateLoad({required this.template});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [template];
 }
 
 class AddCategory extends EditTemplateEvent{
@@ -19,7 +19,7 @@ class AddCategory extends EditTemplateEvent{
   const AddCategory({required this.category});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [category];
 }
 
 class DeleteCategory extends EditTemplateEvent{
@@ -28,7 +28,7 @@ class DeleteCategory extends EditTemplateEvent{
   const DeleteCategory({required this.index});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [index];
 }
 
 class AddItemToCategory extends EditTemplateEvent{
@@ -38,7 +38,7 @@ class AddItemToCategory extends EditTemplateEvent{
   const AddItemToCategory({required this.item, required this.index});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [item, index];
 }
 
 class DeleteItemFromCategory extends EditTemplateEvent{
@@ -51,6 +51,26 @@ class DeleteItemFromCategory extends EditTemplateEvent{
   });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [categoryIndex, itemIndex];
+}
+
+class UpdateItemInCategory extends EditTemplateEvent{
+  final int categoryIndex;
+  final int itemIndex;
+  final String itemName;
+
+  const UpdateItemInCategory({required this.categoryIndex, required this.itemIndex, required this.itemName});
+
+  @override
+  List<Object?> get props => [categoryIndex, itemIndex, itemName];
+}
+
+class SaveTemplate extends EditTemplateEvent{
+  final Template template;
+
+  const SaveTemplate({required this.template});
+
+  @override
+  List<Object?> get props => [template];
 }
 
