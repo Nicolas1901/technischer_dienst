@@ -65,10 +65,19 @@ class UpdateItemInCategory extends EditTemplateEvent{
   List<Object?> get props => [categoryIndex, itemIndex, itemName];
 }
 
-class SaveTemplate extends EditTemplateEvent{
+class SaveNewTemplate extends EditTemplateEvent{
   final Template template;
 
-  const SaveTemplate({required this.template});
+  const SaveNewTemplate({required this.template});
+
+  @override
+  List<Object?> get props => [template];
+}
+
+class SaveModifiedTemplate extends EditTemplateEvent{
+  final Template template;
+
+  const SaveModifiedTemplate({required this.template});
 
   @override
   List<Object?> get props => [template];

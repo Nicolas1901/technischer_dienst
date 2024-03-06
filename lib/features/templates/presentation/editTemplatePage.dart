@@ -20,19 +20,16 @@ class EditTemplatePage extends StatefulWidget {
 }
 
 class _EditTemplatePageState extends State<EditTemplatePage> {
-  List<ReportCategory> tabs = List.empty(growable: true);
   final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      tabs = widget.template.categories;
-    });
+  context.read<EditTemplateBloc>().add(EditTemplateLoad(template: widget.template));
   }
 
-  Future<void> buildDialog(EditTemplateBloc editTemplateBloc) {
+
+  Future<void> buildDialog() {
     TextEditingController addController = TextEditingController();
     return showDialog<void>(
         context: context,
@@ -59,10 +56,9 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
               if (formKey.currentState!.validate()) {
                 ReportCategory category = ReportCategory(
                     categoryName: addController.text, itemData: []);
-                
-                editTemplateBloc.add(AddCategory(category: category));
+
+                context.read<EditTemplateBloc>().add(AddCategory(category: category));
                 debugPrint("Added Categorie");
-                //addCategory(addController.text);
                 Navigator.of(context).pop();
               }
             },
@@ -70,127 +66,107 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
         });
   }
 
-  void addCategory(String name) {
-    setState(() {
-      tabs.add(ReportCategory(categoryName: name, itemData: []));
-    });
-  }
 
-  createTemplateJson() {
-    Template tmp;
-    if (widget.templateExists) {
-      tmp = Template(
-          id: widget.template.id,
-          name: widget.template.name,
-          image: widget.template.image,
-          categories: widget.template.categories);
-      context.read<TemplateBloc>().add(UpdateTemplate(template: tmp));
-    } else {
-      tmp = Template(
-          id: "",
-          name: widget.template.name,
-          image: widget.template.image,
-          categories: widget.template.categories);
-      context.read<TemplateBloc>().add(AddTemplate(template: tmp));
-    }
+  createTemplateJson(Template template) {
+   if(widget.templateExists){
+     context.read<EditTemplateBloc>().add(SaveModifiedTemplate(template: template));
+   } else{
+     context.read<EditTemplateBloc>().add(SaveNewTemplate(template: template));
+   }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          EditTemplateBloc()..add(EditTemplateLoad(template: widget.template)),
-      child: Scaffold(body: BlocBuilder<EditTemplateBloc, EditTemplateState>(
-        builder: (context, state) {
-          if (state is EditTemplatesLoaded) {
-            return DefaultTabController(
-              length: state.template.categories.length + 1,
-              child: Scaffold(
-                appBar: AppBar(
-                  title: Text(state.template.name),
-                  bottom: TabBar(
-                    isScrollable: true,
-                    tabs: [
-                      for (ReportCategory category
-                          in state.template.categories) ...{
-                        Tab(
-                          text: category.categoryName,
-                        ),
-                      },
+    return Scaffold(body: BlocBuilder<EditTemplateBloc, EditTemplateState>(
+      builder: (context, state) {
+        if (state is EditTemplatesLoaded) {
+          return DefaultTabController(
+            length: state.template.categories.length + 1,
+            child: Scaffold(
+              appBar: AppBar(
+                title: Text(state.template.name),
+                bottom: TabBar(
+                  isScrollable: true,
+                  tabs: [
+                    for (ReportCategory category
+                        in state.template.categories) ...{
                       Tab(
-                        child: TextButton(
-                          child: const Text("Kategorie hinzufügen +"),
-                          onPressed: () {
-                            buildDialog(context.read<EditTemplateBloc>());
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                body: TabBarView(
-                  children: [
-                    for (final (catIndex, category)
-                        in state.template.categories.indexed) ...{
-                      dynamic_form(
-                        templateData:
-                            category.items.map((e) => e.itemName).toList(),
-                        onAddedItem: (String itemName) {
-                          final item = CategoryItem(
-                              itemName: itemName, isChecked: false);
-
-                          setState(() {
-                            category.items.add(item);
-                          });
-
-                          context.read<EditTemplateBloc>().add(
-                              AddItemToCategory(item: item, index: catIndex));
-                        },
-                        onDeletedItem: (int index) {
-                          setState(() {
-                            category.items.removeAt(index);
-                          });
-                          context.read<EditTemplateBloc>().add(
-                              DeleteItemFromCategory(
-                                  categoryIndex: catIndex, itemIndex: index));
-                        },
-                        onUpdateItem: (int index, String itemName) {
-                          category.items[index].itemName = itemName;
-                          context.read<EditTemplateBloc>().add(
-                              UpdateItemInCategory(
-                                  categoryIndex: catIndex,
-                                  itemIndex: index,
-                                  itemName: itemName));
-                        },
+                        text: category.categoryName,
                       ),
                     },
-                    TextButton(
-                      child: const Text("Kategorie hinzufügen +"),
-                      onPressed: () {
-                        buildDialog(context.read<EditTemplateBloc>());
-                      },
+                    Tab(
+                      child: TextButton(
+                        child: const Text("Kategorie hinzufügen +"),
+                        onPressed: () {
+                          buildDialog();
+                        },
+                      ),
                     ),
                   ],
                 ),
-                floatingActionButton: FloatingActionButton(
-                  child: const Icon(Icons.save),
-                  onPressed: () {
-                    createTemplateJson();
-                    Navigator.of(context).pop();
-                  },
-                ),
               ),
-            );
-          }
+              body: TabBarView(
+                children: [
+                  for (final (catIndex, category)
+                      in state.template.categories.indexed) ...{
+                    dynamic_form(
+                      templateData:
+                          category.items.map((e) => e.itemName).toList(),
+                      onAddedItem: (String itemName) {
+                        final item =
+                            CategoryItem(itemName: itemName, isChecked: false);
 
-          if (state is EditTemplateLoading) {
-            return const CircularProgressIndicator();
-          } else {
-            return const Text("Etwas ist schief gelaufen");
-          }
-        },
-      )),
-    );
+                        setState(() {
+                          category.items.add(item);
+                        });
+
+                        context.read<EditTemplateBloc>().add(
+                            AddItemToCategory(item: item, index: catIndex));
+                      },
+                      onDeletedItem: (int index) {
+                        setState(() {
+                          category.items.removeAt(index);
+                        });
+                        context.read<EditTemplateBloc>().add(
+                            DeleteItemFromCategory(
+                                categoryIndex: catIndex, itemIndex: index));
+                      },
+                      onUpdateItem: (int index, String itemName) {
+                        category.items[index].itemName = itemName;
+                        context.read<EditTemplateBloc>().add(
+                            UpdateItemInCategory(
+                                categoryIndex: catIndex,
+                                itemIndex: index,
+                                itemName: itemName));
+                      },
+                    ),
+                  },
+                  TextButton(
+                    child: const Text("Kategorie hinzufügen +"),
+                    onPressed: () {
+                      buildDialog();
+                    },
+                  ),
+                ],
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: const Icon(Icons.save),
+                onPressed: () {
+                  createTemplateJson(state.template);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+          );
+        }
+
+        if (state is EditTemplateLoading) {
+          return const CircularProgressIndicator();
+        } else {
+          return const Text("Etwas ist schief gelaufen");
+        }
+      },
+    ));
   }
 }
 

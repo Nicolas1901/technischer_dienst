@@ -17,6 +17,12 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
     on<AddItemToCategory>(_onAddItemToCategory);
     on<DeleteItemFromCategory>(_deleteItemFromCategory);
     on<UpdateItemInCategory>(_onUpdateItemInCategory);
+    on<SaveModifiedTemplate>(_onSaveModifiedTemplate);
+    on<SaveNewTemplate>(_onSaveNewTemplate);
+  }
+
+  FutureOr<void> _onEditTemplateLoad(EditTemplateLoad event, Emitter<EditTemplateState> emit) {
+    emit(EditTemplatesLoaded(template: event.template));
   }
 
   FutureOr<void> _onAddCategory(
@@ -80,7 +86,21 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
     }
   }
 
-  FutureOr<void> _onEditTemplateLoad(EditTemplateLoad event, Emitter<EditTemplateState> emit) {
-    emit(EditTemplatesLoaded(template: event.template));
+
+
+  FutureOr<void> _onSaveModifiedTemplate(SaveModifiedTemplate event, Emitter<EditTemplateState> emit) {
+    final state = this.state;
+
+    if(state is EditTemplatesLoaded){
+      emit(ModifiedTemplateSaved(template: event.template));
+    }
+  }
+
+  FutureOr<void> _onSaveNewTemplate(SaveNewTemplate event, Emitter<EditTemplateState> emit) {
+    final state = this.state;
+
+    if(state is EditTemplatesLoaded){
+      emit(NewTemplateSaved(template: event.template));
+    }
   }
 }

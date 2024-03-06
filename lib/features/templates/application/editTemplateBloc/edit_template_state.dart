@@ -15,5 +15,23 @@ class EditTemplatesLoaded extends EditTemplateState{
   const EditTemplatesLoaded({required this.template});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [template];
+}
+
+class ModifiedTemplateSaved extends EditTemplateState{
+  final Template template;
+
+  const ModifiedTemplateSaved({required this.template});
+
+  @override
+  List<Object?> get props => [template];
+}
+
+class NewTemplateSaved extends EditTemplateState{
+  final Template template;
+
+  const NewTemplateSaved({required this.template});
+
+  @override
+  List<Object?> get props => [template];
 }
