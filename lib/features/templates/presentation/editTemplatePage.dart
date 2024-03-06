@@ -116,10 +116,6 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                         final item =
                             CategoryItem(itemName: itemName, isChecked: false);
 
-                        setState(() {
-                          category.items.add(item);
-                        });
-
                         context.read<EditTemplateBloc>().add(
                             AddItemToCategory(item: item, index: catIndex));
                       },
