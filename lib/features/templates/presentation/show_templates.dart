@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   void openEditReportPage(Template template) {
     Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (context) => EditTemplatePage(
+          builder: (context) =>
+              EditTemplatePage(
                 template: template,
                 templateExists: true,
               )),
@@ -36,11 +38,18 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   ImageProvider resolveImage(Template template) {
     ImageProvider image = const AssetImage(AssetImages.placeholder);
     if (template.image.isNotEmpty) {
-      /*try {
-        image = NetworkImage(template.image);
-      } catch (e) {
-        debugPrint(e.toString());
-      }*/
+
+      final File file = File(template.image);
+
+      if (file.existsSync()) {
+        image = FileImage(File(template.image));
+      } else {
+        try {
+          image = NetworkImage(template.image);
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+      }
     }
     debugPrint("resolveImage: ${image.toString()}");
     return image;
@@ -56,13 +65,14 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => EditTemplatePage(
-                      template: Template(
-                        id: Random().nextInt(10000).toString(),
-                        name: addController.text,
-                        categories: [],
-                      ),
-                    ),
+                    builder: (context) =>
+                        EditTemplatePage(
+                          template: Template(
+                            id: Random().nextInt(10000).toString(),
+                            name: addController.text,
+                            categories: [],
+                          ),
+                        ),
                   ));
                 }
               },
@@ -90,7 +100,10 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .inversePrimary,
         title: Text(widget.title),
       ),
       drawer: Drawer(
@@ -99,7 +112,10 @@ class _ShowTemplatesState extends State<ShowTemplates> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .primary,
               ),
               child: const Text("Technischer Dienst"),
             ),
@@ -134,9 +150,10 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreateReportPage(
-                          template: tmp,
-                        ),
+                        builder: (context) =>
+                            CreateReportPage(
+                              template: tmp,
+                            ),
                       ));
                     },
                     child: CardExample(

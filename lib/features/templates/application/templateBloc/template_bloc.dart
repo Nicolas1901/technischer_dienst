@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import '../../domain/template.dart';
@@ -34,6 +35,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
         add(AddTemplate(template: state.template));
       }
     });
+
   }
 
   Future<FutureOr<void>> _onLoadTemplates(
@@ -109,15 +111,16 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     }
   }
 
-  FutureOr<void> _onAddImageToTemplate(
-      AddImage event, Emitter<TemplateState> emit) {
+  Future<FutureOr<void>> _onAddImageToTemplate(
+      AddImage event, Emitter<TemplateState> emit) async {
     final state = this.state;
 
     if (state is TemplatesLoaded) {
-      final File? file = _setImage();
+      final File? file = await _setImage();
 
       if (file != null) {
         final Template template = event.template.copyWith(image: file.path);
+        debugPrint("Template image: ${template.image}");
         try {
           // templateRepository.update(template, file: file);
 
@@ -129,18 +132,18 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     }
   }
 
+  //TODO fix set image
   Future<XFile?> _pickImage() async {
     XFile? pickedImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
     return pickedImage;
   }
 
-  File? _setImage() {
-    _pickImage().then((value) {
-      final XFile? pickedImage = value;
-      if (pickedImage == null) return null;
+  Future<File?> _setImage() async{
+    final XFile? pickedImage = await _pickImage();
 
-      return File(pickedImage.path);
-    });
+    if (pickedImage == null) return null;
+    debugPrint("cacheFile: ${pickedImage.path}");
+    return File(pickedImage.path);
   }
 }
