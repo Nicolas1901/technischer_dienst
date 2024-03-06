@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:pocketbase/pocketbase.dart';
+
 import '../../../shared/domain/ReportCategory.dart';
 
-class Report implements Comparable<Report>{
-  final int id;
+class Report{
+  final String id;
   final String reportName;
   final String inspector;
   final String ofTemplate;
@@ -37,13 +41,16 @@ class Report implements Comparable<Report>{
     };
   }
 
-  @override
-  int compareTo(Report other) {
-    if(id < other.id){
-      return -1;
-    } else if(id > other.id){
-      return 1;
-    }
-    return 0;
+  factory Report.fromRecord(RecordModel record) {
+    return Report(
+        id: record.getStringValue('id'),
+        reportName: record.getStringValue('reportName'),
+        inspector: record.getStringValue('inspector'),
+        ofTemplate: record.getStringValue('template'),
+        from: DateTime.parse(record.getStringValue('date')),
+        categories: List.from(jsonDecode(record.getStringValue('categories')))
+            .map((e) => ReportCategory.fromJson(e))
+            .toList());
   }
+
 }
