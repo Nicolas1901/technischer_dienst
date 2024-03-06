@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
-import 'package:technischer_dienst/features/templates/presentation/showTemplates.dart';
+import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../domain/report.dart';
 

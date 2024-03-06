@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../shared/presentation/components/dialog.dart';
 
-typedef void StringCallback(String val);
-typedef void IntCallback(int index);
-typedef void IntStringCallback(int index, String val);
-
-class dynamic_form extends StatefulWidget {
-  dynamic_form(
+class DynamicForm extends StatefulWidget {
+  const DynamicForm(
       {super.key,
       required this.templateData,
       required this.onAddedItem,
@@ -15,17 +11,17 @@ class dynamic_form extends StatefulWidget {
       required this.onUpdateItem});
 
   @override
-  State<StatefulWidget> createState() => _dynamic_formState();
+  State<StatefulWidget> createState() => _DynamicFormState();
 
   final String title = "Berichtsvorlage erstellen";
   final List<String> templateData;
-  final StringCallback onAddedItem;
-  final IntCallback onDeletedItem;
-  final IntStringCallback onUpdateItem;
+  final Function(String val) onAddedItem;
+  final Function(int index) onDeletedItem;
+  final Function(int index, String val) onUpdateItem;
 }
 
-class _dynamic_formState extends State<dynamic_form>
-    with AutomaticKeepAliveClientMixin<dynamic_form> {
+class _DynamicFormState extends State<DynamicForm>
+    with AutomaticKeepAliveClientMixin<DynamicForm> {
   List<FormFieldData> formFields = [];
 
   final formKey = GlobalKey<FormState>();

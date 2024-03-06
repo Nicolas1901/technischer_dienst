@@ -1,24 +1,15 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:technischer_dienst/Constants/Filenames.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
-import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
-import 'package:technischer_dienst/features/templates/domain/templatesModel.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
-import 'package:technischer_dienst/main.dart';
 import '../../../Constants/assestImages.dart';
-import '../../../Repositories/FileRepository.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../reports/presentation/CreateReports.dart';
 import '../../reports/presentation/ReportList.dart';
-import '../application/templateBloc/mockTemplates.dart';
 import 'components/report_card.dart';
-import 'editTemplatePage.dart';
+import 'edit_templates.dart';
 
 class ShowTemplates extends StatefulWidget {
   const ShowTemplates({super.key, required this.title});
