@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
-import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
+import 'package:technischer_dienst/features/reports/presentation/show_report.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../application/reportsBloc/MockReports.dart';

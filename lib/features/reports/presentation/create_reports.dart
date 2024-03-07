@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
-import '../../../shared/domain/ReportCategory.dart';
+import '../../../shared/domain/report_category.dart';
 import '../domain/report.dart';
 import '../../templates/domain/template.dart';
 

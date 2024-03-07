@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
-import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import 'package:technischer_dienst/shared/domain/report_category.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import 'components/dynamic_form.dart';

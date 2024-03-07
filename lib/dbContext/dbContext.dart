@@ -1,5 +1,5 @@
 import 'package:pocketbase/pocketbase.dart';
-import 'package:technischer_dienst/Constants/DbConnection.dart';
+import 'package:technischer_dienst/Constants/db_connection.dart';
 
 class dbContext {
 

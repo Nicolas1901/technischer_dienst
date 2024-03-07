@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../../shared/domain/ReportCategory.dart';
+import '../../../shared/domain/report_category.dart';
 
 class Template {
 

@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
-import '../../../Constants/assestImages.dart';
+import '../../../Constants/assest_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
-import '../../reports/presentation/CreateReports.dart';
-import '../../reports/presentation/ReportList.dart';
+import '../../reports/presentation/create_reports.dart';
+import '../../reports/presentation/report_list.dart';
 import 'components/report_card.dart';
 import 'edit_templates.dart';
 

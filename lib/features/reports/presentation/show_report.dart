@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
 import 'package:technischer_dienst/Helper/mailer.dart';
-import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
-import '../../../Helper/pdfHelper.dart';
+import 'package:technischer_dienst/shared/domain/report_category.dart';
+import '../../../Helper/pdf_helper.dart';
 import '../domain/report.dart';
 
 class ShowReport extends StatefulWidget {

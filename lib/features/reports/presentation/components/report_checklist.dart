@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/domain/ReportCategory.dart';
+import '../../../../shared/domain/report_category.dart';
 
 class ReportChecklist extends StatefulWidget {
   const ReportChecklist({super.key, required this.items, required this.valueChanged, this.readonly = false});

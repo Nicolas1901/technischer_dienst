@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import 'package:technischer_dienst/shared/domain/report_category.dart';
 
 import '../../../templates/domain/template.dart';
 import '../../domain/report.dart';

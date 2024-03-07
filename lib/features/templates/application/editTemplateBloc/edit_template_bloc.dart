@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import 'package:technischer_dienst/shared/domain/report_category.dart';
 import '../../domain/template.dart';
 import '../templateBloc/template_bloc.dart';
 

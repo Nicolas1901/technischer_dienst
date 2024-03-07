@@ -1,4 +1,4 @@
-import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
+import 'package:technischer_dienst/shared/domain/report_category.dart';
 
 import '../../domain/report.dart';
 

@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:provider/provider.dart';
-import 'package:technischer_dienst/Constants/DbConnection.dart';
+import 'package:technischer_dienst/Constants/db_connection.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
-import 'features/reports/application/reportsBloc/MockReports.dart';
 import 'features/templates/application/templateBloc/mockTemplates.dart';
 
 final getIt = GetIt.instance;
@@ -40,7 +38,7 @@ class MyApp extends StatelessWidget {
               ..add(LoadTemplates(templates: MockTemplates.generate()))),
         BlocProvider(create: (context) => CreateReportBloc()),
         BlocProvider(
-          lazy: false,
+            lazy: false,
             create: (context) =>
                 ReportsBloc(createReportBloc: context.read<CreateReportBloc>()))
       ],
