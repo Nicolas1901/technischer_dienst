@@ -10,6 +10,7 @@ import 'package:technischer_dienst/features/templates/application/editTemplateBl
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'features/reports/application/reportsBloc/MockReports.dart';
 import 'features/templates/application/templateBloc/mockTemplates.dart';
 
 final getIt = GetIt.instance;
@@ -38,8 +39,10 @@ class MyApp extends StatelessWidget {
                 getIt<TemplateRepository>(), context.read<EditTemplateBloc>())
               ..add(LoadTemplates(templates: MockTemplates.generate()))),
         BlocProvider(create: (context) => CreateReportBloc()),
-        BlocProvider(create: (context) => ReportsBloc(createReportBloc: context.read<CreateReportBloc>()))
-
+        BlocProvider(
+          lazy: false,
+            create: (context) =>
+                ReportsBloc(createReportBloc: context.read<CreateReportBloc>()))
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

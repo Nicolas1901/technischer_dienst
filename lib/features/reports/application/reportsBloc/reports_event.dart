@@ -4,15 +4,6 @@ abstract class ReportsEvent extends Equatable {
   const ReportsEvent();
 }
 
-class ReportsInitialize extends ReportsEvent{
-  final List<Report> reports;
-
-  const ReportsInitialize({this.reports = const <Report>[]});
-
-  @override
-  List<Object> get props => [reports];
-}
-
 class LoadReportsFromRepo extends ReportsEvent{
   final List<Report> reports;
 

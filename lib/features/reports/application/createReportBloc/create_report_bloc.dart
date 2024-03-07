@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/shared/domain/ReportCategory.dart';
 
 import '../../../templates/domain/template.dart';
@@ -46,9 +47,10 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
       Emitter<CreateReportState> emit) {
 
     final state = this.state;
-
+    debugPrint("_onSaveReport: $state");
     if(state is TemplateLoaded){
-      emit(SavedReport(report: state.report));
+      emit(SavedReport(report: event.report));
+      debugPrint("_onSaveReport: ${this.state}");
     }
   }
 }

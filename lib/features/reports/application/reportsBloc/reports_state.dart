@@ -5,13 +5,22 @@ abstract class ReportsState extends Equatable {
 }
 
 class ReportsLoading extends ReportsState {
+  const ReportsLoading();
   @override
   List<Object> get props => [];
 }
 
+class AddedLocalReport extends ReportsState{
+  final List<Report> reports;
+
+  const AddedLocalReport({required this.reports});
+
+  @override
+  List<Object> get props => [reports];
+}
 
 class ReportsLoaded extends ReportsState{
-  @override
+
   final List<Report> reports;
 
   const ReportsLoaded({required this.reports});

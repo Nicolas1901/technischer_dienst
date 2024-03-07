@@ -22,11 +22,12 @@ class _CreateReportPageState extends State<CreateReportPage> {
   @override
   void initState() {
     super.initState();
-    context.read<CreateReportBloc>().add(LoadReportFromTemplate(template: widget.template));
+    context
+        .read<CreateReportBloc>()
+        .add(LoadReportFromTemplate(template: widget.template));
   }
 
-
-  Future<void> buildDialog() {
+  Future<void> buildDialog(Report report) {
     TextEditingController reportNameController = TextEditingController();
     TextEditingController inspectorNameController = TextEditingController();
 
@@ -78,8 +79,11 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 ),
                 child: const Text('speichern'),
                 onPressed: () {
-                  createReport(
-                      reportNameController.text, inspectorNameController.text);
+                  Report newReport = report.copyWith(
+                      reportName: reportNameController.text,
+                      inspector: inspectorNameController.text);
+                  debugPrint(newReport.reportName);
+                  context.read<CreateReportBloc>().add(SaveReport(report: newReport));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
@@ -89,27 +93,16 @@ class _CreateReportPageState extends State<CreateReportPage> {
         });
   }
 
-  Future<void> createReport(String reportName, String inspector) async {
-    Report report = Report(
-        id: "",
-        reportName: reportName,
-        inspector: inspector,
-        ofTemplate: widget.template.name,
-        from: DateTime.now(),
-        categories: _reportData);
-    context.read<CreateReportBloc>().add(SaveReport(report: report));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<CreateReportBloc, CreateReportState>(
         builder: (context, state) {
-          if(state is CreateReportLoading){
+          if (state is CreateReportLoading) {
             return const CircularProgressIndicator();
           }
 
-          if(state is TemplateLoaded){
+          if (state is TemplateLoaded) {
             return DefaultTabController(
               length: state.report.categories.length,
               child: Scaffold(
@@ -119,7 +112,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
                   bottom: TabBar(
                     isScrollable: true,
                     tabs: [
-                      for (ReportCategory category in state.report.categories) ...{
+                      for (ReportCategory category
+                          in state.report.categories) ...{
                         Tab(
                           text: category.categoryName,
                         ),
@@ -132,7 +126,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
                     Expanded(
                       child: TabBarView(
                         children: [
-                          for (ReportCategory category in state.report.categories) ...{
+                          for (ReportCategory category
+                              in state.report.categories) ...{
                             ReportChecklist(
                               items: category.items,
                               valueChanged: (int index, bool isChecked) {},
@@ -149,18 +144,21 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 floatingActionButton: FloatingActionButton(
                   child: const Icon(Icons.save),
                   onPressed: () {
-                    buildDialog();
+                    buildDialog(state.report);
                   },
                 ),
               ),
             );
-          } if(state is FailedLoading){
-            return Center(child: Text(state.message),);
-          } else{
-            return const Center(child: Text("Etwas ist schief gelaufen"),);
-
           }
-
+          if (state is FailedLoading) {
+            return Center(
+              child: Text(state.message),
+            );
+          } else {
+            return const Center(
+              child: Text("Etwas ist schief gelaufen"),
+            );
+          }
         },
       ),
     );

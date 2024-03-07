@@ -4,7 +4,7 @@ import 'package:pocketbase/pocketbase.dart';
 
 import '../../../shared/domain/ReportCategory.dart';
 
-class Report{
+class Report {
   final String id;
   final String reportName;
   final String inspector;
@@ -12,13 +12,12 @@ class Report{
   final DateTime from;
   final List<ReportCategory> categories;
 
-  Report(
-      {required this.id,
-      required this.reportName,
-      required this.inspector,
-      required this.ofTemplate,
-      required this.from,
-      required this.categories});
+  Report({required this.id,
+    required this.reportName,
+    required this.inspector,
+    required this.ofTemplate,
+    required this.from,
+    required this.categories});
 
   Report.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -51,6 +50,16 @@ class Report{
         categories: List.from(jsonDecode(record.getStringValue('categories')))
             .map((e) => ReportCategory.fromJson(e))
             .toList());
+  }
+
+  Report copyWith({String? id, String? reportName, String? inspector,
+      String? ofTemplate, DateTime? from, List<ReportCategory>? categories}) {
+    return Report(id: id ?? this.id,
+        reportName: reportName ?? this.reportName,
+        inspector: inspector ?? this.inspector,
+        ofTemplate: ofTemplate ?? this.ofTemplate,
+        from: from ?? this.from,
+        categories: categories ?? this.categories);
   }
 
 }

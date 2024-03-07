@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
-import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../application/reportsBloc/MockReports.dart';
-import '../domain/report.dart';
 
 class ReportList extends StatefulWidget {
   const ReportList({super.key});
@@ -18,25 +14,12 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
-  final FileRepository _fileRepo = FileRepository();
-
-  List<Report> _reports = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
     context.read<ReportsBloc>().add(LoadReportsFromRepo(reports: MockReports.generate()));
-    
-    _fileRepo.readFile("reports.json").then((value) {
-      List<dynamic> json = jsonDecode(value);
-      debugPrint(json.toString());
-      _reports =
-          List<dynamic>.from(json).map((e) => Report.fromJson(e)).toList();
 
-      setState(() {
-        _reports;
-      });
-    });
   }
 
   @override
