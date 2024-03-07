@@ -1,11 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
-import 'package:technischer_dienst/Constants/Filenames.dart';
-import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import '../../../shared/domain/ReportCategory.dart';
 import '../domain/report.dart';
 import '../../templates/domain/template.dart';
@@ -21,15 +17,12 @@ class CreateReportPage extends StatefulWidget {
 }
 
 class _CreateReportPageState extends State<CreateReportPage> {
-  final FileRepository _fileRepo = FileRepository();
   final List<ReportCategory> _reportData = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _reportData.addAll(widget.template.categories);
-    });
+    context.read<CreateReportBloc>().add(LoadReportFromTemplate(template: widget.template));
   }
 
 
@@ -111,11 +104,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<CreateReportBloc, CreateReportState>(
-        buildWhen: (previousState, state){
-          return (previousState is CreateReportLoading && state is TemplateLoaded);
-        },
         builder: (context, state) {
-          context.read<CreateReportBloc>().add(LoadReportFromTemplate(template: widget.template));
           if(state is CreateReportLoading){
             return const CircularProgressIndicator();
           }

@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/ShowReport.dart';
 import 'package:technischer_dienst/Repositories/FileRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
+import '../application/reportsBloc/MockReports.dart';
 import '../domain/report.dart';
 
 class ReportList extends StatefulWidget {
@@ -22,6 +25,8 @@ class _ReportListState extends State<ReportList> {
   @override
   void initState() {
     super.initState();
+    context.read<ReportsBloc>().add(LoadReportsFromRepo(reports: MockReports.generate()));
+    
     _fileRepo.readFile("reports.json").then((value) {
       List<dynamic> json = jsonDecode(value);
       debugPrint(json.toString());
@@ -64,23 +69,41 @@ class _ReportListState extends State<ReportList> {
           ),
         ),
         body: Center(
-          child: ListView.builder(
-            itemCount: _reports.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(_reports[index].reportName),
-                subtitle: Text(
-                    _reports[index].from.toString().replaceRange(19, null, "")),
-                leading: const Icon(Icons.file_copy),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ShowReport(
-                          report: _reports[index],
-                          title: _reports[index].reportName)));
-                },
-              );
+          child: BlocBuilder<ReportsBloc, ReportsState>(
+  builder: (context, state) {
+
+    if(state is ReportsLoading){
+      return const Center(child: CircularProgressIndicator(),);
+    }
+
+    if(state is ReportsLoaded){
+      return ListView.builder(
+        itemCount: state.reports.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(state.reports[index].reportName),
+            subtitle: Text(
+                state.reports[index].from.toString().replaceRange(19, null, "")),
+            leading: const Icon(Icons.file_copy),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ShowReport(
+                      report: state.reports[index],
+                      title: state.reports[index].reportName)));
             },
-          ),
+          );
+        },
+      );
+    }
+    if(state is ReportsError){
+      return Center(child: Text(state.message),);
+    } else{
+      return const Center(child: Text("Etwas ist schief gelaufen"),);
+    }
+
+
+  },
+),
         ));
   }
 }
