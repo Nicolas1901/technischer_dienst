@@ -7,19 +7,32 @@ import '../../data/user_repository.dart';
 import '../../domain/user.dart';
 
 part 'auth_event.dart';
+
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository userRepository;
-  AuthBloc({required this.userRepository}) : super(AuthInitial()) {
+
+  AuthBloc({required this.userRepository}) : super(LoggedOut()) {
     on<Authentication>(_onAuthentication);
+    on<Logout>(_onLogout);
   }
 
-  FutureOr<void> _onAuthentication(Authentication event, Emitter<AuthState> emit) {
-    final state = this.state;
+  FutureOr<void> _onAuthentication(
+      Authentication event, Emitter<AuthState> emit) async {
 
-    if(state is AuthInitial){
+    final User user = await userRepository.authenticateUser(
+        usernameOrEmail: event.usernameOrEmail, password: event.password);
 
+    if (user.authStore.isValid) {
+      emit(Authenticated(user: user));
+    } else {
+      emit(LoginFailed());
     }
+  }
+
+  FutureOr<void> _onLogout(Logout event, Emitter<AuthState> emit) {
+    userRepository.logoutUser();
+    emit(LoggedOut());
   }
 }

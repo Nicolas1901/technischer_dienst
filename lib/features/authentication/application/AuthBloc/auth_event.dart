@@ -19,7 +19,7 @@ class ResetPassword extends AuthEvent{
   List<Object> get props => [];
 }
 
-class LogOut extends AuthEvent {
+class Logout extends AuthEvent {
   @override
   List<Object> get props => [];
 }
