@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:technischer_dienst/features/authentication/application/AuthBloc/MockAuthEvents.dart';
 
 import '../../data/user_repository.dart';
 import '../../domain/user.dart';
@@ -16,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.userRepository}) : super(LoggedOut()) {
     on<Authentication>(_onAuthentication);
     on<Logout>(_onLogout);
+    on<MockAuthentication>(_onMockAuthentication);
   }
 
   FutureOr<void> _onAuthentication(
@@ -34,5 +36,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onLogout(Logout event, Emitter<AuthState> emit) {
     userRepository.logoutUser();
     emit(LoggedOut());
+  }
+
+  FutureOr<void> _onMockAuthentication(MockAuthentication event, Emitter<AuthState> emit) {
+    emit(Authenticated(user: event.user));
   }
 }

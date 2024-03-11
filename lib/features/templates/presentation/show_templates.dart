@@ -7,6 +7,7 @@ import 'package:technischer_dienst/features/templates/application/templateBloc/t
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import '../../../Constants/assest_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
+import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../../reports/presentation/create_reports.dart';
 import '../../reports/presentation/report_list.dart';
 import 'components/report_card.dart';
@@ -27,8 +28,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   void openEditReportPage(Template template) {
     Navigator.of(context).push(
       MaterialPageRoute(
-          builder: (context) =>
-              EditTemplatePage(
+          builder: (context) => EditTemplatePage(
                 template: template,
                 templateExists: true,
               )),
@@ -36,9 +36,8 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   }
 
   ImageProvider resolveImage(Template template) {
-    ImageProvider image = const AssetImage(AssetImages.placeholder);
+    ImageProvider image = const AssetImage(AssetImages.noImageTemplate);
     if (template.image.isNotEmpty) {
-
       final File file = File(template.image);
 
       if (file.existsSync()) {
@@ -65,14 +64,13 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                 if (formKey.currentState!.validate()) {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        EditTemplatePage(
-                          template: Template(
-                            id: Random().nextInt(10000).toString(),
-                            name: addController.text,
-                            categories: [],
-                          ),
-                        ),
+                    builder: (context) => EditTemplatePage(
+                      template: Template(
+                        id: Random().nextInt(10000).toString(),
+                        name: addController.text,
+                        categories: [],
+                      ),
+                    ),
                   ));
                 }
               },
@@ -100,35 +98,33 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .primary,
-              ),
-              child: const Text("Technischer Dienst"),
+      drawer: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                if (state is Authenticated)
+                  UserAccountsDrawerHeader(
+                      accountName: Text(state.user.username),
+                      accountEmail: Text(state.user.email),
+                      currentAccountPicture: CircleAvatar(foregroundImage: _renderImage(state.user.profileImage)),),
+
+                ListTile(
+                    title: const Text("Berichte"),
+                    leading: const Icon(Icons.file_copy),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ReportList()));
+                    })
+              ],
             ),
-            ListTile(
-                title: const Text("Berichte"),
-                leading: const Icon(Icons.file_copy),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ReportList()));
-                })
-          ],
-        ),
+          );
+        },
       ),
       body: BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
         if (state is TemplatesLoading) {
@@ -150,10 +146,9 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) =>
-                            CreateReportPage(
-                              template: tmp,
-                            ),
+                        builder: (context) => CreateReportPage(
+                          template: tmp,
+                        ),
                       ));
                     },
                     child: CardExample(
@@ -194,5 +189,17 @@ class _ShowTemplatesState extends State<ShowTemplates> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  ImageProvider _renderImage(String profileImagePath) {
+    ImageProvider profileImage;
+
+    if(profileImagePath.isNotEmpty){
+      profileImage = NetworkImage(profileImagePath);
+    } else{
+      profileImage = AssetImage(AssetImages.noImageUser);
+    }
+
+    return profileImage;
   }
 }

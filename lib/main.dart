@@ -3,12 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:technischer_dienst/Constants/db_connection.dart';
+import 'package:technischer_dienst/features/authentication/application/AuthBloc/auth_bloc.dart';
+import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'features/authentication/data/user_repository.dart';
 import 'features/templates/application/templateBloc/mockTemplates.dart';
 
 final getIt = GetIt.instance;
@@ -31,6 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => AuthBloc(userRepository: UserRepository(pb: getIt<PocketBase>()))),
         BlocProvider(create: (context) => EditTemplateBloc()),
         BlocProvider(
             create: (context) => TemplateBloc(
@@ -48,7 +52,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const ShowTemplates(title: 'Vorlagen'),
+        home: const Login(),
       ),
     );
   }
