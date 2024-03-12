@@ -76,10 +76,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme
-                      .of(context)
-                      .textTheme
-                      .labelLarge,
+                  textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
                 child: const Text('abbrechen'),
                 onPressed: () {
@@ -88,10 +85,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme
-                      .of(context)
-                      .textTheme
-                      .labelLarge,
+                  textStyle: Theme.of(context).textTheme.labelLarge,
                 ),
                 child: const Text('speichern'),
                 onPressed: () {
@@ -139,16 +133,13 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor:
-                    Theme
-                        .of(context)
-                        .colorScheme
-                        .inversePrimary,
+                        Theme.of(context).colorScheme.inversePrimary,
                     title: Text(state.report.ofTemplate),
                     bottom: TabBar(
                       isScrollable: true,
                       tabs: [
                         for (ReportCategory category
-                        in state.report.categories) ...{
+                            in state.report.categories) ...{
                           Tab(
                             text: category.categoryName,
                           ),
@@ -162,7 +153,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
                         child: TabBarView(
                           children: [
                             for (var (int catIndex, ReportCategory category)
-                            in state.report.categories.indexed) ...{
+                                in state.report.categories.indexed) ...{
                               ReportChecklist(
                                 items: category.items,
                                 valueChanged: (int index, CategoryItem item) {
@@ -175,6 +166,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
                                           categoryIndex: catIndex,
                                           itemIndex: index,
                                           item: item));
+                                },
+                                onTapped: (int index, CategoryItem item) {
+                                  debugPrint("openDialog");
+                                  _addCommentaryDialog(index, catIndex, item);
                                 },
                               ),
                             }
@@ -211,27 +206,62 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   Future<void> _buildUnsavedChangesDialog(Report report) {
-    return showDialog(context: context, builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text("Warnung"),
-        content: const Text(
-            "Alle Änderungen gehen verloren. Wollen Sie den Bericht verlassen?"),
-        actions: [
-          TextButton(
-              onPressed: () {
-                context.read<CreateReportBloc>().add(ResetReport());
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Warnung"),
+            content: const Text(
+                "Alle Änderungen gehen verloren. Wollen Sie den Bericht verlassen?"),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    context.read<CreateReportBloc>().add(ResetReport());
 
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text("Bericht verlassen")),
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("abbrechen")),
-        ],
-      );
-    });
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Bericht verlassen")),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("abbrechen")),
+            ],
+          );
+        });
+  }
+
+  Future<void> _addCommentaryDialog(
+      int index, int catIndex, CategoryItem item) {
+    final TextEditingController commentController = TextEditingController();
+    commentController.text = item.comment;
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            onSave: () {
+              CategoryItem newItem =
+                  item.copyWith(comment: commentController.text);
+              context.read<CreateReportBloc>().add(
+                    UpdateItemState(
+                        categoryIndex: catIndex,
+                        itemIndex: index,
+                        item: newItem),
+                  );
+              Navigator.of(context).pop();
+            },
+            onAbort: () {
+              Navigator.of(context).pop();
+            },
+            title: "Bemerkung",
+            child: TextFormField(
+              maxLines: null,
+              controller: commentController,
+              autofocus: true,
+            ),
+          );
+        });
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
-import 'package:technischer_dienst/features/reports/presentation/show_report.dart';
+import 'package:technischer_dienst/features/reports/presentation/report_details.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../application/reportsBloc/MockReports.dart';
@@ -70,7 +70,7 @@ class _ReportListState extends State<ReportList> {
             leading: const Icon(Icons.file_copy),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ShowReport(
+                  builder: (context) => ReportDetails(
                       report: state.reports[index],
                       title: state.reports[index].reportName)));
             },

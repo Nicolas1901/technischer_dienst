@@ -7,17 +7,17 @@ import 'package:technischer_dienst/shared/domain/report_category.dart';
 import '../../../Helper/pdf_helper.dart';
 import '../domain/report.dart';
 
-class ShowReport extends StatefulWidget {
+class ReportDetails extends StatefulWidget {
   final Report report;
   final String title;
 
-  const ShowReport({super.key, required this.report, required this.title});
+  const ReportDetails({super.key, required this.report, required this.title});
 
   @override
-  State<ShowReport> createState() => _ShowReportState();
+  State<ReportDetails> createState() => _ReportDetailsState();
 }
 
-class _ShowReportState extends State<ShowReport> {
+class _ReportDetailsState extends State<ReportDetails> {
   String formattedDate = "";
 
   @override
@@ -37,7 +37,7 @@ class _ShowReportState extends State<ShowReport> {
         builder: (BuildContext context) {
           return SimpleDialog(
             title: Text(widget.title),
-            contentPadding: EdgeInsets.all(24),
+            contentPadding: const EdgeInsets.all(24),
             children: [
               Text("Prüfer: ${widget.report.inspector}"),
               Text("Vorlage: ${widget.report.ofTemplate}"),
@@ -67,7 +67,7 @@ class _ShowReportState extends State<ShowReport> {
                   onPressed: () {
                     buildDialog();
                   },
-                  icon: const Icon(Icons.more_vert))
+                  icon: const Icon(Icons.info_outline))
             ],
             bottom: TabBar(
               isScrollable: true,
@@ -86,7 +86,7 @@ class _ShowReportState extends State<ShowReport> {
                 ReportChecklist(
                   items: c.items,
                   valueChanged: (int index,CategoryItem item) {},
-                  readonly: true,
+                  readonly: true, onTapped: (int index, CategoryItem item) {},
                 )
               }
             ],
