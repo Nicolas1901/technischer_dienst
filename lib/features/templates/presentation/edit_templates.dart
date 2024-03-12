@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
 import 'package:technischer_dienst/shared/domain/report_category.dart';

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
+import 'package:technischer_dienst/shared/presentation/components/dialog.dart';
 import '../../../shared/domain/report_category.dart';
 import '../domain/report.dart';
 import '../../templates/domain/template.dart';
@@ -17,14 +20,21 @@ class CreateReportPage extends StatefulWidget {
 }
 
 class _CreateReportPageState extends State<CreateReportPage> {
-  final List<ReportCategory> _reportData = List.empty(growable: true);
+  bool changesSaved = true;
 
   @override
   void initState() {
     super.initState();
+    debugPrint("init");
     context
         .read<CreateReportBloc>()
         .add(LoadReportFromTemplate(template: widget.template));
+  }
+
+  @override
+  dispose() {
+    debugPrint("createReports disposed");
+    super.dispose();
   }
 
   Future<void> buildDialog(Report report) {
@@ -66,7 +76,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
                 ),
                 child: const Text('abbrechen'),
                 onPressed: () {
@@ -75,15 +88,25 @@ class _CreateReportPageState extends State<CreateReportPage> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge,
+                  textStyle: Theme
+                      .of(context)
+                      .textTheme
+                      .labelLarge,
                 ),
                 child: const Text('speichern'),
                 onPressed: () {
                   Report newReport = report.copyWith(
                       reportName: reportNameController.text,
                       inspector: inspectorNameController.text);
-                  debugPrint(newReport.reportName);
-                  context.read<CreateReportBloc>().add(SaveReport(report: newReport));
+
+                  context
+                      .read<CreateReportBloc>()
+                      .add(SaveReport(report: newReport));
+
+                  setState(() {
+                    changesSaved = true;
+                  });
+
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
@@ -103,49 +126,72 @@ class _CreateReportPageState extends State<CreateReportPage> {
           }
 
           if (state is TemplateLoaded) {
-            return DefaultTabController(
-              length: state.report.categories.length,
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                  title: Text(state.report.ofTemplate),
-                  bottom: TabBar(
-                    isScrollable: true,
-                    tabs: [
-                      for (ReportCategory category
-                          in state.report.categories) ...{
-                        Tab(
-                          text: category.categoryName,
+            return PopScope(
+              canPop: changesSaved,
+              onPopInvoked: (didPop) {
+                if (didPop) {
+                  return;
+                }
+                _buildUnsavedChangesDialog(state.report);
+              },
+              child: DefaultTabController(
+                length: state.report.categories.length,
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor:
+                    Theme
+                        .of(context)
+                        .colorScheme
+                        .inversePrimary,
+                    title: Text(state.report.ofTemplate),
+                    bottom: TabBar(
+                      isScrollable: true,
+                      tabs: [
+                        for (ReportCategory category
+                        in state.report.categories) ...{
+                          Tab(
+                            text: category.categoryName,
+                          ),
+                        }
+                      ],
+                    ),
+                  ),
+                  body: Column(
+                    children: [
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            for (var (int catIndex, ReportCategory category)
+                            in state.report.categories.indexed) ...{
+                              ReportChecklist(
+                                items: category.items,
+                                valueChanged: (int index, CategoryItem item) {
+                                  setState(() {
+                                    changesSaved = false;
+                                  });
+
+                                  context.read<CreateReportBloc>().add(
+                                      UpdateItemState(
+                                          categoryIndex: catIndex,
+                                          itemIndex: index,
+                                          item: item));
+                                },
+                              ),
+                            }
+                          ],
                         ),
-                      }
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
                     ],
                   ),
-                ),
-                body: Column(
-                  children: [
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          for (ReportCategory category
-                              in state.report.categories) ...{
-                            ReportChecklist(
-                              items: category.items,
-                              valueChanged: (int index, bool isChecked) {},
-                            ),
-                          }
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 50,
-                    ),
-                  ],
-                ),
-                floatingActionButton: FloatingActionButton(
-                  child: const Icon(Icons.save),
-                  onPressed: () {
-                    buildDialog(state.report);
-                  },
+                  floatingActionButton: FloatingActionButton(
+                    child: const Icon(Icons.save),
+                    onPressed: () {
+                      buildDialog(state.report);
+                    },
+                  ),
                 ),
               ),
             );
@@ -162,5 +208,30 @@ class _CreateReportPageState extends State<CreateReportPage> {
         },
       ),
     );
+  }
+
+  Future<void> _buildUnsavedChangesDialog(Report report) {
+    return showDialog(context: context, builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("Warnung"),
+        content: const Text(
+            "Alle Änderungen gehen verloren. Wollen Sie den Bericht verlassen?"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                context.read<CreateReportBloc>().add(ResetReport());
+
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text("Bericht verlassen")),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("abbrechen")),
+        ],
+      );
+    });
   }
 }

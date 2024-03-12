@@ -18,6 +18,7 @@ class _LoginState extends State<Login> {
   final userNameOrEmailController = TextEditingController();
   final passwordController = TextEditingController();
   bool inputIsObscured = true;
+  bool loginFailed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +34,11 @@ class _LoginState extends State<Login> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: 200,
-                    child: Image.asset(AssetImages.logo, fit: BoxFit.contain, )),
+                    height: 200,
+                    child: Image.asset(
+                      AssetImages.logo,
+                      fit: BoxFit.contain,
+                    )),
                 Form(
                     key: formKey,
                     child: Column(
@@ -78,6 +82,10 @@ class _LoginState extends State<Login> {
                             return null;
                           },
                         ),
+                        if (loginFailed == true)
+                          const Text(
+                              style: TextStyle(color: Colors.red),
+                              "Benutzername oder Passwort ist falsch"),
                         BlocListener<AuthBloc, AuthState>(
                           listener: (context, state) {
                             if (state is Authenticated) {
@@ -86,12 +94,19 @@ class _LoginState extends State<Login> {
                                       builder: (context) => const ShowTemplates(
                                           title: "Vorlagen")));
                             }
+                            if (state is LoginFailed) {
+                              setState(() {
+                                loginFailed = true;
+                              });
+                            }
                           },
                           child: TextButton(
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
                                   debugPrint("login");
-                                  context.read<AuthBloc>().add(MockAuthentication());
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(MockAuthentication());
                                 }
                               },
                               child: const Text("Einloggen")),

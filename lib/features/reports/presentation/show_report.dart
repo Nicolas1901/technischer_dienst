@@ -85,7 +85,7 @@ class _ShowReportState extends State<ShowReport> {
               for (ReportCategory c in widget.report.categories) ...{
                 ReportChecklist(
                   items: c.items,
-                  valueChanged: (int index, bool isChecked) {},
+                  valueChanged: (int index,CategoryItem item) {},
                   readonly: true,
                 )
               }

@@ -24,16 +24,7 @@ class ShowTemplates extends StatefulWidget {
 
 class _ShowTemplatesState extends State<ShowTemplates> {
   final formKey = GlobalKey<FormState>();
-
-  void openEditReportPage(Template template) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-          builder: (context) => EditTemplatePage(
-                template: template,
-                templateExists: true,
-              )),
-    );
-  }
+  
 
   ImageProvider resolveImage(Template template) {
     ImageProvider image = const AssetImage(AssetImages.noImageTemplate);
@@ -52,6 +43,18 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     }
     debugPrint("resolveImage: ${image.toString()}");
     return image;
+  }
+
+  ImageProvider _renderImage(String profileImagePath) {
+    ImageProvider profileImage;
+
+    if(profileImagePath.isNotEmpty){
+      profileImage = NetworkImage(profileImagePath);
+    } else{
+      profileImage = const AssetImage(AssetImages.noImageUser);
+    }
+
+    return profileImage;
   }
 
   Future<void> buildDialog() {
@@ -155,7 +158,13 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                       reportTitle: tmp.name,
                       image: resolveImage(tmp),
                       onEdit: () {
-                        openEditReportPage(tmp);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => EditTemplatePage(
+                                template: tmp,
+                                templateExists: true,
+                              )),
+                        );
                       },
                       onDelete: () {
                         context
@@ -191,15 +200,5 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     );
   }
 
-  ImageProvider _renderImage(String profileImagePath) {
-    ImageProvider profileImage;
 
-    if(profileImagePath.isNotEmpty){
-      profileImage = NetworkImage(profileImagePath);
-    } else{
-      profileImage = AssetImage(AssetImages.noImageUser);
-    }
-
-    return profileImage;
-  }
 }

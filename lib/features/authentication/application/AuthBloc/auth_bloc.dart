@@ -39,6 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onMockAuthentication(MockAuthentication event, Emitter<AuthState> emit) {
+    //emit(LoginFailed());
     emit(Authenticated(user: event.user));
   }
 }

@@ -27,4 +27,6 @@ class SaveReport extends CreateReportEvent{
   const SaveReport({required this.report});
 }
 
+class ResetReport extends CreateReportEvent{
+}
 

@@ -11,11 +11,11 @@ class MockTemplates{
           categories: [
             ReportCategory(
                 categoryName: "Kategorie1",
-                itemData: ["Item1", "Item2", "Item3"]
+                itemData: ["HLF1", "HLF2", "HLF3"]
             ),
             ReportCategory(
                 categoryName: "Kategorie2",
-                itemData: ["Item1", "Item2", "Item3"]
+                itemData: ["HLF2.1", "HLF2.2", "HLF2.3"]
             )
       ]),
       Template(
@@ -24,10 +24,10 @@ class MockTemplates{
           categories: [
             ReportCategory(
                 categoryName: "KategorieMTF1",
-                itemData: ["Item1", "Item2", "Item3"]),
+                itemData: ["MTF1", "MTF2", "MTF3"]),
             ReportCategory(
                 categoryName: "KategorieMTF2",
-                itemData: ["Item1", "Item2", "Item3"])
+                itemData: ["MTF2.1", "MTF2.2", "MTF2.3"])
           ])
     ];
   }
