@@ -67,6 +67,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
       for (var category in report.categories) {
         for (var item in category.items) {
           item.isChecked = false;
+          item.comment = "";
         }
       }
 

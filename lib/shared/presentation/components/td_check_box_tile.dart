@@ -5,7 +5,7 @@ class CheckboxTileBoxOnly extends StatefulWidget {
   final bool? value;
   final Function(bool? value) onChanged;
   final Function() onTap;
-  final bool tristate = false;
+  final bool tristate = true;
 
   const CheckboxTileBoxOnly({super.key,
     required this.title,
@@ -22,11 +22,23 @@ class _CheckboxTileBoxOnlyState extends State<CheckboxTileBoxOnly> {
     return ListTile(
       title: widget.title,
       trailing: Checkbox(
+        activeColor: _setColor(widget.value),
         value: widget.value,
         tristate: widget.tristate,
         onChanged: widget.onChanged,
       ),
       onTap: widget.onTap,
     );
+  }
+}
+
+Color? _setColor(bool? value){
+  if(value == null){
+    return Colors.red;
+  } else{
+    if(value){
+      return Colors.green;
+    }
+    return null;
   }
 }

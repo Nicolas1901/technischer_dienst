@@ -41,12 +41,12 @@ class PdfHelper {
                       for (CategoryItem item in c.items) ...{
                         pw.TableRow(children: [
                           pw.Text(item.itemName),
-                          if(item.isChecked != null)
-                            pw.Text("-")
+                          if(item.isChecked == null)
+                            pw.Text("nicht OK", style: disapprovedStyle)
                           else if (item.isChecked!)
                             pw.Text("OK", style: approvedStyle)
                           else if (!item.isChecked!)
-                            pw.Text("nicht OK", style: disapprovedStyle)
+                              pw.Text("-")
                         ]),
                       }
                     ]),

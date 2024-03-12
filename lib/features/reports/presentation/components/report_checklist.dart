@@ -36,12 +36,10 @@ class _ReportChecklistState extends State<ReportChecklist> {
               title: Text(widget.items[index].itemName),
               value: widget.items[index].isChecked,
               onChanged: (bool? value) {
-                if (value != null && !widget.readonly) {
                   setState(() {
                     widget.items[index].isChecked = value;
                   });
                   widget.valueChanged(index, widget.items[index]);
-                }
               },
               onTap: () {
                 debugPrint("Tapped");

@@ -250,6 +250,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
                         itemIndex: index,
                         item: newItem),
                   );
+
+              setState(() {
+                changesSaved = false;
+              });
               Navigator.of(context).pop();
             },
             onAbort: () {
