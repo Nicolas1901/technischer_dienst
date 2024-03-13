@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
@@ -23,9 +25,8 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<EditTemplateBloc>()
-        .add(EditTemplateLoad(template: widget.template));
+
+    debugPrint("editTemplate init: ${jsonEncode(widget.template)}");
   }
 
   Future<void> buildDialog() {
@@ -103,7 +104,10 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                       in state.template.categories.indexed) ...{
                     DynamicForm(
                       templateData:
-                          category.items.map((e) => e.itemName).toList(),
+                          category.items.map((e) {
+                            debugPrint("editTemplate: ${jsonEncode(e)}");
+                            return e.itemName;
+                          }).toList(),
                       onAddedItem: (String itemName) {
                         final item =
                             CategoryItem(itemName: itemName, isChecked: false);

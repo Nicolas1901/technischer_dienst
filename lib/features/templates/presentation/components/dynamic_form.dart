@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../../../../shared/presentation/components/dialog.dart';
@@ -32,6 +34,7 @@ class _DynamicFormState extends State<DynamicForm>
   @override
   void initState() {
     super.initState();
+    debugPrint(jsonEncode(widget.templateData));
     for (String item in widget.templateData) {
       formFields.add(FormFieldData(name: item));
     }

@@ -24,7 +24,7 @@ class CustomDialog extends StatelessWidget {
               textStyle: Theme.of(context).textTheme.labelLarge,
             ),
             onPressed: onSave,
-            child: const Text('erstellen')
+            child: const Text('speichern')
         ),
         TextButton(
           style: TextButton.styleFrom(

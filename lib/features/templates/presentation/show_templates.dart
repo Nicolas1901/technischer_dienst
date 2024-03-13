@@ -10,6 +10,7 @@ import '../../../shared/presentation/components/dialog.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../../reports/presentation/create_reports.dart';
 import '../../reports/presentation/report_list.dart';
+import '../application/editTemplateBloc/edit_template_bloc.dart';
 import 'components/report_card.dart';
 import 'edit_templates.dart';
 
@@ -158,6 +159,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                       reportTitle: tmp.name,
                       image: resolveImage(tmp),
                       onEdit: () {
+                        context.read<EditTemplateBloc>().add(EditTemplateLoad(template: tmp));
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => EditTemplatePage(

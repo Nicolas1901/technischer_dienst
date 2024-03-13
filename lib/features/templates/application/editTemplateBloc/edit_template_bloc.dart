@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/domain/report_category.dart';
 import '../../domain/template.dart';
 import '../templateBloc/template_bloc.dart';
@@ -68,7 +69,7 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
     if (state is EditTemplatesLoaded) {
       Template template = state.template;
       template.categories[event.categoryIndex].items.removeAt(event.itemIndex);
-
+      debugPrint("item deleted");
       emit(EditTemplatesLoaded(template: template));
     }
   }

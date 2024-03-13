@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_check_box_tile.dart';
@@ -36,10 +35,12 @@ class _ReportChecklistState extends State<ReportChecklist> {
               title: Text(widget.items[index].itemName),
               value: widget.items[index].isChecked,
               onChanged: (bool? value) {
-                  setState(() {
-                    widget.items[index].isChecked = value;
-                  });
-                  widget.valueChanged(index, widget.items[index]);
+                  if (!widget.readonly) {
+                    setState(() {
+                      widget.items[index].isChecked = value;
+                    });
+                    widget.valueChanged(index, widget.items[index]);
+                  }
               },
               onTap: () {
                 debugPrint("Tapped");

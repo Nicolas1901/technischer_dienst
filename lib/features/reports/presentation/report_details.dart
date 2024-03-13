@@ -5,6 +5,7 @@ import 'package:technischer_dienst/features/reports/presentation/components/repo
 import 'package:technischer_dienst/Helper/mailer.dart';
 import 'package:technischer_dienst/shared/domain/report_category.dart';
 import '../../../Helper/pdf_helper.dart';
+import '../../../shared/presentation/components/dialog.dart';
 import '../domain/report.dart';
 
 class ReportDetails extends StatefulWidget {
@@ -42,6 +43,23 @@ class _ReportDetailsState extends State<ReportDetails> {
               Text("Prüfer: ${widget.report.inspector}"),
               Text("Vorlage: ${widget.report.ofTemplate}"),
             ],
+          );
+        });
+  }
+
+  Future<void> _commentaryDialog(CategoryItem item) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            onSave: () {
+              Navigator.of(context).pop();
+            },
+            onAbort: () {
+              Navigator.of(context).pop();
+            },
+            title: "Bemerkung",
+            child: Text(item.comment),
           );
         });
   }
@@ -85,8 +103,11 @@ class _ReportDetailsState extends State<ReportDetails> {
               for (ReportCategory c in widget.report.categories) ...{
                 ReportChecklist(
                   items: c.items,
-                  valueChanged: (int index,CategoryItem item) {},
-                  readonly: true, onTapped: (int index, CategoryItem item) {},
+                  valueChanged: (int index, CategoryItem item) {},
+                  readonly: true,
+                  onTapped: (int index, CategoryItem item) {
+                    _commentaryDialog(item);
+                  },
                 )
               }
             ],
