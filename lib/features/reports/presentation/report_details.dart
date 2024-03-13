@@ -51,15 +51,15 @@ class _ReportDetailsState extends State<ReportDetails> {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
-          return CustomDialog(
-            onSave: () {
-              Navigator.of(context).pop();
-            },
-            onAbort: () {
-              Navigator.of(context).pop();
-            },
-            title: "Bemerkung",
-            child: Text(item.comment),
+          return SimpleDialog(
+            title: const Text("Bemerkung"),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  initialValue: item.comment, readOnly: true, maxLines: null,),
+              )
+            ],
           );
         });
   }
@@ -71,7 +71,10 @@ class _ReportDetailsState extends State<ReportDetails> {
         length: widget.report.categories.length,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            backgroundColor: Theme
+                .of(context)
+                .colorScheme
+                .inversePrimary,
             title: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

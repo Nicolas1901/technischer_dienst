@@ -119,7 +119,7 @@ class _DynamicFormState extends State<DynamicForm>
               onPressed: () {
                 buildDialog();
               },
-              child: const Text('Add Field'),
+              child: const Text('Gegenstand hinzufügen'),
             ),
           ],
         ),

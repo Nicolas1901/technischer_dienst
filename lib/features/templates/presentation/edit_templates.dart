@@ -56,9 +56,8 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
               if (formKey.currentState!.validate()) {
                 ReportCategory category = ReportCategory(
                     categoryName: addController.text, itemData: []);
-                setState(() {
-
-                });
+                //this is needed to rebuild page and reflect current state properly
+                setState(() {});
 
                 context
                     .read<EditTemplateBloc>()
@@ -87,11 +86,11 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                     for (var (int index, ReportCategory category)
                         in state.template.categories.indexed) ...{
                       Tab(
-                          child: GestureDetector(
-                              onLongPress: (){
-                                openChangeCategoryNameDialog(index, category);
-                              },
-                              child: Text(category.categoryName)),
+                        child: GestureDetector(
+                            onLongPress: () {
+                              openChangeCategoryNameDialog(index, category);
+                            },
+                            child: Text(category.categoryName)),
                       ),
                     },
                     Tab(
@@ -110,11 +109,10 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                   for (final (catIndex, category)
                       in state.template.categories.indexed) ...{
                     DynamicForm(
-                      templateData:
-                          category.items.map((e) {
-                            debugPrint("editTemplate: ${jsonEncode(e)}");
-                            return e.itemName;
-                          }).toList(),
+                      templateData: category.items.map((e) {
+                        debugPrint("editTemplate: ${jsonEncode(e)}");
+                        return e.itemName;
+                      }).toList(),
                       onAddedItem: (String itemName) {
                         final item =
                             CategoryItem(itemName: itemName, isChecked: false);
@@ -173,47 +171,46 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
     ));
   }
 
-  Future<void> openChangeCategoryNameDialog(int index, ReportCategory category) {
+  Future<void> openChangeCategoryNameDialog(
+      int index, ReportCategory category) {
     TextEditingController categoryNameController = TextEditingController();
     categoryNameController.text = category.categoryName;
-    
-    return showDialog(context: context, builder: (BuildContext context){
-      return CustomDialog(
-        title: "Kategorie hinzufügen",
-        child: Form(
-          key: editCategoryKey,
-          child: TextFormField(
-            controller: categoryNameController,
-            autofocus: true,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Kategoriename darf nicht leer sein";
-              }
-              return null;
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialog(
+            title: "Kategorie hinzufügen",
+            child: Form(
+              key: editCategoryKey,
+              child: TextFormField(
+                controller: categoryNameController,
+                autofocus: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Kategoriename darf nicht leer sein";
+                  }
+                  return null;
+                },
+              ),
+            ),
+            onAbort: () {
+              Navigator.of(context).pop();
             },
-          ),
-        ),
-        onAbort: () {
-          Navigator.of(context).pop();
-        },
-        onSave: () {
-          if (editCategoryKey.currentState!.validate()) {
-            ReportCategory newCategory = category.copyWith(
-                categoryName: categoryNameController.text);
+            onSave: () {
+              if (editCategoryKey.currentState!.validate()) {
+                ReportCategory newCategory = category.copyWith(
+                    categoryName: categoryNameController.text);
+                //this is needed to rebuild page and reflect current state properly
+                setState(() {});
 
-            setState(() {
-
-            });
-
-            context
-                .read<EditTemplateBloc>()
-                .add(UpdateCategory(category: newCategory, categoryIndex: index));
-            debugPrint("Added Categorie");
-            Navigator.of(context).pop();
-          }
-        },
-      );
-    });
+                context.read<EditTemplateBloc>().add(UpdateCategory(
+                    category: newCategory, categoryIndex: index));
+                debugPrint("Added Categorie");
+                Navigator.of(context).pop();
+              }
+            },
+          );
+        });
   }
-
 }

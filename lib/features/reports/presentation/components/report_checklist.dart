@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_check_box_tile.dart';
 
@@ -32,19 +31,24 @@ class _ReportChecklistState extends State<ReportChecklist> {
           itemCount: widget.items.length,
           itemBuilder: (context, index) {
             return CheckboxTileBoxOnly(
-              title: Text(widget.items[index].itemName),
+              title: widget.items[index].comment.isNotEmpty
+                  ? Text(
+                      widget.items[index].itemName,
+                      style: const TextStyle(color: Colors.blueAccent),
+                    )
+                  : Text(widget.items[index].itemName),
               value: widget.items[index].isChecked,
               onChanged: (bool? value) {
-                  if (!widget.readonly) {
-                    setState(() {
-                      widget.items[index].isChecked = value;
-                    });
-                    widget.valueChanged(index, widget.items[index]);
-                  }
+                if (!widget.readonly) {
+                  setState(() {
+                    widget.items[index].isChecked = value;
+                  });
+                  widget.valueChanged(index, widget.items[index]);
+                }
               },
               onTap: () {
                 debugPrint("Tapped");
-               widget.onTapped(index, widget.items[index]);
+                widget.onTapped(index, widget.items[index]);
               },
             );
           },

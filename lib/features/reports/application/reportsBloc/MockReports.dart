@@ -39,6 +39,7 @@ class MockReports {
     ];
 
     mockReports[0].categories[0].items[0].isChecked = true;
+    mockReports[0].categories[0].items[0].comment = "Kommentar";
     mockReports[0].categories[0].items[3].isChecked = true;
     mockReports[1].categories[2].items[0].isChecked = true;
     mockReports[1].categories[2].items[1].isChecked = true;
