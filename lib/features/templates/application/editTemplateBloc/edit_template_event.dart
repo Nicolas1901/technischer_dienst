@@ -13,10 +13,22 @@ class EditTemplateLoad extends EditTemplateEvent{
   List<Object?> get props => [template];
 }
 
+
+
 class AddCategory extends EditTemplateEvent{
   final ReportCategory category;
 
   const AddCategory({required this.category});
+
+  @override
+  List<Object?> get props => [category];
+}
+
+class UpdateCategory extends EditTemplateEvent{
+  final ReportCategory category;
+  final int categoryIndex;
+
+  const UpdateCategory({required this.categoryIndex, required this.category});
 
   @override
   List<Object?> get props => [category];
@@ -30,6 +42,8 @@ class DeleteCategory extends EditTemplateEvent{
   @override
   List<Object?> get props => [index];
 }
+
+
 
 class AddItemToCategory extends EditTemplateEvent{
   final CategoryItem item;
@@ -64,6 +78,8 @@ class UpdateItemInCategory extends EditTemplateEvent{
   @override
   List<Object?> get props => [categoryIndex, itemIndex, itemName];
 }
+
+
 
 class SaveNewTemplate extends EditTemplateEvent{
   final Template template;

@@ -21,11 +21,11 @@ class EditTemplatePage extends StatefulWidget {
 
 class _EditTemplatePageState extends State<EditTemplatePage> {
   final formKey = GlobalKey<FormState>();
+  final editCategoryKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-
     debugPrint("editTemplate init: ${jsonEncode(widget.template)}");
   }
 
@@ -81,10 +81,14 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                 bottom: TabBar(
                   isScrollable: true,
                   tabs: [
-                    for (ReportCategory category
-                        in state.template.categories) ...{
+                    for (var (int index, ReportCategory category)
+                        in state.template.categories.indexed) ...{
                       Tab(
-                        text: category.categoryName,
+                          child: GestureDetector(
+                              onLongPress: (){
+                                openChangeCategoryNameDialog(index, category);
+                              },
+                              child: Text(category.categoryName)),
                       ),
                     },
                     Tab(
@@ -165,4 +169,44 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
       },
     ));
   }
+
+  Future<void> openChangeCategoryNameDialog(int index, ReportCategory category) {
+    TextEditingController categoryNameController = TextEditingController();
+    categoryNameController.text = category.categoryName;
+    
+    return showDialog(context: context, builder: (BuildContext context){
+      return CustomDialog(
+        title: "Kategorie hinzufügen",
+        child: Form(
+          key: editCategoryKey,
+          child: TextFormField(
+            controller: categoryNameController,
+            autofocus: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Kategoriename darf nicht leer sein";
+              }
+              return null;
+            },
+          ),
+        ),
+        onAbort: () {
+          Navigator.of(context).pop();
+        },
+        onSave: () {
+          if (editCategoryKey.currentState!.validate()) {
+            ReportCategory newCategory = category.copyWith(
+                categoryName: categoryNameController.text);
+
+            context
+                .read<EditTemplateBloc>()
+                .add(UpdateCategory(category: newCategory, categoryIndex: index));
+            debugPrint("Added Categorie");
+            Navigator.of(context).pop();
+          }
+        },
+      );
+    });
+  }
+
 }

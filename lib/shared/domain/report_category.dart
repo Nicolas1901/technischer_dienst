@@ -4,12 +4,14 @@ class ReportCategory {
 
   ReportCategory({
     required this.categoryName,
-    required List<dynamic> itemData,
+    required List<String> itemData,
   }) {
     for (String item in itemData) {
       items.add(CategoryItem(itemName: item, isChecked: false));
     }
   }
+
+  ReportCategory._copy({required this.categoryName, required this.items});
 
   ReportCategory.fromJson(Map<String, dynamic> json)
       : categoryName = json['categoryName'],
@@ -18,6 +20,12 @@ class ReportCategory {
 
   Map<String, dynamic> toJson() {
     return {"categoryName": categoryName, "itemList": items};
+  }
+
+  ReportCategory copyWith({String? categoryName, List<CategoryItem>? items}) {
+    return ReportCategory._copy(
+        categoryName: categoryName ?? this.categoryName,
+        items: items ?? this.items);
   }
 }
 
