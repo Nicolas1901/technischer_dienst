@@ -56,6 +56,9 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
               if (formKey.currentState!.validate()) {
                 ReportCategory category = ReportCategory(
                     categoryName: addController.text, itemData: []);
+                setState(() {
+
+                });
 
                 context
                     .read<EditTemplateBloc>()
@@ -197,6 +200,10 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
           if (editCategoryKey.currentState!.validate()) {
             ReportCategory newCategory = category.copyWith(
                 categoryName: categoryNameController.text);
+
+            setState(() {
+
+            });
 
             context
                 .read<EditTemplateBloc>()
