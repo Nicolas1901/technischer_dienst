@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../shared/domain/report_category.dart';
@@ -12,12 +13,13 @@ class Report {
   final DateTime from;
   final List<ReportCategory> categories;
 
-  Report({required this.id,
-    required this.reportName,
-    required this.inspector,
-    required this.ofTemplate,
-    required this.from,
-    required this.categories});
+  Report(
+      {required this.id,
+      required this.reportName,
+      required this.inspector,
+      required this.ofTemplate,
+      required this.from,
+      required this.categories});
 
   Report.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -40,26 +42,47 @@ class Report {
     };
   }
 
-  factory Report.fromRecord(RecordModel record) {
+  factory Report.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
     return Report(
-        id: record.getStringValue('id'),
-        reportName: record.getStringValue('reportName'),
-        inspector: record.getStringValue('inspector'),
-        ofTemplate: record.getStringValue('template'),
-        from: DateTime.parse(record.getStringValue('date')),
-        categories: List.from(jsonDecode(record.getStringValue('categories')))
-            .map((e) => ReportCategory.fromJson(e))
-            .toList());
+      reportName: data?['reportName'],
+      id: '',
+      inspector: data?['inspector'],
+      ofTemplate: data?['ofTemplate'],
+      from: data?['from'],
+      categories: data?['categories'] is Iterable ? List.from(data?['categories']) : <ReportCategory>[],
+    );
   }
 
-  Report copyWith({String? id, String? reportName, String? inspector,
-      String? ofTemplate, DateTime? from, List<ReportCategory>? categories}) {
-    return Report(id: id ?? this.id,
+  Map<String, dynamic> toFirestore() {
+    return {
+      "id": id,
+      "reportName": reportName,
+      "inspector": inspector,
+      "template": ofTemplate,
+      "date": from.toString().replaceRange(19, null, ""),
+      "categories": categories
+    };
+  }
+
+
+
+  Report copyWith(
+      {String? id,
+      String? reportName,
+      String? inspector,
+      String? ofTemplate,
+      DateTime? from,
+      List<ReportCategory>? categories}) {
+    return Report(
+        id: id ?? this.id,
         reportName: reportName ?? this.reportName,
         inspector: inspector ?? this.inspector,
         ofTemplate: ofTemplate ?? this.ofTemplate,
         from: from ?? this.from,
         categories: categories ?? this.categories);
   }
-
 }

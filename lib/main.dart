@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -10,14 +13,22 @@ import 'package:technischer_dienst/features/reports/application/reportsBloc/repo
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
-import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 import 'features/authentication/data/user_repository.dart';
 import 'features/templates/application/templateBloc/mockTemplates.dart';
+import 'firebase_options.dart';
 
 final getIt = GetIt.instance;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
+  getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+
 
   getIt.registerSingleton<PocketBase>(PocketBase(DbConnectionString.url));
   getIt.registerSingleton<TemplateRepository>(
@@ -34,7 +45,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthBloc(userRepository: UserRepository(pb: getIt<PocketBase>()))),
+        BlocProvider(create: (context) => AuthBloc(userRepository: UserRepository(fireAuth: getIt<FirebaseAuth>(), db: getIt<FirebaseFirestore>()))),
         BlocProvider(create: (context) => EditTemplateBloc()),
         BlocProvider(
             create: (context) => TemplateBloc(

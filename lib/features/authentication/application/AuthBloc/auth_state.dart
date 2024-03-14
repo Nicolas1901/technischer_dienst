@@ -11,7 +11,7 @@ class LoggedOut extends AuthState {
 }
 
 class Authenticated extends AuthState {
-  final User user;
+  final AppUser user;
 
   const Authenticated({required this.user});
 
@@ -20,6 +20,10 @@ class Authenticated extends AuthState {
 }
 
 class LoginFailed extends AuthState{
+  final String message;
+
+  const LoginFailed({required this.message});
+
   @override
   List<Object> get props => [];
 }

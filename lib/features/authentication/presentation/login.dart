@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final formKey = GlobalKey<FormState>();
-  final userNameOrEmailController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool inputIsObscured = true;
   bool loginFailed = false;
@@ -46,7 +46,7 @@ class _LoginState extends State<Login> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         TextFormField(
-                          controller: userNameOrEmailController,
+                          controller: emailController,
                           decoration: const InputDecoration(
                             hintText: "Name oder Email-Adresse",
                           ),
@@ -91,10 +91,12 @@ class _LoginState extends State<Login> {
                             if (state is Authenticated) {
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                      builder: (context) => const ShowTemplates(
+                                      builder: (context) =>
+                                      const ShowTemplates(
                                           title: "Vorlagen")));
                             }
                             if (state is LoginFailed) {
+                              debugPrint(state.message);
                               setState(() {
                                 loginFailed = true;
                               });
@@ -106,7 +108,10 @@ class _LoginState extends State<Login> {
                                   debugPrint("login");
                                   context
                                       .read<AuthBloc>()
-                                      .add(MockAuthentication());
+                                      .add(Authentication(
+                                      usernameOrEmail: emailController.text,
+                                      password: passwordController.text)
+                                  );
                                 }
                               },
                               child: const Text("Einloggen")),

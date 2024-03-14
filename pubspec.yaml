@@ -44,6 +44,9 @@ dependencies:
   get_it: ^7.6.7
   flutter_bloc: ^8.1.4
   equatable: ^2.0.5
+  firebase_core: ^2.27.0
+  cloud_firestore: ^4.15.8
+  firebase_auth: ^4.17.8
 
 dev_dependencies:
   flutter_test:

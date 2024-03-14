@@ -1,26 +1,41 @@
-import 'package:pocketbase/pocketbase.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../domain/user.dart';
+import '../domain/Appuser.dart';
 
 class UserRepository {
-  final PocketBase pb;
+  final FirebaseAuth fireAuth;
+  final FirebaseFirestore db;
 
-  UserRepository({required this.pb});
+  UserRepository({required this.db, required this.fireAuth});
 
-  Future<User> authenticateUser(
-      {required String usernameOrEmail, required String password}) async {
-    await pb.collection('user').authWithPassword(usernameOrEmail, password);
+  Future<AppUser> signIn(String email, String password) async {
+    try {
+      final credentials = await fireAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      
+      final data = await db.collection('userAccounts').doc(credentials.user!.uid).get();
 
-    final AuthStore authStore = pb.authStore;
-
-    return User(
-        username: authStore.model.getStringValue('username'),
-        profileImage: authStore.model.getStringValue('avatar'),
-        email: authStore.model.getStringValue('email'),
-        authStore: authStore);
+      return AppUser(uid: credentials.user!.uid,
+          username: data['username'] as String,
+          profileImage: data['profileImage'] as String,
+          email: credentials.user!.email ?? "",
+         );
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  logoutUser() {
-    pb.authStore.clear();
+  Future<void> signOut() async {
+      try {
+        await fireAuth.signOut();
+      } catch (e) {
+        rethrow;
+      }
   }
+
+  resetPassword() {
+    //TODO implement resetPassword
+  }
+
 }

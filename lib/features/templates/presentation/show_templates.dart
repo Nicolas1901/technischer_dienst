@@ -113,8 +113,8 @@ class _ShowTemplatesState extends State<ShowTemplates> {
               children: [
                 if (state is Authenticated)
                   UserAccountsDrawerHeader(
-                      accountName: Text(state.user.username),
-                      accountEmail: Text(state.user.email),
+                      accountName: Text(state.user.username ?? ""),
+                      accountEmail: Text(state.user.email ?? ""),
                       currentAccountPicture: CircleAvatar(foregroundImage: _renderImage(state.user.profileImage)),),
 
                 ListTile(
