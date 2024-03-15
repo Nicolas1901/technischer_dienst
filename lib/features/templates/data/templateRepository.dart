@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 
@@ -8,14 +9,19 @@ import 'package:technischer_dienst/features/templates/domain/template.dart';
 
 class TemplateRepository {
   final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
   late final CollectionReference<Template> _templatesRef;
+  late final Reference _storageRef;
 
   TemplateRepository({
     required this.firestore,
+    required this.storage,
   }) {
     _templatesRef = firestore.collection('templates').withConverter(
         fromFirestore: Template.fromFirestore,
         toFirestore: (Template template, _) => template.toFirestore());
+
+    _storageRef = storage.ref();
   }
 
   Future<void> add(Template template) async {
@@ -25,13 +31,36 @@ class TemplateRepository {
       rethrow;
     }
   }
-
+  //TODO throw error if upload fails
   Future<void> update(Template template, {File? file}) async {
-    try {
-     await _templatesRef.doc(template.id).set(template);
-    } on Exception catch (e) {
-      rethrow;
+    if(file != null){
+      try{
+        //upload File to Firebase Storage
+        final templateRef = _storageRef.child(template.id);
+        final uploadTask =  templateRef.putFile(file);
+        uploadTask.whenComplete(() async {
+          String path = await templateRef.getDownloadURL();
+
+          Template templateWithImage = template.copyWith(image: path);
+
+          await _templatesRef.doc(template.id).set(templateWithImage);
+        });
+        debugPrint("File uploaded");
+        //set path of File to image attribute of given Template object
+
+      }on Exception catch(e){
+        rethrow;
+      }
+
+    } else{
+      try {
+        await _templatesRef.doc(template.id).set(template);
+      } on Exception catch (e) {
+        rethrow;
+      }
     }
+
+
   }
 
   Future<void> delete(String id) async {

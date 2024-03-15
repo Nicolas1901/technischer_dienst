@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -28,9 +29,11 @@ Future<void> main() async {
 
   getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
   getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+  getIt.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
+
 
   getIt.registerSingleton<TemplateRepository>(
-      TemplateRepository(firestore: getIt<FirebaseFirestore>()));
+      TemplateRepository(firestore: getIt<FirebaseFirestore>(), storage: getIt<FirebaseStorage>()));
 
   runApp(const MyApp());
 }

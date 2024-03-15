@@ -109,7 +109,6 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     }
   }
 
-  //TODO save image to firestore
   Future<FutureOr<void>> _onAddImageToTemplate(
       AddImage event, Emitter<TemplateState> emit) async {
     final state = this.state;
@@ -121,7 +120,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
         final Template template = event.template.copyWith(image: file.path);
         debugPrint("Template image: ${template.image}");
         try {
-          // templateRepository.update(template, file: file);
+          templateRepository.update(template, file: file);
 
           _onUpdateTemplate(UpdateTemplate(template: template), emit);
         } catch (e) {
@@ -131,7 +130,6 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     }
   }
 
-  //TODO fix set image
   Future<XFile?> _pickImage() async {
     XFile? pickedImage =
         await ImagePicker().pickImage(source: ImageSource.camera);

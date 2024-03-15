@@ -109,7 +109,7 @@ class _LoginState extends State<Login> {
                                   context
                                       .read<AuthBloc>()
                                       .add(Authentication(
-                                      usernameOrEmail: emailController.text,
+                                      usernameOrEmail: emailController.text.trim(),
                                       password: passwordController.text)
                                   );
                                 }
