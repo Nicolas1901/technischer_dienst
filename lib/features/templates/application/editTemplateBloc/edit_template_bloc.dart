@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/domain/report_category.dart';
+import '../../data/templateRepository.dart';
 import '../../domain/template.dart';
 import '../templateBloc/template_bloc.dart';
 
@@ -11,7 +12,9 @@ part 'edit_template_event.dart';
 part 'edit_template_state.dart';
 
 class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
-  EditTemplateBloc() : super(EditTemplateLoading()) {
+  final TemplateRepository repo;
+
+  EditTemplateBloc({required this.repo}) : super(EditTemplateLoading()) {
     on<EditTemplateLoad>(_onEditTemplateLoad);
     on<AddCategory>(_onAddCategory);
     on<UpdateCategory>(_onUpdateCategory);
@@ -27,15 +30,21 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
     emit(EditTemplatesLoaded(template: event.template));
   }
 
-  FutureOr<void> _onAddCategory(
-      AddCategory event, Emitter<EditTemplateState> emit) {
+  Future<FutureOr<void>> _onAddCategory(
+      AddCategory event, Emitter<EditTemplateState> emit) async {
     final state = this.state;
 
     if (state is EditTemplatesLoaded) {
-      Template template = state.template;
-      template.categories.add(event.category);
+      try {
+        Template template = state.template;
+        template.categories.add(event.category);
 
-      emit(EditTemplatesLoaded(template: template));
+        await repo.add(template);
+
+        emit(EditTemplatesLoaded(template: template));
+      } on Exception catch (e) {
+        emit(ActionFailed(template: state.template, message: e.toString()));
+      }
     }
   }
 

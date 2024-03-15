@@ -9,7 +9,7 @@ class EditTemplateLoading extends EditTemplateState {
   List<Object> get props => [];
 }
 
-class EditTemplatesLoaded extends EditTemplateState{
+class EditTemplatesLoaded extends EditTemplateState {
   final Template template;
 
   const EditTemplatesLoaded({required this.template});
@@ -18,7 +18,7 @@ class EditTemplatesLoaded extends EditTemplateState{
   List<Object?> get props => [template];
 }
 
-class ModifiedTemplateSaved extends EditTemplateState{
+class ModifiedTemplateSaved extends EditTemplateState {
   final Template template;
 
   const ModifiedTemplateSaved({required this.template});
@@ -27,11 +27,23 @@ class ModifiedTemplateSaved extends EditTemplateState{
   List<Object?> get props => [template];
 }
 
-class NewTemplateSaved extends EditTemplateState{
+class NewTemplateSaved extends EditTemplateState {
   final Template template;
 
   const NewTemplateSaved({required this.template});
 
   @override
   List<Object?> get props => [template];
+}
+
+class ActionFailed extends EditTemplatesLoaded {
+  @override
+  final Template template;
+  final String message;
+
+  const ActionFailed({required this.template, required this.message})
+      : super(template: template);
+
+  @override
+  List<Object?> get props => [message];
 }

@@ -72,7 +72,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: BlocBuilder<EditTemplateBloc, EditTemplateState>(
+    return Scaffold(body: BlocConsumer<EditTemplateBloc, EditTemplateState>(
       builder: (context, state) {
         if (state is EditTemplatesLoaded) {
           return DefaultTabController(
@@ -166,6 +166,11 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
           return const CircularProgressIndicator();
         } else {
           return const Text("Etwas ist schief gelaufen");
+        }
+      },
+      listener: (BuildContext context, EditTemplateState state) {
+        if(state is ActionFailed){
+          SnackBar(content: Text(state.message),);
         }
       },
     ));

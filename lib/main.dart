@@ -29,10 +29,8 @@ Future<void> main() async {
   getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
   getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
 
-
-  getIt.registerSingleton<PocketBase>(PocketBase(DbConnectionString.url));
   getIt.registerSingleton<TemplateRepository>(
-      TemplateRepository(pb: getIt<PocketBase>()));
+      TemplateRepository(firestore: getIt<FirebaseFirestore>()));
 
   runApp(const MyApp());
 }
@@ -45,13 +43,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthBloc(userRepository: UserRepository(fireAuth: getIt<FirebaseAuth>(), db: getIt<FirebaseFirestore>()))),
-        BlocProvider(create: (context) => EditTemplateBloc()),
+        BlocProvider(
+            create: (context) => AuthBloc(
+                userRepository: UserRepository(
+                    fireAuth: getIt<FirebaseAuth>(),
+                    db: getIt<FirebaseFirestore>()))),
+
+        BlocProvider(
+            create: (context) =>
+                EditTemplateBloc(repo: getIt<TemplateRepository>())),
+
         BlocProvider(
             create: (context) => TemplateBloc(
                 getIt<TemplateRepository>(), context.read<EditTemplateBloc>())
               ..add(LoadTemplates(templates: MockTemplates.generate()))),
+
         BlocProvider(create: (context) => CreateReportBloc()),
+
         BlocProvider(
             lazy: false,
             create: (context) =>

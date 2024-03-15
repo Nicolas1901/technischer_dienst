@@ -1,63 +1,67 @@
 import 'dart:io';
 
-import 'package:pocketbase/pocketbase.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
-import 'package:http/http.dart';
 
 //Todo Cache Images
 
 class TemplateRepository {
-  final PocketBase pb;
-  final String tableName = 'templates';
+  final FirebaseFirestore firestore;
+  late final CollectionReference<Template> _templatesRef;
 
   TemplateRepository({
-    required this.pb,
-  });
-
-  void add(Template template) {
-    if(template.image.isEmpty){
-      pb.collection(tableName).create(body: template.toJson(),);
-    } else{
-      final File image = File(template.image);
-      pb.collection(tableName).create(body: template.toJson(), files: [
-        MultipartFile.fromBytes('image', image.readAsBytesSync()),
-      ]);
-    }
-
+    required this.firestore,
+  }) {
+    _templatesRef = firestore.collection('templates').withConverter(
+        fromFirestore: Template.fromFirestore,
+        toFirestore: (Template template, _) => template.toFirestore());
   }
 
-  void update(Template template, {File? file}) {
-    if(file == null){
-      pb.collection(tableName).update(template.id, body: template.toJson(),);
-    }else{
-      final File image = File(template.image);
-      pb.collection(tableName).update(template.id, body: template.toJson(), files: [
-        MultipartFile.fromBytes('image', file.readAsBytesSync(),),
-      ]);
+  Future<void> add(Template template) async {
+    try {
+      await _templatesRef.add(template);
+    } on Exception catch (e) {
+      rethrow;
     }
-
   }
 
-  void delete(String id) {
-    pb.collection(tableName).delete(id);
+  Future<void> update(Template template, {File? file}) async {
+    try {
+     await _templatesRef.doc(template.id).set(template);
+    } on Exception catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> delete(String id) async {
+    try {
+     await _templatesRef.doc(id).delete();
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 
   Future<Template> get(String id) async {
-    final record = (await pb.collection(tableName).getOne(id));
-    final String url = pb.files.getUrl(record, record.getStringValue('image')).path;
+   try {
+     final snapshot = await firestore.collection('templates').doc(id).get();
 
-    Template tmp = Template.fromRecord(record, url);
+     Template template = Template.fromFirestore(snapshot, null);
 
-    return tmp;
+     return template;
+   } on Exception catch (e) {
+     rethrow;
+   }
   }
 
   Future<List<Template>> getAll() async {
-    final List<RecordModel> record =
-        (await pb.collection(tableName).getFullList());
+    try {
+      final templatesQuery = await _templatesRef.get();
 
-    List<Template> templates = List<RecordModel>.from(record)
-        .map((e) => Template.fromRecord(e, pb.files.getUrl(e, e.getStringValue('image')).path))
-        .toList();
-    return templates;
+      final List<Template> templates = List<Template>.from(templatesQuery.docs).map((e) => e).toList();
+
+      return templates;
+    }catch (e) {
+      rethrow;
+    }
   }
 }
