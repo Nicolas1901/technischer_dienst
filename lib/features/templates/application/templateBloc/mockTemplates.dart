@@ -1,6 +1,7 @@
 import 'package:technischer_dienst/shared/domain/report_category.dart';
 
 import '../../domain/template.dart';
+import '../../domain/template_category.dart';
 
 class MockTemplates{
   static List<Template> generate(){
@@ -9,25 +10,25 @@ class MockTemplates{
           id: "1",
           name: "HLF",
           categories: [
-            ReportCategory(
+            const TemplateCategory(
                 categoryName: "Kategorie1",
-                itemData: ["HLF1", "HLF2", "HLF3"]
+                items: ["HLF1", "HLF2", "HLF3"]
             ),
-            ReportCategory(
+            const TemplateCategory(
                 categoryName: "Kategorie2",
-                itemData: ["HLF2.1", "HLF2.2", "HLF2.3"]
+                items: ["HLF2.1", "HLF2.2", "HLF2.3"]
             )
       ]),
       Template(
           id: "2",
           name: "MTF",
           categories: [
-            ReportCategory(
+            const TemplateCategory(
                 categoryName: "KategorieMTF1",
-                itemData: ["MTF1", "MTF2", "MTF3"]),
-            ReportCategory(
+                items: ["MTF1", "MTF2", "MTF3"]),
+            const TemplateCategory(
                 categoryName: "KategorieMTF2",
-                itemData: ["MTF2.1", "MTF2.2", "MTF2.3"])
+                items: ["MTF2.1", "MTF2.2", "MTF2.3"])
           ])
     ];
   }

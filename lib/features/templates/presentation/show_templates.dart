@@ -187,6 +187,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
         }
 
         if (state is TemplatesError) {
+          debugPrint(state.message);
           return Center(child: Text(state.message));
         } else {
           return const Center(child: Text('Etwas ist schief gelaufen'));

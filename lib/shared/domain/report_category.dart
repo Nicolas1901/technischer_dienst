@@ -15,11 +15,11 @@ class ReportCategory {
 
   ReportCategory.fromJson(Map<String, dynamic> json)
       : categoryName = json['categoryName'],
-        items = List<dynamic>.from(json['itemList']).map((e) =>
+        items = List<dynamic>.from(json['items']).map((e) =>
             CategoryItem.fromJson(e)).toList();
 
   Map<String, dynamic> toJson() {
-    return {"categoryName": categoryName, "itemList": items};
+    return {"categoryName": categoryName, "items": items};
   }
 
   ReportCategory copyWith({String? categoryName, List<CategoryItem>? items}) {

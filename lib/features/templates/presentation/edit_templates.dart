@@ -6,6 +6,7 @@ import 'package:technischer_dienst/features/templates/application/editTemplateBl
 import 'package:technischer_dienst/shared/domain/report_category.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import '../../../shared/presentation/components/dialog.dart';
+import '../domain/template_category.dart';
 import 'components/dynamic_form.dart';
 
 class EditTemplatePage extends StatefulWidget {
@@ -54,8 +55,8 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
             },
             onSave: () {
               if (formKey.currentState!.validate()) {
-                ReportCategory category = ReportCategory(
-                    categoryName: addController.text, itemData: []);
+                TemplateCategory category = TemplateCategory(
+                    categoryName: addController.text, items: []);
                 //this is needed to rebuild page and reflect current state properly
                 setState(() {});
 
@@ -83,7 +84,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                 bottom: TabBar(
                   isScrollable: true,
                   tabs: [
-                    for (var (int index, ReportCategory category)
+                    for (var (int index, TemplateCategory category)
                         in state.template.categories.indexed) ...{
                       Tab(
                         child: GestureDetector(
@@ -111,14 +112,11 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                     DynamicForm(
                       templateData: category.items.map((e) {
                         debugPrint("editTemplate: ${jsonEncode(e)}");
-                        return e.itemName;
+                        return e;
                       }).toList(),
                       onAddedItem: (String itemName) {
-                        final item =
-                            CategoryItem(itemName: itemName, isChecked: false);
-
                         context.read<EditTemplateBloc>().add(
-                            AddItemToCategory(item: item, index: catIndex));
+                            AddItemToCategory(item: itemName, categoryIndex: catIndex));
                       },
                       onDeletedItem: (int index) {
                         context.read<EditTemplateBloc>().add(
@@ -126,7 +124,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                                 categoryIndex: catIndex, itemIndex: index));
                       },
                       onUpdateItem: (int index, String itemName) {
-                        category.items[index].itemName = itemName;
+                        category.items[index] = itemName;
                         context.read<EditTemplateBloc>().add(
                             UpdateItemInCategory(
                                 categoryIndex: catIndex,
@@ -177,7 +175,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
   }
 
   Future<void> openChangeCategoryNameDialog(
-      int index, ReportCategory category) {
+      int index, TemplateCategory category) {
     TextEditingController categoryNameController = TextEditingController();
     categoryNameController.text = category.categoryName;
 
@@ -204,7 +202,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
             },
             onSave: () {
               if (editCategoryKey.currentState!.validate()) {
-                ReportCategory newCategory = category.copyWith(
+                TemplateCategory newCategory = category.copyWith(
                     categoryName: categoryNameController.text);
                 //this is needed to rebuild page and reflect current state properly
                 setState(() {});

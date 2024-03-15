@@ -29,7 +29,10 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
         inspector: "",
         ofTemplate: event.template.name,
         from: DateTime.now(),
-        categories: event.template.categories);
+        categories: List.from(event.template.categories)
+            .map((e) =>
+                ReportCategory(categoryName: e.categoryName, itemData: e.items))
+            .toList());
 
     emit(TemplateLoaded(report: report));
   }

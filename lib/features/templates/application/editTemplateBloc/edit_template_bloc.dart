@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/domain/report_category.dart';
 import '../../data/templateRepository.dart';
 import '../../domain/template.dart';
+import '../../domain/template_category.dart';
 import '../templateBloc/template_bloc.dart';
 
 part 'edit_template_event.dart';
@@ -66,7 +67,7 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
 
     if (state is EditTemplatesLoaded) {
       Template template = state.template;
-      template.categories[event.index].items.add(event.item);
+      template.categories[event.categoryIndex].items.add(event.item);
 
       emit(EditTemplatesLoaded(template: template));
     }
@@ -90,8 +91,7 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
 
     if (state is EditTemplatesLoaded) {
       Template template = state.template;
-      template.categories[event.categoryIndex].items[event.itemIndex] =
-          CategoryItem(itemName: event.itemName, isChecked: false);
+      template.categories[event.categoryIndex].items[event.itemIndex] = event.itemName;
 
       emit(EditTemplatesLoaded(template: template));
     }

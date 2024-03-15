@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 
 //Todo Cache Images
@@ -57,8 +58,11 @@ class TemplateRepository {
     try {
       final templatesQuery = await _templatesRef.get();
 
-      final List<Template> templates = List<Template>.from(templatesQuery.docs).map((e) => e).toList();
+      final List<Template> templates = List.empty(growable: true);
 
+      for(QueryDocumentSnapshot<Template> snapshot in templatesQuery.docs){
+        templates.add(snapshot.data());
+      }
       return templates;
     }catch (e) {
       rethrow;

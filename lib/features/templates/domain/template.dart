@@ -4,12 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../shared/domain/report_category.dart';
+import 'template_category.dart';
 
 class Template {
   final String id;
   final String name;
   final String image;
-  final List<ReportCategory> categories;
+  final List<TemplateCategory> categories;
 
   Template({
     required this.id,
@@ -23,7 +24,7 @@ class Template {
         name = json['name'],
         image = json['image'],
         categories = List<dynamic>.from(json['categoryList'])
-            .map((e) => ReportCategory.fromJson(e))
+            .map((e) => TemplateCategory.fromMap(e))
             .toList();
 
   Map<String, dynamic> toJson() {
@@ -40,17 +41,15 @@ class Template {
         id: snapshot.reference.id,
         name: data?['name'],
         image: data?['image'],
-        categories: data?['categories'] is Iterable
-            ? List.from(data?['categories'])
-            : <ReportCategory>[]);
+        categories: List<dynamic>.from(data?['categories']).map((e) => TemplateCategory.fromMap(e)).toList());
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       "name": name,
       "image": image,
-      "categories": List<Map<String, List<String>>>.from(categories
-          .map((c) => [c.categoryName, c.items.map((item) => item.itemName)]))
+      "categories": List<Map<String, dynamic>>.from(categories
+          .map((c) => [c.categoryName, c.items]))
     };
   }
 
@@ -60,7 +59,7 @@ class Template {
   }
 
   Template copyWith(
-      {String? name, String? image, List<ReportCategory>? categories}) {
+      {String? name, String? image, List<TemplateCategory>? categories}) {
     return Template(
         id: this.id,
         name: name ?? this.name,
