@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../../shared/domain/report_category.dart';
+import '../../reports/domain/report_category.dart';
 import 'template_category.dart';
 
 class Template {
@@ -49,7 +49,7 @@ class Template {
       "name": name,
       "image": image,
       "categories": List<Map<String, dynamic>>.from(categories
-          .map((c) => [c.categoryName, c.items]))
+          .map((c) => c.toMap()))
     };
   }
 

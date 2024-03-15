@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
 
         BlocProvider(
             create: (context) =>
-                EditTemplateBloc(repo: getIt<TemplateRepository>())),
+                EditTemplateBloc()),
 
         BlocProvider(
             create: (context) => TemplateBloc(

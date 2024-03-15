@@ -55,7 +55,6 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     if (state is TemplatesLoaded) {
       try {
         templateRepository.add(event.template);
-
         emit(
           TemplatesLoaded(
             templates: List.from(state.templates)..add(event.template),

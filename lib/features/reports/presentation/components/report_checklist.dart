@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_check_box_tile.dart';
 
-import '../../../../shared/domain/report_category.dart';
+import '../../domain/report_category.dart';
 
 class ReportChecklist extends StatefulWidget {
   const ReportChecklist({

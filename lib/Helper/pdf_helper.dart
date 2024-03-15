@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:technischer_dienst/shared/domain/report_category.dart';
+import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 import '../features/reports/domain/report.dart';
 
 class PdfHelper {

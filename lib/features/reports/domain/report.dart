@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-import '../../../shared/domain/report_category.dart';
+import 'report_category.dart';
 
 class Report {
   final String id;

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/shared/domain/report_category.dart';
+import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 import '../../data/templateRepository.dart';
 import '../../domain/template.dart';
 import '../../domain/template_category.dart';
@@ -13,9 +13,8 @@ part 'edit_template_event.dart';
 part 'edit_template_state.dart';
 
 class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
-  final TemplateRepository repo;
 
-  EditTemplateBloc({required this.repo}) : super(EditTemplateLoading()) {
+  EditTemplateBloc() : super(EditTemplateLoading()) {
     on<EditTemplateLoad>(_onEditTemplateLoad);
     on<AddCategory>(_onAddCategory);
     on<UpdateCategory>(_onUpdateCategory);
@@ -39,8 +38,6 @@ class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
       try {
         Template template = state.template;
         template.categories.add(event.category);
-
-        await repo.add(template);
 
         emit(EditTemplatesLoaded(template: template));
       } on Exception catch (e) {

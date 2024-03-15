@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
 import 'package:technischer_dienst/Helper/mailer.dart';
-import 'package:technischer_dienst/shared/domain/report_category.dart';
+import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 import '../../../Helper/pdf_helper.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../domain/report.dart';

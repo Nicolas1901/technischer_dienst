@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:technischer_dienst/shared/domain/report_category.dart';
+import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 
 import '../../../templates/domain/template.dart';
 import '../../domain/report.dart';
