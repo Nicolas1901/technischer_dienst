@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
+import 'package:technischer_dienst/shared/presentation/components/navigation_drawer.dart';
 import '../../../Constants/assest_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
@@ -25,7 +26,6 @@ class ShowTemplates extends StatefulWidget {
 
 class _ShowTemplatesState extends State<ShowTemplates> {
   final formKey = GlobalKey<FormState>();
-  
 
   ImageProvider resolveImage(Template template) {
     ImageProvider image = const AssetImage(AssetImages.noImageTemplate);
@@ -49,9 +49,9 @@ class _ShowTemplatesState extends State<ShowTemplates> {
   ImageProvider _renderImage(String profileImagePath) {
     ImageProvider profileImage;
 
-    if(profileImagePath.isNotEmpty){
+    if (profileImagePath.isNotEmpty) {
       profileImage = NetworkImage(profileImagePath);
-    } else{
+    } else {
       profileImage = const AssetImage(AssetImages.noImageUser);
     }
 
@@ -107,27 +107,21 @@ class _ShowTemplatesState extends State<ShowTemplates> {
       ),
       drawer: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          return Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                if (state is Authenticated)
-                  UserAccountsDrawerHeader(
-                      accountName: Text(state.user.username ?? ""),
-                      accountEmail: Text(state.user.email ?? ""),
-                      currentAccountPicture: CircleAvatar(foregroundImage: _renderImage(state.user.profileImage)),),
-
-                ListTile(
-                    title: const Text("Berichte"),
-                    leading: const Icon(Icons.file_copy),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const ReportList()));
-                    })
-              ],
-            ),
-          );
+          if (state is Authenticated) {
+            return TdNavigationDrawer(
+              accountName: state.user.username,
+              email: state.user.email,
+              avatar: state.user.profileImage,
+              selectedIndex: 0,
+            );
+          } else {
+            return const TdNavigationDrawer(
+              accountName: '',
+              email: '',
+              avatar: '',
+              selectedIndex: 0,
+            );
+          }
         },
       ),
       body: BlocBuilder<TemplateBloc, TemplateState>(builder: (context, state) {
@@ -159,13 +153,15 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                       reportTitle: tmp.name,
                       image: resolveImage(tmp),
                       onEdit: () {
-                        context.read<EditTemplateBloc>().add(EditTemplateLoad(template: tmp));
+                        context
+                            .read<EditTemplateBloc>()
+                            .add(EditTemplateLoad(template: tmp));
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => EditTemplatePage(
-                                template: tmp,
-                                templateExists: true,
-                              )),
+                                    template: tmp,
+                                    templateExists: true,
+                                  )),
                         );
                       },
                       onDelete: () {
@@ -202,6 +198,4 @@ class _ShowTemplatesState extends State<ShowTemplates> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-
-
 }

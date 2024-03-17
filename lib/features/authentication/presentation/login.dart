@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/Constants/assest_images.dart';
-import 'package:technischer_dienst/features/authentication/application/AuthBloc/MockAuthEvents.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../application/AuthBloc/auth_bloc.dart';
