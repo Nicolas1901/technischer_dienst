@@ -65,6 +65,7 @@ class TemplateRepository {
 
   Future<void> delete(String id) async {
     try {
+      _storageRef.child(id).delete();
      await _templatesRef.doc(id).delete();
     } on Exception catch (e) {
       rethrow;
