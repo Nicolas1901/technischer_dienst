@@ -41,15 +41,17 @@ class Template {
         id: snapshot.reference.id,
         name: data?['name'],
         image: data?['image'],
-        categories: List<dynamic>.from(data?['categories']).map((e) => TemplateCategory.fromMap(e)).toList());
+        categories: List<dynamic>.from(data?['categories'])
+            .map((e) => TemplateCategory.fromMap(e))
+            .toList());
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       "name": name,
       "image": image,
-      "categories": List<Map<String, dynamic>>.from(categories
-          .map((c) => c.toMap()))
+      "categories":
+          List<Map<String, dynamic>>.from(categories.map((c) => c.toMap()))
     };
   }
 
@@ -59,9 +61,12 @@ class Template {
   }
 
   Template copyWith(
-      {String? name, String? image, List<TemplateCategory>? categories}) {
+      {String? id,
+      String? name,
+      String? image,
+      List<TemplateCategory>? categories}) {
     return Template(
-        id: this.id,
+        id: id ?? this.id,
         name: name ?? this.name,
         categories: categories ?? this.categories,
         image: image ?? this.image);

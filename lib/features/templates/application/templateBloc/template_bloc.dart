@@ -50,14 +50,16 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
   }
 
   FutureOr<void> _onAddTemplate(
-      AddTemplate event, Emitter<TemplateState> emit) {
+      AddTemplate event, Emitter<TemplateState> emit) async{
     final state = this.state;
     if (state is TemplatesLoaded) {
       try {
-        templateRepository.add(event.template);
+        final String uid = (await templateRepository.add(event.template)).id;
+
+        Template template = event.template.copyWith(id:  uid);
         emit(
           TemplatesLoaded(
-            templates: List.from(state.templates)..add(event.template),
+            templates: List.from(state.templates)..add(template),
           ),
         );
       } catch (e) {

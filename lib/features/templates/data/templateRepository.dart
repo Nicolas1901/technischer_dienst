@@ -24,9 +24,9 @@ class TemplateRepository {
     _storageRef = storage.ref();
   }
 
-  Future<void> add(Template template) async {
+  Future<DocumentReference<Template>> add(Template template) async {
     try {
-      await _templatesRef.add(template);
+      return await _templatesRef.add(template);
     } on Exception catch (e) {
       rethrow;
     }
