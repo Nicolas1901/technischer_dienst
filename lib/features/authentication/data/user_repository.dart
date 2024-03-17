@@ -38,4 +38,12 @@ class UserRepository {
     //TODO implement resetPassword
   }
 
+  Future<DocumentSnapshot> loadUserData(String uid) async {
+    try{
+      return await db.collection('userAccounts').doc(uid).get();
+    } catch(e){
+      rethrow;
+    }
+  }
+
 }

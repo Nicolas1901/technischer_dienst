@@ -18,6 +18,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.userRepository}) : super(LoggedOut()) {
     on<Authentication>(_onAuthentication);
     on<Logout>(_onLogout);
+
+    userRepository.fireAuth.authStateChanges().listen((user) async {
+      if(user != null){
+        final userData = await userRepository.loadUserData(user.uid);
+
+        AppUser u = AppUser(uid: user.uid,
+          username: userData['username'] as String,
+          profileImage: userData['profileImage'] as String,
+          email:user.email ?? "",
+        );
+
+        emit(Authenticated(user: u));
+      }
+    });
   }
 
   FutureOr<void> _onAuthentication(

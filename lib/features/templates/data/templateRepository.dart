@@ -27,7 +27,7 @@ class TemplateRepository {
   Future<DocumentReference<Template>> add(Template template) async {
     try {
       return await _templatesRef.add(template);
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }
@@ -48,14 +48,14 @@ class TemplateRepository {
         debugPrint("File uploaded");
         //set path of File to image attribute of given Template object
 
-      }on Exception catch(e){
+      }on Exception {
         rethrow;
       }
 
     } else{
       try {
         await _templatesRef.doc(template.id).set(template);
-      } on Exception catch (e) {
+      } on Exception {
         rethrow;
       }
     }
@@ -67,7 +67,7 @@ class TemplateRepository {
     try {
       _storageRef.child(id).delete();
      await _templatesRef.doc(id).delete();
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }
@@ -79,7 +79,7 @@ class TemplateRepository {
      Template template = Template.fromFirestore(snapshot, null);
 
      return template;
-   } on Exception catch (e) {
+   } on Exception {
      rethrow;
    }
   }
