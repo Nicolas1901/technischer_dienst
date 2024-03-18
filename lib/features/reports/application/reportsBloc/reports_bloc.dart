@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/reports/data/report_repository.dart';
 
 import '../../../../Helper/mailer.dart';
@@ -38,11 +37,9 @@ class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
     final state = this.state;
 
     try {
-      final List<Report> reports = await reportRepository.getAll();
+      List<Report> reports = await reportRepository.getAll();
 
       if (state is AddedLocalReport) {
-        List<Report> reports = state.reports;
-        reports.addAll(reports);
         emit(ReportsLoaded(reports: reports));
       } else if (state is ReportsLoading) {
         emit(ReportsLoaded(reports: reports));
