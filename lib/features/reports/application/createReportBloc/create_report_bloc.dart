@@ -46,17 +46,16 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
           event.item;
 
       emit(TemplateLoaded(report: state.report));
-      debugPrint("Update");
     }
   }
 
   FutureOr<void> _onSaveReport(
       SaveReport event, Emitter<CreateReportState> emit) {
     final state = this.state;
-    debugPrint("_onSaveReport: $state");
+
     if (state is TemplateLoaded) {
       emit(SavedReport(report: event.report));
-      debugPrint("_onSaveReport: ${this.state}");
+
     }
   }
 

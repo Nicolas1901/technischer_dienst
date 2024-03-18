@@ -168,7 +168,6 @@ class _CreateReportPageState extends State<CreateReportPage> {
                                           item: item));
                                 },
                                 onTapped: (int index, CategoryItem item) {
-                                  debugPrint("openDialog");
                                   _addCommentaryDialog(index, catIndex, item);
                                 },
                               ),

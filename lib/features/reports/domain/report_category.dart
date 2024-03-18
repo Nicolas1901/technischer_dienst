@@ -27,6 +27,13 @@ class ReportCategory {
         categoryName: categoryName ?? this.categoryName,
         items: items ?? this.items);
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'categoryName': this.categoryName,
+      'items': List<Map<String, dynamic>>.from(items.map((c) => c.toMap()))
+    };
+  }
 }
 
 class CategoryItem {
@@ -54,5 +61,13 @@ class CategoryItem {
         itemName: itemName ?? this.itemName,
         isChecked: isChecked ?? this.isChecked,
         comment: comment ?? this.comment);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'itemName': this.itemName,
+      'isChecked': this.isChecked,
+      'comment': this.comment,
+    };
   }
 }

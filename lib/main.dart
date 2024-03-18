@@ -67,8 +67,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => CreateReportBloc()),
         BlocProvider(
             lazy: false,
-            create: (context) =>
-                ReportsBloc(createReportBloc: context.read<CreateReportBloc>()))
+            create: (context) => ReportsBloc(
+                createReportBloc: context.read<CreateReportBloc>(),
+                reportRepository: getIt<ReportRepository>()))
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

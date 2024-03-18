@@ -42,7 +42,7 @@ class ReportRepository {
     _reportsRef.doc(report.id).set(report);
   }
 
-  add(Report report) async {
+  Future<DocumentReference> add(Report report) async {
     try {
       return await _reportsRef.add(report);
     } on Exception {

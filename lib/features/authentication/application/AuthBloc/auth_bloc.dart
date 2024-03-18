@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:technischer_dienst/features/authentication/application/AuthBloc/MockAuthEvents.dart';
-
 import '../../data/user_repository.dart';
 import '../../domain/Appuser.dart';
 
@@ -15,7 +13,7 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserRepository userRepository;
 
-  AuthBloc({required this.userRepository}) : super(LoggedOut()) {
+  AuthBloc({required this.userRepository}) : super(AuthInit()) {
     on<Authentication>(_onAuthentication);
     on<Logout>(_onLogout);
 
@@ -30,6 +28,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
 
         emit(Authenticated(user: u));
+      }
+
+      if(user == null){
+        emit(LoggedOut());
       }
     });
   }

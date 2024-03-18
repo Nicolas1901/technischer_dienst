@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:technischer_dienst/features/reports/data/report_repository.dart';
 
 import '../../../../Helper/mailer.dart';
 import '../../../../Helper/pdf_helper.dart';
@@ -15,46 +16,81 @@ part 'reports_event.dart';
 part 'reports_state.dart';
 
 class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
+  final ReportRepository reportRepository;
   final CreateReportBloc createReportBloc;
   late StreamSubscription _createReportsSub;
 
-  ReportsBloc({required this.createReportBloc}) : super(const ReportsLoading()) {
+  ReportsBloc({required this.createReportBloc, required this.reportRepository})
+      : super(const ReportsLoading()) {
     on<LoadReportsFromRepo>(_onLoadReportsFromRepo);
     on<AddReport>(_onAddReport);
     on<SendReportPerMail>(_onSendReportPerMail);
 
     _createReportsSub = createReportBloc.stream.listen((state) {
       if (state is SavedReport) {
-        debugPrint("State is SavedReport");
         add(AddReport(report: state.report));
       }
     });
   }
 
   FutureOr<void> _onLoadReportsFromRepo(
-      LoadReportsFromRepo event, Emitter<ReportsState> emit) {
+      LoadReportsFromRepo event, Emitter<ReportsState> emit) async {
     final state = this.state;
 
-    if (state is AddedLocalReport) {
-      List<Report> reports = state.reports;
-      reports.addAll(event.reports);
-      emit(ReportsLoaded(reports: reports));
+    try {
+      final List<Report> reports = await reportRepository.getAll();
 
-    } else if (state is ReportsLoading) {
-      emit(ReportsLoaded(reports: event.reports));
+      if (state is AddedLocalReport) {
+        List<Report> reports = state.reports;
+        reports.addAll(reports);
+        emit(ReportsLoaded(reports: reports));
+      } else if (state is ReportsLoading) {
+        emit(ReportsLoaded(reports: reports));
+      }
+    } on Exception catch (e) {
+      emit(ReportsError(message: e.toString()));
     }
   }
 
-  FutureOr<void> _onAddReport(AddReport event, Emitter<ReportsState> emit) {
+  FutureOr<void> _onAddReport(AddReport event, Emitter<ReportsState> emit) async {
     final state = this.state;
 
     if (state is ReportsLoaded) {
-      final List<Report> reports = state.reports;
-      reports.add(event.report);
-      emit(ReportsLoaded(reports: reports));
+      try {
+        final snapshot = await reportRepository.add(event.report);
+
+        final Report report = event.report.copyWith(id: snapshot.id);
+
+        final List<Report> reports = state.reports;
+        reports.add(report);
+        emit(ReportsLoaded(reports: reports));
+      } on Exception catch (e) {
+        emit(ReportsError(message: e.toString()));
+      }
+
 
     } else if (state is ReportsLoading) {
-      emit(AddedLocalReport(reports: <Report>[event.report]));
+      try {
+        final snapshot = await reportRepository.add(event.report);
+        final Report report = event.report.copyWith(id: snapshot.id);
+
+        emit(AddedLocalReport(reports: <Report>[report]));
+      } on Exception catch (e) {
+        emit(ReportsError(message: e.toString()));
+      }
+
+    } else if(state is AddedLocalReport){
+      try {
+        final snapshot = await reportRepository.add(event.report);
+        final Report report = event.report.copyWith(id: snapshot.id);
+
+        final List<Report> reports = state.reports;
+        reports.add(report);
+
+        emit(AddedLocalReport(reports: reports));
+      } on Exception catch (e) {
+        emit(ReportsError(message: e.toString()));
+      }
     }
   }
 

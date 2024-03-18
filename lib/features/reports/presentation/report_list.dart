@@ -19,7 +19,7 @@ class _ReportListState extends State<ReportList> {
     super.initState();
     context
         .read<ReportsBloc>()
-        .add(LoadReportsFromRepo(reports: MockReports.generate()));
+        .add(LoadReportsFromRepo());
   }
 
   @override

@@ -38,7 +38,7 @@ class Report {
       "inspector": inspector,
       "template": ofTemplate,
       "date": from.toString().replaceRange(19, null, ""),
-      "categoryList": categories
+      "categoryList": jsonEncode(categories)
     };
   }
 
@@ -48,29 +48,26 @@ class Report {
   ) {
     final data = snapshot.data();
     return Report(
-      reportName: data?['reportName'],
-      id: snapshot.reference.id,
-      inspector: data?['inspector'],
-      ofTemplate: data?['ofTemplate'],
-      from: data?['from'],
-      categories:  List<dynamic>.from(data?['categories'])
-          .map((e) => ReportCategory.fromJson(e))
-          .toList()
-    );
+        reportName: data?['reportName'],
+        id: snapshot.reference.id,
+        inspector: data?['inspector'],
+        ofTemplate: data?['template'],
+        from: DateTime.parse(data?['date']),
+        categories: List<dynamic>.from(jsonDecode(data?['categoryList']))
+            .map((e) => ReportCategory.fromJson(e))
+            .toList());
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      "id": id,
       "reportName": reportName,
       "inspector": inspector,
       "template": ofTemplate,
       "date": from.toString().replaceRange(19, null, ""),
-      "categories": categories
+      "categories":
+          List<Map<String, dynamic>>.from(categories.map((c) => c.toMap()))
     };
   }
-
-
 
   Report copyWith(
       {String? id,
