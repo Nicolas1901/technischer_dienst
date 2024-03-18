@@ -5,8 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:pocketbase/pocketbase.dart';
-import 'package:technischer_dienst/Constants/db_connection.dart';
 import 'package:technischer_dienst/features/authentication/application/AuthBloc/auth_bloc.dart';
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
@@ -17,7 +15,6 @@ import 'package:technischer_dienst/features/templates/application/templateBloc/t
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 import 'features/authentication/data/user_repository.dart';
-import 'features/templates/application/templateBloc/mockTemplates.dart';
 import 'firebase_options.dart';
 
 final getIt = GetIt.instance;
