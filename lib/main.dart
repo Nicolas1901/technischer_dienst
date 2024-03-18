@@ -11,9 +11,11 @@ import 'package:technischer_dienst/features/authentication/application/AuthBloc/
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
+import 'package:technischer_dienst/features/reports/data/report_repository.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
+import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 import 'features/authentication/data/user_repository.dart';
 import 'features/templates/application/templateBloc/mockTemplates.dart';
 import 'firebase_options.dart';
@@ -27,13 +29,21 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  //Data Provider
   getIt.registerSingleton<FirebaseAuth>(FirebaseAuth.instance);
   getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
   getIt.registerSingleton<FirebaseStorage>(FirebaseStorage.instance);
 
+  //Repositories
+  getIt.registerSingleton<TemplateRepository>(TemplateRepository(
+      firestore: getIt<FirebaseFirestore>(),
+      storage: getIt<FirebaseStorage>()));
 
-  getIt.registerSingleton<TemplateRepository>(
-      TemplateRepository(firestore: getIt<FirebaseFirestore>(), storage: getIt<FirebaseStorage>()));
+  getIt.registerSingleton<ReportRepository>(
+      ReportRepository(firestore: getIt<FirebaseFirestore>()));
+
+  getIt.registerSingleton(UserRepository(
+      db: getIt<FirebaseFirestore>(), fireAuth: getIt<FirebaseAuth>()));
 
   runApp(const MyApp());
 }
@@ -47,22 +57,14 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) => AuthBloc(
-                userRepository: UserRepository(
-                    fireAuth: getIt<FirebaseAuth>(),
-                    db: getIt<FirebaseFirestore>()))),
-
-        BlocProvider(
             create: (context) =>
-                EditTemplateBloc()),
-
+                AuthBloc(userRepository: getIt<UserRepository>())),
+        BlocProvider(create: (context) => EditTemplateBloc()),
         BlocProvider(
             create: (context) => TemplateBloc(
                 getIt<TemplateRepository>(), context.read<EditTemplateBloc>())
-              ..add(LoadTemplates(templates: MockTemplates.generate()))),
-
+              ..add(const LoadTemplates())),
         BlocProvider(create: (context) => CreateReportBloc()),
-
         BlocProvider(
             lazy: false,
             create: (context) =>
@@ -74,7 +76,19 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const Login(),
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (BuildContext context, AuthState state) {
+            if (state is Authenticated) {
+              return const ShowTemplates(title: "Vorlagen");
+            }
+
+            if (state is LoggedOut) {
+              return const Login();
+            }
+
+            return const CircularProgressIndicator();
+          },
+        ),
       ),
     );
   }

@@ -3,14 +3,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
-import 'package:technischer_dienst/shared/presentation/components/navigation_drawer.dart';
+import 'package:technischer_dienst/shared/presentation/components/td_navigation_drawer.dart';
 import '../../../Constants/assest_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../../reports/presentation/create_reports.dart';
-import '../../reports/presentation/report_list.dart';
 import '../application/editTemplateBloc/edit_template_bloc.dart';
 import 'components/report_card.dart';
 import 'edit_templates.dart';
@@ -46,16 +46,9 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     return image;
   }
 
-  ImageProvider _renderImage(String profileImagePath) {
-    ImageProvider profileImage;
-
-    if (profileImagePath.isNotEmpty) {
-      profileImage = NetworkImage(profileImagePath);
-    } else {
-      profileImage = const AssetImage(AssetImages.noImageUser);
-    }
-
-    return profileImage;
+  onLogout(){
+    debugPrint("Logout");
+    Navigator.pop(context);
   }
 
   Future<void> buildDialog() {

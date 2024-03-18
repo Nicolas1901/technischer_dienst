@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/report_details.dart';
-import '../../../shared/presentation/components/navigation_drawer.dart';
+import '../../../shared/presentation/components/td_navigation_drawer.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../application/reportsBloc/MockReports.dart';
 

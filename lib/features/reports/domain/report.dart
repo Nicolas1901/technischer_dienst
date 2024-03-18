@@ -49,11 +49,13 @@ class Report {
     final data = snapshot.data();
     return Report(
       reportName: data?['reportName'],
-      id: '',
+      id: snapshot.reference.id,
       inspector: data?['inspector'],
       ofTemplate: data?['ofTemplate'],
       from: data?['from'],
-      categories: data?['categories'] is Iterable ? List.from(data?['categories']) : <ReportCategory>[],
+      categories:  List<dynamic>.from(data?['categories'])
+          .map((e) => ReportCategory.fromJson(e))
+          .toList()
     );
   }
 

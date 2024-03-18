@@ -4,8 +4,13 @@ abstract class AuthState extends Equatable {
   const AuthState();
 }
 
+class AuthInit extends AuthState{
+  @override
+  List<Object> get props => [];
+}
+
+
 class LoggedOut extends AuthState {
-  //TODO Set user Object from Shared preferences if possible
   @override
   List<Object> get props => [];
 }
