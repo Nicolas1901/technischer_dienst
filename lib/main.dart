@@ -14,6 +14,7 @@ import 'package:technischer_dienst/features/templates/application/editTemplateBl
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'Constants/assest_images.dart';
 import 'features/authentication/data/user_repository.dart';
 import 'firebase_options.dart';
 
@@ -84,7 +85,10 @@ class MyApp extends StatelessWidget {
               return const Login();
             }
 
-            return const Center(child: CircularProgressIndicator());
+            return Scaffold(body: Center(child: Image.asset(
+              AssetImages.logo,
+              fit: BoxFit.contain,
+            )));
           },
         ),
       ),

@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
@@ -46,7 +47,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
     return image;
   }
 
-  onLogout(){
+  onLogout() {
     debugPrint("Logout");
     Navigator.pop(context);
   }
@@ -163,9 +164,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                             .add(DeleteTemplate(template: tmp));
                       },
                       pickImage: () {
-                        context
-                            .read<TemplateBloc>()
-                            .add(AddImage(template: tmp));
+                        chooseImageSource(tmp);
                       },
                     ),
                   ),
@@ -190,5 +189,41 @@ class _ShowTemplatesState extends State<ShowTemplates> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  chooseImageSource(Template tmp) {
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 20.0),
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.read<TemplateBloc>().add(AddImage(template: tmp));
+                    },
+                    child: const Column(
+                      children: [Icon(Icons.camera_alt), Text("Kamera")],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.read<TemplateBloc>().add(
+                          AddImage(template: tmp, source: ImageSource.gallery));
+                    },
+                    child: const Column(
+                      children: [Icon(Icons.image), Text("Gallerie")],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 }

@@ -116,7 +116,7 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     final state = this.state;
 
     if (state is TemplatesLoaded) {
-      final File? file = await _setImage();
+      final File? file = await _setImage(event.source);
 
       if (file != null) {
         final Template template = event.template.copyWith(image: file.path);
@@ -132,14 +132,14 @@ class TemplateBloc extends Bloc<TemplateEvent, TemplateState> {
     }
   }
 
-  Future<XFile?> _pickImage() async {
+  Future<XFile?> _pickImage(ImageSource source) async {
     XFile? pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+        await ImagePicker().pickImage(source: source);
     return pickedImage;
   }
 
-  Future<File?> _setImage() async {
-    final XFile? pickedImage = await _pickImage();
+  Future<File?> _setImage(ImageSource source) async {
+    final XFile? pickedImage = await _pickImage(source);
 
     if (pickedImage == null) return null;
     debugPrint("cacheFile: ${pickedImage.path}");
