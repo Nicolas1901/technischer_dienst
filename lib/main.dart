@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
               return const Login();
             }
 
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           },
         ),
       ),

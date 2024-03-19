@@ -189,6 +189,18 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
               child: TextFormField(
                 controller: categoryNameController,
                 autofocus: true,
+                decoration: InputDecoration(
+                  suffixIcon: GestureDetector(
+                    onTap: (){
+                      context.read<EditTemplateBloc>().add(DeleteCategory(index: index));
+
+                      //this is needed to rebuild page and reflect current state properly
+                      setState(() {});
+                      Navigator.of(context).pop();
+                    },
+                    child: const Icon(Icons.delete),
+                  )
+                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Kategoriename darf nicht leer sein";

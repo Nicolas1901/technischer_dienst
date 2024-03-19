@@ -2,14 +2,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:technischer_dienst/features/reports/domain/report_category.dart';
-import '../../data/templateRepository.dart';
 import '../../domain/template.dart';
 import '../../domain/template_category.dart';
-import '../templateBloc/template_bloc.dart';
 
 part 'edit_template_event.dart';
-
 part 'edit_template_state.dart';
 
 class EditTemplateBloc extends Bloc<EditTemplateEvent, EditTemplateState> {
