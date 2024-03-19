@@ -50,7 +50,7 @@ class TdNavigationDrawer extends StatelessWidget {
               }),
           ListTile(
               tileColor:
-                  selectedIndex == 1 ? Theme.of(context).primaryColor : null,
+                  selectedIndex == 1 ? Theme.of(context).focusColor : null,
               title: const Text("Berichte"),
               leading: const Icon(Icons.file_copy),
               onTap: () {
