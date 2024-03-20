@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/components/report_checklist.dart';
 import 'package:technischer_dienst/shared/presentation/components/dialog.dart';
+import '../../../shared/application/connection_bloc/connection_bloc.dart';
 import '../domain/report_category.dart';
 import '../domain/report.dart';
 import '../../templates/domain/template.dart';
@@ -21,6 +22,7 @@ class CreateReportPage extends StatefulWidget {
 
 class _CreateReportPageState extends State<CreateReportPage> {
   bool changesSaved = true;
+  bool isConnected = false;
 
   @override
   void initState() {
@@ -180,11 +182,29 @@ class _CreateReportPageState extends State<CreateReportPage> {
                       ),
                     ],
                   ),
-                  floatingActionButton: FloatingActionButton(
-                    child: const Icon(Icons.save),
-                    onPressed: () {
-                      buildDialog(state.report);
+                  floatingActionButton: BlocListener<NetworkBloc, NetworkState>(
+                    listener: (context, state) {
+                      if(state is Disconnected){
+                        setState(() {
+                          isConnected = false;
+                        });
+                      }
+                      if(state is Connected){
+                        setState(() {
+                          isConnected = true;
+                        });
+                      }
                     },
+                    child: FloatingActionButton(
+                      foregroundColor: isConnected ? null : Theme.of(context).disabledColor,
+                      backgroundColor: isConnected ? null : Theme.of(context).disabledColor,
+                      child: const Icon(Icons.save),
+                      onPressed: () {
+                        if (isConnected) {
+                          buildDialog(state.report);
+                        }
+                      },
+                    ),
                   ),
                 ),
               ),
