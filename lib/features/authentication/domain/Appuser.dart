@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AppUser{
+class AppUser {
 
   final String uid;
   final String username;
@@ -18,11 +19,11 @@ class AppUser{
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is AppUser &&
-          runtimeType == other.runtimeType &&
-          username == other.username &&
-          profileImage == other.profileImage &&
-          email == other.email);
+          (other is AppUser &&
+              runtimeType == other.runtimeType &&
+              username == other.username &&
+              profileImage == other.profileImage &&
+              email == other.email);
 
   @override
   int get hashCode =>
@@ -69,6 +70,16 @@ class AppUser{
       profileImage: map['profileImage'] as String,
       email: map['email'] as String,
     );
+  }
+
+  factory AppUser.fromFirestore(DocumentSnapshot<Map<String, dynamic>> snapshot,
+      SnapshotOptions? options,){
+    final data = snapshot.data();
+
+    return AppUser(uid: snapshot.reference.id,
+        username: data?['username'],
+        profileImage: data?["profileImage"],
+        email: data?["email"]);
   }
 
 //</editor-fold>

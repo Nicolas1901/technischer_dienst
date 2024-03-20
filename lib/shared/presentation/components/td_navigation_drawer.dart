@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
 import '../../../Constants/asset_images.dart';
+import '../../../features/admin/presentation/user_list.dart';
 import '../../../features/authentication/application/AuthBloc/auth_bloc.dart';
 import '../../../features/authentication/presentation/login.dart';
 import '../../../features/reports/presentation/report_list.dart';
@@ -63,6 +64,18 @@ class TdNavigationDrawer extends StatelessWidget {
               }),
           ListTile(
               tileColor:
+              selectedIndex == 2 ? activeColor : null,
+              title: const Text("Berichte"),
+              leading: const Icon(Icons.file_copy),
+              onTap: () {
+                if (selectedIndex != 2) {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const UserList()));
+                }
+              }),
+          ListTile(
+              tileColor:
                   selectedIndex == -1 ? activeColor : null,
               title: const Text("Abmelden"),
               leading: const Icon(Icons.logout),
@@ -83,7 +96,11 @@ class TdNavigationDrawer extends StatelessWidget {
     ImageProvider profileImage;
 
     if (profileImagePath.isNotEmpty) {
-      profileImage = NetworkImage(profileImagePath);
+      try {
+        profileImage = NetworkImage(profileImagePath);
+      } on Exception catch (e) {
+        profileImage = const AssetImage(AssetImages.noImageUser);
+      }
     } else {
       profileImage = const AssetImage(AssetImages.noImageUser);
     }

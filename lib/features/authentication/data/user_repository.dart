@@ -6,15 +6,19 @@ import '../domain/Appuser.dart';
 class UserRepository {
   final FirebaseAuth fireAuth;
   final FirebaseFirestore db;
+  late final CollectionReference<AppUser> _usersRef;
 
-  UserRepository({required this.db, required this.fireAuth});
+  UserRepository({required this.db, required this.fireAuth}){
+    _usersRef = db.collection('userAccounts').withConverter(fromFirestore: AppUser.fromFirestore,
+        toFirestore: (AppUser user, _) => user.toMap());
+  }
 
   Future<AppUser> signIn(String email, String password) async {
     try {
       final credentials = await fireAuth.signInWithEmailAndPassword(
           email: email, password: password);
       
-      final data = await db.collection('userAccounts').doc(credentials.user!.uid).get();
+      final data = await _usersRef.doc(credentials.user!.uid).get();
 
       return AppUser(uid: credentials.user!.uid,
           username: data['username'] as String,
@@ -42,6 +46,34 @@ class UserRepository {
     try{
       return await db.collection('userAccounts').doc(uid).get();
     } catch(e){
+      rethrow;
+    }
+  }
+
+  Future<List<AppUser>> getAllUser() async {
+    List<AppUser> users = List.empty(growable: true);
+    QuerySnapshot<AppUser> userQuery = await _usersRef.get();
+
+    for(DocumentSnapshot<AppUser> snapshot in userQuery.docs){
+
+      if (snapshot.data() != null) {
+        users.add(snapshot.data()!);
+      }
+    }
+
+    return users;
+  }
+
+  Future<AppUser?> createNewUser(AppUser user, String tmpPassword) async {
+
+    try {
+      final credentials = await fireAuth.createUserWithEmailAndPassword(email: user.email, password: tmpPassword);
+      AppUser newUser = user.copyWith(uid: credentials.user?.uid);
+
+      final docRef=  await _usersRef.add(newUser);
+      return (await docRef.get()).data();
+
+    } on Exception catch (e) {
       rethrow;
     }
   }
