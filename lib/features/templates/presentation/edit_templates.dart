@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/application/editTemplateBloc/edit_template_bloc.dart';
-import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
+import '../../../shared/application/connection_bloc/connection_bloc.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../domain/template_category.dart';
 import 'components/dynamic_form.dart';
@@ -23,11 +23,13 @@ class EditTemplatePage extends StatefulWidget {
 class _EditTemplatePageState extends State<EditTemplatePage> {
   final formKey = GlobalKey<FormState>();
   final editCategoryKey = GlobalKey<FormState>();
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-    context.read<EditTemplateBloc>().add(EditTemplateLoad(template: widget.template));
+    context.read<EditTemplateBloc>().add(
+        EditTemplateLoad(template: widget.template));
   }
 
   Future<void> buildDialog() {
@@ -85,7 +87,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                   isScrollable: true,
                   tabs: [
                     for (var (int index, TemplateCategory category)
-                        in state.template.categories.indexed) ...{
+                    in state.template.categories.indexed) ...{
                       Tab(
                         child: GestureDetector(
                             onLongPress: () {
@@ -108,7 +110,7 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
               body: TabBarView(
                 children: [
                   for (final (catIndex, category)
-                      in state.template.categories.indexed) ...{
+                  in state.template.categories.indexed) ...{
                     DynamicForm(
                       templateData: category.items.map((e) {
                         debugPrint("editTemplate: ${jsonEncode(e)}");
@@ -116,7 +118,8 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                       }).toList(),
                       onAddedItem: (String itemName) {
                         context.read<EditTemplateBloc>().add(
-                            AddItemToCategory(item: itemName, categoryIndex: catIndex));
+                            AddItemToCategory(
+                                item: itemName, categoryIndex: catIndex));
                       },
                       onDeletedItem: (int index) {
                         context.read<EditTemplateBloc>().add(
@@ -141,20 +144,38 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
                   ),
                 ],
               ),
-              floatingActionButton: FloatingActionButton(
-                child: const Icon(Icons.save),
-                onPressed: () {
-                  if (widget.templateExists) {
-                    context
-                        .read<EditTemplateBloc>()
-                        .add(SaveModifiedTemplate(template: state.template));
-                  } else {
-                    context
-                        .read<EditTemplateBloc>()
-                        .add(SaveNewTemplate(template: state.template));
+              floatingActionButton: BlocListener<NetworkBloc, NetworkState>(
+                listener: (context, state) {
+                  if(state is Disconnected){
+                    setState(() {
+                      isConnected = false;
+                    });
                   }
-                  Navigator.of(context).pop();
+                  if(state is Connected){
+                    setState(() {
+                      isConnected = true;
+                    });
+                  }
                 },
+                child: FloatingActionButton(
+                  foregroundColor: isConnected ? null : Theme.of(context).disabledColor,
+                  backgroundColor: isConnected ? null : Theme.of(context).disabledColor,
+                  child: const Icon(Icons.save),
+                  onPressed: () {
+                    if (isConnected) {
+                      if (widget.templateExists) {
+                        context
+                            .read<EditTemplateBloc>()
+                            .add(SaveModifiedTemplate(template: state.template));
+                      } else {
+                        context
+                            .read<EditTemplateBloc>()
+                            .add(SaveNewTemplate(template: state.template));
+                      }
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
               ),
             ),
           );
@@ -167,15 +188,15 @@ class _EditTemplatePageState extends State<EditTemplatePage> {
         }
       },
       listener: (BuildContext context, EditTemplateState state) {
-        if(state is ActionFailed){
+        if (state is ActionFailed) {
           SnackBar(content: Text(state.message),);
         }
       },
     ));
   }
 
-  Future<void> openChangeCategoryNameDialog(
-      int index, TemplateCategory category) {
+  Future<void> openChangeCategoryNameDialog(int index,
+      TemplateCategory category) {
     TextEditingController categoryNameController = TextEditingController();
     categoryNameController.text = category.categoryName;
 

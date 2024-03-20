@@ -78,9 +78,18 @@ class MyApp extends StatelessWidget {
         ),
         home: BlocListener<NetworkBloc, NetworkState>(
           listener: (context, state) {
-            if(state is Disconnected){
-              debugPrint("disconnected");
-              SnackBar(content: Text("Keine Internetverbindung"),);
+            if (state is Disconnected) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text("Keine Internetverbindung"),
+                duration: Duration(seconds: 3),
+              ));
+            }
+            if (state is Connected) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                backgroundColor: Colors.lightGreen,
+                content: Text("Verbunden"),
+                duration: Duration(seconds: 3),
+              ));
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
