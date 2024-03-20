@@ -3,11 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_navigation_drawer.dart';
-import '../../../Constants/assest_images.dart';
+import '../../../Constants/asset_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../../reports/presentation/create_reports.dart';
@@ -165,7 +166,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                       pickImage: () {
                         context
                             .read<TemplateBloc>()
-                            .add(AddImage(template: tmp));
+                            .add(AddImage(source: ImageSource.camera ,template: tmp));
                       },
                     ),
                   ),

@@ -1,9 +1,4 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pocketbase/pocketbase.dart';
-
-import '../../reports/domain/report_category.dart';
 import 'template_category.dart';
 
 class Template {

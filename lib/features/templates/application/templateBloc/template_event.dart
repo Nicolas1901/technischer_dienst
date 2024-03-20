@@ -47,8 +47,9 @@ class DeleteTemplate extends TemplateEvent{
 
 class AddImage extends TemplateEvent{
   final Template template;
+  final ImageSource source;
 
-  const AddImage({required this.template});
+  const AddImage({required this.source, required this.template});
 
 }
 

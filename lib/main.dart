@@ -14,6 +14,7 @@ import 'package:technischer_dienst/features/templates/application/editTemplateBl
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/data/templateRepository.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'package:technischer_dienst/shared/application/connection_bloc/connection_bloc.dart';
 import 'features/authentication/data/user_repository.dart';
 import 'firebase_options.dart';
 
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => NetworkBloc()..add(NetworkObserve())),
         BlocProvider(
             create: (context) =>
                 AuthBloc(userRepository: getIt<UserRepository>())),
@@ -74,18 +76,26 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (BuildContext context, AuthState state) {
-            if (state is Authenticated) {
-              return const ShowTemplates(title: "Vorlagen");
+        home: BlocListener<NetworkBloc, NetworkState>(
+          listener: (context, state) {
+            if(state is Disconnected){
+              debugPrint("disconnected");
+              SnackBar(content: Text("Keine Internetverbindung"),);
             }
-
-            if (state is LoggedOut) {
-              return const Login();
-            }
-
-            return const CircularProgressIndicator();
           },
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (BuildContext context, AuthState state) {
+              if (state is Authenticated) {
+                return const ShowTemplates(title: "Vorlagen");
+              }
+
+              if (state is LoggedOut) {
+                return const Login();
+              }
+
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
         ),
       ),
     );

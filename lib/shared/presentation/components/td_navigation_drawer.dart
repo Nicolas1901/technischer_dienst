@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 
-import '../../../Constants/assest_images.dart';
+import '../../../Constants/asset_images.dart';
 import '../../../features/authentication/application/AuthBloc/auth_bloc.dart';
 import '../../../features/authentication/presentation/login.dart';
 import '../../../features/reports/presentation/report_list.dart';
@@ -25,6 +25,7 @@ class TdNavigationDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color activeColor = Theme.of(context).focusColor;
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -37,7 +38,7 @@ class TdNavigationDrawer extends StatelessWidget {
           ),
           ListTile(
               tileColor:
-                  selectedIndex == 0 ? Theme.of(context).focusColor : null,
+                  selectedIndex == 0 ? activeColor : null,
               title: const Text("Vorlagen"),
               leading: const Icon(Icons.file_copy_outlined),
               onTap: () {
@@ -50,7 +51,7 @@ class TdNavigationDrawer extends StatelessWidget {
               }),
           ListTile(
               tileColor:
-                  selectedIndex == 1 ? Theme.of(context).primaryColor : null,
+                  selectedIndex == 1 ? activeColor : null,
               title: const Text("Berichte"),
               leading: const Icon(Icons.file_copy),
               onTap: () {
@@ -62,7 +63,7 @@ class TdNavigationDrawer extends StatelessWidget {
               }),
           ListTile(
               tileColor:
-                  selectedIndex == -1 ? Theme.of(context).primaryColor : null,
+                  selectedIndex == -1 ? activeColor : null,
               title: const Text("Abmelden"),
               leading: const Icon(Icons.logout),
               onTap: () {
