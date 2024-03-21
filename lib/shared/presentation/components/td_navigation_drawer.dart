@@ -65,7 +65,7 @@ class TdNavigationDrawer extends StatelessWidget {
           ListTile(
               tileColor:
               selectedIndex == 2 ? activeColor : null,
-              title: const Text("Berichte"),
+              title: const Text("Benutzerverwaltung"),
               leading: const Icon(Icons.file_copy),
               onTap: () {
                 if (selectedIndex != 2) {

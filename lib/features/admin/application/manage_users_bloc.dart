@@ -16,19 +16,13 @@ class ManageUsersBloc extends Bloc<ManageUsersEvent, ManageUsersState> {
   }
 
   FutureOr<void> _onLoadUsers(LoadUsers event, Emitter<ManageUsersState> emit) async {
-    emit(UsersLoaded(users: [
-      const AppUser(uid: "",
-          username: "Nico",
-          profileImage: "",
-          email: "Nicolas.will01@gmail.com")
-    ]));
 
-    /*try {
+    try {
        List<AppUser> users = await  userRepository.getAllUser();
 
        emit(UsersLoaded(users: users));
      } on Exception catch (e) {
        emit(LoadingFailed(message: e.toString()));
-     }*/
+     }
   }
 }

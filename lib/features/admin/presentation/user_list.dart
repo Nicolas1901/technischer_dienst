@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/admin/application/manage_users_bloc.dart';
+import 'package:technischer_dienst/features/admin/presentation/user_details.dart';
 import 'package:technischer_dienst/features/authentication/data/user_repository.dart';
 import 'package:technischer_dienst/main.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_badge.dart';
@@ -66,6 +67,9 @@ class _UserListState extends State<UserList> {
                         ],
                       ),
                       subtitle: Text(state.users[index].email),
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetails(user: state.users[index])));
+                      },
                     );
                   });
             }
@@ -74,6 +78,11 @@ class _UserListState extends State<UserList> {
             );
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {  },
+
       ),
     );
   }
