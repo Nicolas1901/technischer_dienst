@@ -5,9 +5,8 @@ import 'package:technischer_dienst/features/admin/presentation/user_details.dart
 import 'package:technischer_dienst/features/authentication/data/user_repository.dart';
 import 'package:technischer_dienst/main.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_badge.dart';
+import 'package:technischer_dienst/shared/presentation/components/td_circle_avatar.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_navigation_drawer.dart';
-
-import '../../../Constants/asset_images.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 
 class UserList extends StatefulWidget {
@@ -54,12 +53,7 @@ class _UserListState extends State<UserList> {
                   itemCount: state.users.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      leading: CircleAvatar(
-                        foregroundImage:
-                            _resolveImage(state.users[index].profileImage),
-                        backgroundImage:
-                            const AssetImage(AssetImages.noImageUser),
-                      ),
+                      leading: TdCircleAvatar(url: state.users[index].profileImage),
                       title: Row(
                         children: [
                           Text(state.users[index].username),
@@ -85,18 +79,5 @@ class _UserListState extends State<UserList> {
 
       ),
     );
-  }
-
-  ImageProvider? _resolveImage(String url) {
-    ImageProvider? image;
-    if (url.isNotEmpty) {
-      try {
-        image = NetworkImage(url);
-      } catch (e) {
-        debugPrint(e.toString());
-      }
-    }
-
-    return image;
   }
 }

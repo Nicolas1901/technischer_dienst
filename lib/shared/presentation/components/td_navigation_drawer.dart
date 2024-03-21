@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'package:technischer_dienst/shared/presentation/components/td_circle_avatar.dart';
 
 import '../../../Constants/asset_images.dart';
 import '../../../features/admin/presentation/user_list.dart';
@@ -35,7 +36,7 @@ class TdNavigationDrawer extends StatelessWidget {
             accountName: Text(accountName),
             accountEmail: Text(email),
             currentAccountPicture:
-                CircleAvatar(foregroundImage: _renderImage(avatar)),
+                TdCircleAvatar(url: avatar),
           ),
           ListTile(
               tileColor:
