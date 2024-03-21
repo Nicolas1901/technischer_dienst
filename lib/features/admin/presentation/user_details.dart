@@ -6,7 +6,7 @@ import '../../authentication/domain/Appuser.dart';
 class UserDetails extends StatefulWidget {
   final AppUser user;
 
-  const UserDetails({super.key, required this.user});
+  const UserDetails({super.key, required this.user,});
 
   @override
   State<UserDetails> createState() => _UserDetailsState();
@@ -115,4 +115,5 @@ class _UserDetailsState extends State<UserDetails> {
               isEditingMode ? const Icon(Icons.check) : const Icon(Icons.edit)),
     );
   }
+
 }

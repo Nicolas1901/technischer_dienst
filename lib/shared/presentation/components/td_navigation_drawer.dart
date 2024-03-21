@@ -42,7 +42,7 @@ class TdNavigationDrawer extends StatelessWidget {
               tileColor:
                   selectedIndex == 0 ? activeColor : null,
               title: const Text("Vorlagen"),
-              leading: const Icon(Icons.file_copy_outlined),
+              leading: const Icon(Icons.fire_truck),
               onTap: () {
                 if (selectedIndex != 0) {
                   Navigator.pop(context);
@@ -67,7 +67,7 @@ class TdNavigationDrawer extends StatelessWidget {
               tileColor:
               selectedIndex == 2 ? activeColor : null,
               title: const Text("Benutzerverwaltung"),
-              leading: const Icon(Icons.file_copy),
+              leading: const Icon(Icons.group),
               onTap: () {
                 if (selectedIndex != 2) {
                   Navigator.pop(context);
