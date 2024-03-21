@@ -77,22 +77,31 @@ class _CreateUserState extends State<CreateUser> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
+                          controller: username,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: "Benutzername",
+                            labelText: "Benutzername",
                           ),
-                          controller: username,
+                          validator: (input) {
+                            if (input != null && input.isNotEmpty) return null;
+                            return "Benutzername darf nicht leer sein";
+                          },
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: "Email",
-                          ),
-                          controller: email,
-                        ),
+                            controller: email,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Email",
+                            ),
+                            validator: (input) {
+                              if (input != null && input.isNotEmpty) {
+                                return null;
+                              }
+                              return "Email darf nicht leer sein";
+                            }),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -111,35 +120,52 @@ class _CreateUserState extends State<CreateUser> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: "Passwort",
-                          ),
-                          obscureText: true,
-                          autocorrect: false,
-                          enableSuggestions: false,
-                          controller: password,
-                        ),
+                            controller: password,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Passwort",
+                            ),
+                            obscureText: true,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            validator: (input) {
+                              if (input != null && input.isNotEmpty) {
+                                return null;
+                              }
+                              return "Passwort darf nicht leer sein";
+                            }),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: TextFormField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: "Passwort wiederholen",
-                          ),
-                          obscureText: true,
-                          autocorrect: false,
-                          enableSuggestions: false,
-                          controller: repeatPassword,
-                        ),
+                            controller: repeatPassword,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Passwort wiederholen",
+                            ),
+                            obscureText: true,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            validator: (input) {
+                              if (input == password.text) {
+                                return null;
+                              }
+                              return "Passwörter stimmen nicht überein";
+                            }),
                       ),
                       TextButton(
-                        onPressed: () {},
-                        child: Text("Speichern", style: TextStyle(fontWeight: FontWeight.bold),),
+                        onPressed: () {
+                          if(formKey.currentState!.validate()){
+                            debugPrint("validate");
+                          }
+                        },
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.lightGreen,
-                            foregroundColor: Colors.black54),
+                            foregroundColor: Colors.black),
+                        child: const Text(
+                          "Speichern",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       )
                     ],
                   ),
@@ -150,5 +176,10 @@ class _CreateUserState extends State<CreateUser> {
         ),
       ),
     );
+  }
+  
+  bool _checkPassword(String password){
+    //TODO regex for passwort security
+    return password.length >= 8;
   }
 }
