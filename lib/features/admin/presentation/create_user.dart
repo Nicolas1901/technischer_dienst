@@ -70,48 +70,85 @@ class _CreateUserState extends State<CreateUser> {
               const Divider(),
               Form(
                 key: formKey,
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: username,
-                    ),
-                    TextField(
-                      controller: email,
-                    ),
-                    DropdownMenu<Role>(
-                      controller: role,
-                      dropdownMenuEntries:
-                          Role.values.map<DropdownMenuEntry<Role>>((Role role) {
-                        return DropdownMenuEntry(
-                            value: role, label: role.label);
-                      }).toList(),
-                    ),
-                    TextField(
-                      obscureText: true,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      controller: password,
-                    ),
-
-                    TextField(
-                      obscureText: true,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      controller: repeatPassword,
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Benutzername",
+                          ),
+                          controller: username,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Email",
+                          ),
+                          controller: email,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: DropdownMenu<Role>(
+                          expandedInsets: EdgeInsets.zero,
+                          controller: role,
+                          initialSelection: Role.user,
+                          label: const Text("Funktion"),
+                          dropdownMenuEntries: Role.values
+                              .map<DropdownMenuEntry<Role>>((Role role) {
+                            return DropdownMenuEntry(
+                                value: role, label: role.label);
+                          }).toList(),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Passwort",
+                          ),
+                          obscureText: true,
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          controller: password,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Passwort wiederholen",
+                          ),
+                          obscureText: true,
+                          autocorrect: false,
+                          enableSuggestions: false,
+                          controller: repeatPassword,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: Text("Speichern", style: TextStyle(fontWeight: FontWeight.bold),),
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.lightGreen,
+                            foregroundColor: Colors.black54),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        //TODO validate form and create user if validate
-        onPressed: (){},
-      ),
     );
   }
-
-
 }

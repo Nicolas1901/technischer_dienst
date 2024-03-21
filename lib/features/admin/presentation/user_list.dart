@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/admin/application/manage_users_bloc.dart';
+import 'package:technischer_dienst/features/admin/presentation/create_user.dart';
 import 'package:technischer_dienst/features/admin/presentation/user_details.dart';
 import 'package:technischer_dienst/features/authentication/data/user_repository.dart';
 import 'package:technischer_dienst/main.dart';
@@ -53,16 +54,20 @@ class _UserListState extends State<UserList> {
                   itemCount: state.users.length,
                   itemBuilder: (BuildContext context, int index) {
                     return ListTile(
-                      leading: TdCircleAvatar(url: state.users[index].profileImage),
+                      leading:
+                          TdCircleAvatar(url: state.users[index].profileImage),
                       title: Row(
                         children: [
                           Text(state.users[index].username),
-                         const TdBadge(label: "Admin", color: Colors.lightGreen)
+                          const TdBadge(
+                              label: "Admin", color: Colors.lightGreen)
                         ],
                       ),
                       subtitle: Text(state.users[index].email),
-                      onTap: (){
-                        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => UserDetails(user: state.users[index])));
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                UserDetails(user: state.users[index])));
                       },
                     );
                   });
@@ -75,8 +80,10 @@ class _UserListState extends State<UserList> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {  },
-
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => CreateUser()));
+        },
       ),
     );
   }
