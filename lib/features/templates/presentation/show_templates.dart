@@ -154,9 +154,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                             .add(DeleteTemplate(template: tmp));
                       },
                       pickImage: () {
-                        context
-                            .read<TemplateBloc>()
-                            .add(AddImage(source: ImageSource.camera ,template: tmp));
+                        chooseImageSource(tmp);
                       },
                     ),
                   ),
@@ -181,5 +179,41 @@ class _ShowTemplatesState extends State<ShowTemplates> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  chooseImageSource(Template tmp) {
+    showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 20.0),
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.read<TemplateBloc>().add(AddImage(template: tmp));
+                    },
+                    child: const Column(
+                      children: [Icon(Icons.camera_alt), Text("Kamera")],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      context.read<TemplateBloc>().add(
+                          AddImage(template: tmp, source: ImageSource.gallery));
+                    },
+                    child: const Column(
+                      children: [Icon(Icons.image), Text("Gallerie")],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
+        });
   }
 }
