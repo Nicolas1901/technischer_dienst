@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 
 import '../../../enums/roles.dart';
@@ -97,10 +98,10 @@ class _CreateUserState extends State<CreateUser> {
                               labelText: "Email",
                             ),
                             validator: (input) {
-                              if (input != null && input.isNotEmpty) {
+                              if (input != null && EmailValidator.validate(input)) {
                                 return null;
                               }
-                              return "Email darf nicht leer sein";
+                              return "Geben Sie eine korrekte Email ein";
                             }),
                       ),
                       Padding(
@@ -158,6 +159,7 @@ class _CreateUserState extends State<CreateUser> {
                           if(formKey.currentState!.validate()){
                             debugPrint("validate");
                           }
+                          debugPrint("not validate");
                         },
                         style: TextButton.styleFrom(
                             backgroundColor: Colors.lightGreen,
