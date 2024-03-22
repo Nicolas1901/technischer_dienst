@@ -44,6 +44,9 @@ Future<void> main() async {
   getIt.registerSingleton(UserRepository(
       db: getIt<FirebaseFirestore>(), fireAuth: getIt<FirebaseAuth>()));
 
+  //BLoC
+  getIt.registerLazySingleton(() => ManageUsersBloc(userRepository: getIt()));
+
   runApp(const MyApp());
 }
 
@@ -97,7 +100,7 @@ class MyApp extends StatelessWidget {
               ));
             }
           },
-          child: BlocBuilder<AuthBloc, AuthState>(
+          child: BlocConsumer<AuthBloc, AuthState>(
             builder: (BuildContext context, AuthState state) {
               if (state is Authenticated) {
                 return const ShowTemplates(title: "Vorlagen");
@@ -107,7 +110,16 @@ class MyApp extends StatelessWidget {
                 return const Login();
               }
 
+              if(state is LoginFailed){
+                return const Login();
+              }
+
               return const Center(child: CircularProgressIndicator());
+            },
+            listener: (BuildContext context, AuthState state) {
+              if(state is LoginFailed){
+
+              }
             },
           ),
         ),

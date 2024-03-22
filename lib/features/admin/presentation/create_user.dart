@@ -1,8 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technischer_dienst/features/admin/application/manage_users_bloc.dart';
 import 'package:technischer_dienst/features/authentication/domain/Appuser.dart';
 
 import '../../../enums/roles.dart';
+import '../../../main.dart';
 import '../../../shared/presentation/components/td_circle_avatar.dart';
 
 class CreateUser extends StatefulWidget {
@@ -85,7 +88,8 @@ class _CreateUserState extends State<CreateUser> {
                             labelText: "Benutzername",
                           ),
                           validator: (input) {
-                            if (input != null && input.isNotEmpty) return null;
+                            if (input != null && input.isNotEmpty)
+                              return null;
                             return "Benutzername darf nicht leer sein";
                           },
                         ),
@@ -160,13 +164,17 @@ class _CreateUserState extends State<CreateUser> {
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             AppUser user = AppUser(
-                                uid: "",
-                                username: username.text,
-                                profileImage: path,
-                                email: email.text,
-                                role: role.text,
+                              uid: "",
+                              username: username.text,
+                              profileImage: path,
+                              email: email.text,
+                              role: role.text,
                             );
                             debugPrint(user.toString());
+                            getIt<ManageUsersBloc>().add(
+                                CreateUserEvent(
+                                    password: password.text, user: user));
+                            Navigator.of(context).pop();
                           }
                           debugPrint("not validate");
                         },

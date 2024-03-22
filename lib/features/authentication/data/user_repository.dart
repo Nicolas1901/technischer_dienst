@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:technischer_dienst/features/admin/data/create_user_repository.dart';
 
 import '../domain/Appuser.dart';
 
@@ -67,13 +69,15 @@ class UserRepository {
   }
 
   Future<AppUser?> createNewUser(AppUser user, String tmpPassword) async {
+    FirebaseApp app = await Firebase.initializeApp(
+        name: 'Secondary', options: Firebase.app().options);
 
     try {
-      final credentials = await fireAuth.createUserWithEmailAndPassword(email: user.email, password: tmpPassword);
-      AppUser newUser = user.copyWith(uid: credentials.user?.uid);
+      final credentials = await CreateUserRepository.createNewUser(user: user, tmpPassword: tmpPassword);
+      AppUser newUser = user.copyWith(uid: credentials?.user?.uid);
 
-      final docRef=  await _usersRef.add(newUser);
-      return (await docRef.get()).data();
+      await _usersRef.doc(newUser.uid).set(newUser);
+      return (await _usersRef.doc(newUser.uid).get()).data();
 
     } on Exception catch (e) {
       rethrow;
