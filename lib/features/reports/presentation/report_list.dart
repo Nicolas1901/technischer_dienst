@@ -18,9 +18,7 @@ class _ReportListState extends State<ReportList> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<ReportsBloc>()
-        .add(const LoadReportsFromRepo());
+    context.read<ReportsBloc>().add(const LoadReportsFromRepo());
   }
 
   @override
@@ -34,14 +32,13 @@ class _ReportListState extends State<ReportList> {
           builder: (context, state) {
             if (state is Authenticated) {
               return TdNavigationDrawer(
-                  accountName: state.user.username,
-                  email: state.user.email,
-                  avatar: state.user.profileImage, selectedIndex: 1,);
+                selectedIndex: 1,
+                currentUser: state.user,
+              );
             } else {
               return const TdNavigationDrawer(
-                accountName: '',
-                email: '',
-                avatar: '', selectedIndex: 1,
+                selectedIndex: 1,
+                currentUser: null,
               );
             }
           },

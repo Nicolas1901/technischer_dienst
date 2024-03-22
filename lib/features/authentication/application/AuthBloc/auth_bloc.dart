@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import '../../data/user_repository.dart';
 import '../../domain/Appuser.dart';
 
@@ -19,15 +20,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     userRepository.fireAuth.authStateChanges().listen((user) async {
       if(user != null){
-        final userData = await userRepository.loadUserData(user.uid);
+        try {
+         final userData = await userRepository.loadUserData(user.uid);
 
-        AppUser u = AppUser(uid: user.uid,
-          username: userData['username'] as String,
-          profileImage: userData['profileImage'] as String,
-          email:user.email ?? "",
-        );
+          AppUser u = AppUser(uid: user.uid,
+            username: userData['username'] as String,
+            profileImage: userData['profileImage'] as String,
+            email:user.email ?? "",
+            role: userData['role'] as String,
+          );
 
-        emit(Authenticated(user: u));
+          emit(Authenticated(user: u));
+        } catch (e) {
+          emit(LoggedOut());
+        }
       }
 
       if(user == null){

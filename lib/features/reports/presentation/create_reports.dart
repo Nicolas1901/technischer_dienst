@@ -27,6 +27,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
   @override
   void initState() {
     super.initState();
+    isConnected = context.read<NetworkBloc>().state is Connected;
+
     debugPrint("init");
     context
         .read<CreateReportBloc>()
@@ -82,6 +84,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 ),
                 child: const Text('abbrechen'),
                 onPressed: () {
+                  inspectorNameController.dispose();
+                  reportNameController.dispose();
                   Navigator.of(context).pop();
                 },
               ),
@@ -102,6 +106,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
                   setState(() {
                     changesSaved = true;
                   });
+                  inspectorNameController.dispose();
+                  reportNameController.dispose();
 
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();

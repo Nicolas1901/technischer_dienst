@@ -23,10 +23,14 @@ class EditTemplatePage extends StatefulWidget {
 class _EditTemplatePageState extends State<EditTemplatePage> {
   final formKey = GlobalKey<FormState>();
   final editCategoryKey = GlobalKey<FormState>();
-  bool isConnected = false;
+  bool isConnected = true;
 
   @override
   void initState() {
+    setState(() {
+      isConnected = context.read<NetworkBloc>().state is Connected;
+    });
+
     super.initState();
     context.read<EditTemplateBloc>().add(
         EditTemplateLoad(template: widget.template));

@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
+import 'package:technischer_dienst/shared/presentation/components/td_circle_avatar.dart';
 
 import '../../../Constants/asset_images.dart';
+import '../../../enums/roles.dart';
+import '../../../features/admin/presentation/user_list.dart';
 import '../../../features/authentication/application/AuthBloc/auth_bloc.dart';
+import '../../../features/authentication/domain/Appuser.dart';
 import '../../../features/authentication/presentation/login.dart';
 import '../../../features/reports/presentation/report_list.dart';
 
 class TdNavigationDrawer extends StatelessWidget {
   const TdNavigationDrawer({
     super.key,
-    required this.accountName,
-    required this.email,
-    required this.avatar,
     this.onLogout,
     required this.selectedIndex,
+    required this.currentUser,
   });
 
-  final String accountName;
-  final String email;
-  final String avatar;
+  final AppUser? currentUser;
   final int selectedIndex;
   final Function? onLogout;
 
@@ -31,16 +31,15 @@ class TdNavigationDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(accountName),
-            accountEmail: Text(email),
+            accountName: Text(currentUser?.username ?? ""),
+            accountEmail: Text(currentUser?.email ?? ""),
             currentAccountPicture:
-                CircleAvatar(foregroundImage: _renderImage(avatar)),
+                TdCircleAvatar(url: currentUser?.profileImage ?? ""),
           ),
           ListTile(
-              tileColor:
-                  selectedIndex == 0 ? activeColor : null,
+              tileColor: selectedIndex == 0 ? activeColor : null,
               title: const Text("Vorlagen"),
-              leading: const Icon(Icons.file_copy_outlined),
+              leading: const Icon(Icons.fire_truck),
               onTap: () {
                 if (selectedIndex != 0) {
                   Navigator.pop(context);
@@ -50,8 +49,7 @@ class TdNavigationDrawer extends StatelessWidget {
                 }
               }),
           ListTile(
-              tileColor:
-                  selectedIndex == 1 ? activeColor : null,
+              tileColor: selectedIndex == 1 ? activeColor : null,
               title: const Text("Berichte"),
               leading: const Icon(Icons.file_copy),
               onTap: () {
@@ -61,33 +59,32 @@ class TdNavigationDrawer extends StatelessWidget {
                       builder: (context) => const ReportList()));
                 }
               }),
+          if(currentUser != null && currentUser?.role == Role.admin.value)
           ListTile(
-              tileColor:
-                  selectedIndex == -1 ? activeColor : null,
+              tileColor: selectedIndex == 2 ? activeColor : null,
+              title: const Text("Benutzerverwaltung"),
+              leading: const Icon(Icons.group),
+              onTap: () {
+                if (selectedIndex != 2) {
+                  Navigator.pop(context);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const UserList()));
+                }
+              }),
+          ListTile(
+              tileColor: selectedIndex == -1 ? activeColor : null,
               title: const Text("Abmelden"),
               leading: const Icon(Icons.logout),
               onTap: () {
                 if (selectedIndex != -1) {
                   context.read<AuthBloc>().add(Logout());
                   Navigator.pop(context);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Login()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const Login()));
                 }
               }),
         ],
       ),
     );
-  }
-
-  ImageProvider _renderImage(String profileImagePath) {
-    ImageProvider profileImage;
-
-    if (profileImagePath.isNotEmpty) {
-      profileImage = NetworkImage(profileImagePath);
-    } else {
-      profileImage = const AssetImage(AssetImages.noImageUser);
-    }
-
-    return profileImage;
   }
 }

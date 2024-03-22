@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:technischer_dienst/features/admin/application/manage_users_bloc.dart';
 import 'package:technischer_dienst/features/authentication/application/AuthBloc/auth_bloc.dart';
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
 import 'package:technischer_dienst/features/reports/application/createReportBloc/create_report_bloc.dart';
@@ -43,6 +44,9 @@ Future<void> main() async {
   getIt.registerSingleton(UserRepository(
       db: getIt<FirebaseFirestore>(), fireAuth: getIt<FirebaseAuth>()));
 
+  //BLoC
+  getIt.registerLazySingleton(() => ManageUsersBloc(userRepository: getIt()));
+
   runApp(const MyApp());
 }
 
@@ -68,7 +72,8 @@ class MyApp extends StatelessWidget {
             lazy: false,
             create: (context) => ReportsBloc(
                 createReportBloc: context.read<CreateReportBloc>(),
-                reportRepository: getIt<ReportRepository>()))
+                reportRepository: getIt<ReportRepository>())),
+
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -77,6 +82,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: BlocListener<NetworkBloc, NetworkState>(
+          listenWhen: (prevousState, state){
+            return !(prevousState is NetworkInitial && state is Connected);
+          },
           listener: (context, state) {
             if (state is Disconnected) {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -92,7 +100,7 @@ class MyApp extends StatelessWidget {
               ));
             }
           },
-          child: BlocBuilder<AuthBloc, AuthState>(
+          child: BlocConsumer<AuthBloc, AuthState>(
             builder: (BuildContext context, AuthState state) {
               if (state is Authenticated) {
                 return const ShowTemplates(title: "Vorlagen");
@@ -102,7 +110,16 @@ class MyApp extends StatelessWidget {
                 return const Login();
               }
 
+              if(state is LoginFailed){
+                return const Login();
+              }
+
               return const Center(child: CircularProgressIndicator());
+            },
+            listener: (BuildContext context, AuthState state) {
+              if(state is LoginFailed){
+
+              }
             },
           ),
         ),

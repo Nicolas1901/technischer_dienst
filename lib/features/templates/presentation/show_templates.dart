@@ -97,17 +97,13 @@ class _ShowTemplatesState extends State<ShowTemplates> {
         builder: (context, state) {
           if (state is Authenticated) {
             return TdNavigationDrawer(
-              accountName: state.user.username,
-              email: state.user.email,
-              avatar: state.user.profileImage,
               selectedIndex: 0,
+              currentUser: state.user,
             );
           } else {
             return const TdNavigationDrawer(
-              accountName: '',
-              email: '',
-              avatar: '',
               selectedIndex: 0,
+              currentUser: null,
             );
           }
         },
