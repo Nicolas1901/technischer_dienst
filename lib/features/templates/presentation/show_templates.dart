@@ -194,7 +194,7 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop();
-                      context.read<TemplateBloc>().add(AddImage(template: tmp));
+                      context.read<TemplateBloc>().add(AddImage(template: tmp, source: ImageSource.camera));
                     },
                     child: const Column(
                       children: [Icon(Icons.camera_alt), Text("Kamera")],

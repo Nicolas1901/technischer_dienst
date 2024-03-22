@@ -46,7 +46,8 @@ class PdfHelper {
                           else if (item.isChecked!)
                             pw.Text("OK", style: approvedStyle)
                           else if (!item.isChecked!)
-                              pw.Text("-")
+                              pw.Text("-"),
+                          pw.Text(item.comment)
                         ]),
                       }
                     ]),

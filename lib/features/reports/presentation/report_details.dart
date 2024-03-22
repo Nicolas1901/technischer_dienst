@@ -118,7 +118,7 @@ class _ReportDetailsState extends State<ReportDetails> {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               File file = await PdfHelper.createPdfFromReport(widget.report);
-              SendMail.send(file.path);
+              //SendMail.send(file.path);
             },
             tooltip: 'Berichtsvorlage erstellen',
             child: const Icon(Icons.add),
