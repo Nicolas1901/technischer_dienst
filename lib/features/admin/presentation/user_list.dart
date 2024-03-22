@@ -28,13 +28,14 @@ class _UserListState extends State<UserList> {
         builder: (context, state) {
           if (state is Authenticated) {
             return TdNavigationDrawer(
-                accountName: state.user.username,
-                email: state.user.email,
-                avatar: state.user.profileImage,
-                selectedIndex: 2);
+              selectedIndex: 2,
+              currentUser: state.user,
+            );
           } else {
             return const TdNavigationDrawer(
-                accountName: "", email: "", avatar: "", selectedIndex: 2);
+              selectedIndex: 2,
+              currentUser: null,
+            );
           }
         },
       ),

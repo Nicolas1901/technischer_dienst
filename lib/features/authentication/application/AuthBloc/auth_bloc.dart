@@ -25,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           username: userData['username'] as String,
           profileImage: userData['profileImage'] as String,
           email:user.email ?? "",
+          role: userData['role'] as String,
         );
 
         emit(Authenticated(user: u));

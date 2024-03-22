@@ -25,6 +25,7 @@ class UserRepository {
           username: data['username'] as String,
           profileImage: data['profileImage'] as String,
           email: credentials.user!.email ?? "",
+          role: data['role'] as String
          );
     } catch (e) {
       rethrow;

@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:technischer_dienst/features/authentication/domain/Appuser.dart';
 
 import '../../../enums/roles.dart';
 import '../../../shared/presentation/components/td_circle_avatar.dart';
@@ -98,7 +99,8 @@ class _CreateUserState extends State<CreateUser> {
                               labelText: "Email",
                             ),
                             validator: (input) {
-                              if (input != null && EmailValidator.validate(input)) {
+                              if (input != null &&
+                                  EmailValidator.validate(input)) {
                                 return null;
                               }
                               return "Geben Sie eine korrekte Email ein";
@@ -156,8 +158,15 @@ class _CreateUserState extends State<CreateUser> {
                       ),
                       TextButton(
                         onPressed: () {
-                          if(formKey.currentState!.validate()){
-                            debugPrint("validate");
+                          if (formKey.currentState!.validate()) {
+                            AppUser user = AppUser(
+                                uid: "",
+                                username: username.text,
+                                profileImage: path,
+                                email: email.text,
+                                role: role.text,
+                            );
+                            debugPrint(user.toString());
                           }
                           debugPrint("not validate");
                         },
@@ -179,8 +188,8 @@ class _CreateUserState extends State<CreateUser> {
       ),
     );
   }
-  
-  bool _checkPassword(String password){
+
+  bool _checkPassword(String password) {
     //TODO regex for passwort security
     return password.length >= 8;
   }
