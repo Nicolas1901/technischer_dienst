@@ -6,13 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
+import 'package:technischer_dienst/features/templates/presentation/components/report_card.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_navigation_drawer.dart';
 import '../../../Constants/asset_images.dart';
 import '../../../shared/presentation/components/dialog.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
 import '../../reports/presentation/create_reports.dart';
 import '../application/editTemplateBloc/edit_template_bloc.dart';
-import 'components/report_card.dart';
 import 'edit_templates.dart';
 
 class ShowTemplates extends StatefulWidget {
@@ -125,7 +125,9 @@ class _ShowTemplatesState extends State<ShowTemplates> {
             child: ListView(
               children: [
                 for (Template tmp in state.templates) ...{
-                  GestureDetector(
+                  ReportCard(
+                    reportTitle: tmp.name,
+                    image: tmp.image,
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => CreateReportPage(
@@ -133,30 +135,26 @@ class _ShowTemplatesState extends State<ShowTemplates> {
                         ),
                       ));
                     },
-                    child: CardExample(
-                      reportTitle: tmp.name,
-                      image: resolveImage(tmp),
-                      onEdit: () {
-                        context
-                            .read<EditTemplateBloc>()
-                            .add(EditTemplateLoad(template: tmp));
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => EditTemplatePage(
-                                    template: tmp,
-                                    templateExists: true,
-                                  )),
-                        );
-                      },
-                      onDelete: () {
-                        context
-                            .read<TemplateBloc>()
-                            .add(DeleteTemplate(template: tmp));
-                      },
-                      pickImage: () {
-                        chooseImageSource(tmp);
-                      },
-                    ),
+                    onEdit: () {
+                      context
+                          .read<EditTemplateBloc>()
+                          .add(EditTemplateLoad(template: tmp));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => EditTemplatePage(
+                                  template: tmp,
+                                  templateExists: true,
+                                )),
+                      );
+                    },
+                    onDelete: () {
+                      context
+                          .read<TemplateBloc>()
+                          .add(DeleteTemplate(template: tmp));
+                    },
+                    pickImage: () {
+                      chooseImageSource(tmp);
+                    },
                   ),
                 }
               ],
