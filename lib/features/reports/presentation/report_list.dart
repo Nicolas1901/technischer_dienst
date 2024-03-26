@@ -1,11 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
 import 'package:technischer_dienst/features/reports/presentation/report_details.dart';
+import '../../../enums/roles.dart';
 import '../../../shared/presentation/components/td_navigation_drawer.dart';
 import '../../authentication/application/AuthBloc/auth_bloc.dart';
+import '../../authentication/domain/Appuser.dart';
 
 class ReportList extends StatefulWidget {
   const ReportList({super.key});
@@ -15,9 +15,16 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
+  late final AppUser user;
+
   @override
   void initState() {
     super.initState();
+    final state = context.read<AuthBloc>().state;
+
+    if (state is Authenticated) {
+      user = state.user;
+    }
     context.read<ReportsBloc>().add(const LoadReportsFromRepo());
   }
 
@@ -62,11 +69,27 @@ class _ReportListState extends State<ReportList> {
                           .toString()
                           .replaceRange(19, null, "")),
                       leading: const Icon(Icons.file_copy),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          if (user.role == Role.admin.value ||
+                              user.role == Role.wart.value) {
+                            context.read<ReportsBloc>().add(ChangeLockStatus(
+                                isLocked: !state.reports[index].isLocked,
+                                index: index));
+                            setState(() {});
+                          }
+                        },
+                        child: state.reports[index].isLocked
+                            ? const Icon(Icons.lock)
+                            : const Icon(Icons.lock_open),
+                      ),
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ReportDetails(
-                                report: state.reports[index],
-                                title: state.reports[index].reportName)));
+                                  report: state.reports[index],
+                                  title: state.reports[index].reportName,
+                                  isLocked: state.reports[index].isLocked,
+                                )));
                       },
                     );
                   },

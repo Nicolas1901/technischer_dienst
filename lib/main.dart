@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:technischer_dienst/Constants/asset_images.dart';
 import 'package:technischer_dienst/features/admin/application/manage_users_bloc.dart';
 import 'package:technischer_dienst/features/authentication/application/AuthBloc/auth_bloc.dart';
 import 'package:technischer_dienst/features/authentication/presentation/login.dart';
@@ -114,7 +115,7 @@ class MyApp extends StatelessWidget {
                 return const Login();
               }
 
-              return const Center(child: CircularProgressIndicator());
+              return Scaffold(body: Center(child: Image.asset(AssetImages.logo),),);
             },
             listener: (BuildContext context, AuthState state) {
               if(state is LoginFailed){

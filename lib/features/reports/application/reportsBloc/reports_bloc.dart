@@ -24,6 +24,7 @@ class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
     on<LoadReportsFromRepo>(_onLoadReportsFromRepo);
     on<AddReport>(_onAddReport);
     on<SendReportPerMail>(_onSendReportPerMail);
+    on<ChangeLockStatus>(_onChangeLockStatus);
 
     _createReportsSub = createReportBloc.stream.listen((state) {
       if (state is SavedReport) {
@@ -91,13 +92,31 @@ class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
     }
   }
 
-  Future<FutureOr<void>> _onSendReportPerMail(
+  FutureOr<void> _onSendReportPerMail(
       SendReportPerMail event, Emitter<ReportsState> emit) async {
     final state = this.state;
 
     if (state is ReportsLoaded) {
       File file = await PdfHelper.createPdfFromReport(event.report);
       SendMail.send(file.path);
+    }
+  }
+
+
+
+  FutureOr<void> _onChangeLockStatus(ChangeLockStatus event, Emitter<ReportsState> emit) {
+    final state = this.state;
+
+    if(state is ReportsLoaded){
+      Report report = state.reports[event.index].copyWith(isLocked: event.isLocked);
+
+      try {
+        reportRepository.changeLockState(report.id, report.isLocked);
+        state.reports[event.index] = report;
+        emit(ReportsLoaded(reports: state.reports));
+      } on Exception catch (e) {
+        // TODO
+      }
     }
   }
 }

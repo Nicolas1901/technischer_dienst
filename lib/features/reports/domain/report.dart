@@ -10,6 +10,7 @@ class Report {
   final String inspector;
   final String ofTemplate;
   final DateTime from;
+  final bool isLocked;
   final List<ReportCategory> categories;
 
   Report(
@@ -18,7 +19,8 @@ class Report {
       required this.inspector,
       required this.ofTemplate,
       required this.from,
-      required this.categories});
+      required this.categories,
+      required this.isLocked});
 
   Report.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -28,7 +30,8 @@ class Report {
         categories = List<dynamic>.from(json['categoryList'])
             .map((e) => ReportCategory.fromJson(e))
             .toList(),
-        ofTemplate = json['template'];
+        ofTemplate = json['template'],
+        isLocked = json['isLocked'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -37,7 +40,8 @@ class Report {
       "inspector": inspector,
       "template": ofTemplate,
       "date": from.toString().replaceRange(19, null, ""),
-      "categoryList": jsonEncode(categories)
+      "categoryList": jsonEncode(categories),
+      "isLocked": isLocked
     };
   }
 
@@ -54,7 +58,8 @@ class Report {
         from: DateTime.parse(data?['date']),
         categories: List<dynamic>.from(jsonDecode(data?['categoryList']))
             .map((e) => ReportCategory.fromJson(e))
-            .toList());
+            .toList(),
+        isLocked: data?['isLocked']);
   }
 
   Map<String, dynamic> toFirestore() {
@@ -64,7 +69,8 @@ class Report {
       "template": ofTemplate,
       "date": from.toString().replaceRange(19, null, ""),
       "categories":
-          List<Map<String, dynamic>>.from(categories.map((c) => c.toMap()))
+          List<Map<String, dynamic>>.from(categories.map((c) => c.toMap())),
+      "isLocked": isLocked,
     };
   }
 
@@ -74,13 +80,15 @@ class Report {
       String? inspector,
       String? ofTemplate,
       DateTime? from,
-      List<ReportCategory>? categories}) {
+      List<ReportCategory>? categories,
+      bool? isLocked}) {
     return Report(
         id: id ?? this.id,
         reportName: reportName ?? this.reportName,
         inspector: inspector ?? this.inspector,
         ofTemplate: ofTemplate ?? this.ofTemplate,
         from: from ?? this.from,
-        categories: categories ?? this.categories);
+        categories: categories ?? this.categories,
+        isLocked: isLocked ?? this.isLocked);
   }
 }

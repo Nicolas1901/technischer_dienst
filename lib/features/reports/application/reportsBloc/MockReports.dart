@@ -6,6 +6,7 @@ class MockReports {
   static List<Report> generate() {
     final List<Report> mockReports = [
       Report(
+          isLocked: false,
           id: "1",
           reportName: "Bericht1",
           inspector: "Nico",
@@ -20,6 +21,7 @@ class MockReports {
                 itemData: ["Item1", "Item2", "Item3", "Item4", "Item5"])
           ]),
       Report(
+          isLocked: true,
           id: "2",
           reportName: "Bericht2",
           inspector: "Raphael",
@@ -32,9 +34,18 @@ class MockReports {
             ReportCategory(
                 categoryName: "Kategorie2",
                 itemData: ["Item1", "Item2", "Item3", "Item4", "Item5"]),
-            ReportCategory(
-                categoryName: "Kategorie3",
-                itemData: ["Item1", "Item2", "Item3", "Item4", "Item5","Item6", "Item7", "Item8", "Item9", "Item10"])
+            ReportCategory(categoryName: "Kategorie3", itemData: [
+              "Item1",
+              "Item2",
+              "Item3",
+              "Item4",
+              "Item5",
+              "Item6",
+              "Item7",
+              "Item8",
+              "Item9",
+              "Item10"
+            ])
           ]),
     ];
 

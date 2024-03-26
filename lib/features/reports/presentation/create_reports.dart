@@ -23,6 +23,7 @@ class CreateReportPage extends StatefulWidget {
 class _CreateReportPageState extends State<CreateReportPage> {
   bool changesSaved = true;
   bool isConnected = false;
+  final _saveReportKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -50,32 +51,35 @@ class _CreateReportPageState extends State<CreateReportPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text("Bericht speichern"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(labelText: "Berichtname"),
-                  controller: reportNameController,
-                  autofocus: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Name eingeben";
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(labelText: "Prüfer"),
-                  controller: inspectorNameController,
-                  autofocus: true,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Name eingeben";
-                    }
-                    return null;
-                  },
-                ),
-              ],
+            content: Form(
+              key: _saveReportKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: "Berichtname"),
+                    controller: reportNameController,
+                    autofocus: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Name eingeben";
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: "Prüfer"),
+                    controller: inspectorNameController,
+                    autofocus: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Name eingeben";
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
             ),
             actions: [
               TextButton(
@@ -95,22 +99,24 @@ class _CreateReportPageState extends State<CreateReportPage> {
                 ),
                 child: const Text('speichern'),
                 onPressed: () {
-                  Report newReport = report.copyWith(
-                      reportName: reportNameController.text,
-                      inspector: inspectorNameController.text);
+                  if (_saveReportKey.currentState!.validate()) {
+                    Report newReport = report.copyWith(
+                        reportName: reportNameController.text,
+                        inspector: inspectorNameController.text);
 
-                  context
-                      .read<CreateReportBloc>()
-                      .add(SaveReport(report: newReport));
+                    context
+                        .read<CreateReportBloc>()
+                        .add(SaveReport(report: newReport));
 
-                  setState(() {
-                    changesSaved = true;
-                  });
-                  inspectorNameController.dispose();
-                  reportNameController.dispose();
+                    setState(() {
+                      changesSaved = true;
+                    });
+                    inspectorNameController.dispose();
+                    reportNameController.dispose();
 
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  }
                 },
               ),
             ],

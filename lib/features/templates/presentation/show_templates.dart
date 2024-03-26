@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:technischer_dienst/enums/roles.dart';
+import 'package:technischer_dienst/features/authentication/domain/Appuser.dart';
 import 'package:technischer_dienst/features/templates/application/templateBloc/template_bloc.dart';
 import 'package:technischer_dienst/features/templates/domain/template.dart';
 import 'package:technischer_dienst/features/templates/presentation/components/report_card.dart';
@@ -26,24 +28,15 @@ class ShowTemplates extends StatefulWidget {
 
 class _ShowTemplatesState extends State<ShowTemplates> {
   final formKey = GlobalKey<FormState>();
+  late final AppUser user;
 
-  ImageProvider resolveImage(Template template) {
-    ImageProvider image = const AssetImage(AssetImages.noImageTemplate);
-    if (template.image.isNotEmpty) {
-      final File file = File(template.image);
-
-      if (file.existsSync()) {
-        image = FileImage(File(template.image));
-      } else {
-        try {
-          image = NetworkImage(template.image);
-        } catch (e) {
-          debugPrint(e.toString());
-        }
-      }
+  @override
+  initState(){
+    super.initState();
+    final state = context.read<AuthBloc>().state;
+    if(state is Authenticated){
+      user = state.user;
     }
-    debugPrint("resolveImage: ${image.toString()}");
-    return image;
   }
 
   Future<void> buildDialog() {
@@ -122,41 +115,55 @@ class _ShowTemplatesState extends State<ShowTemplates> {
           }
 
           return Center(
-            child: ListView(
+            child: Column(
               children: [
-                for (Template tmp in state.templates) ...{
-                  ReportCard(
-                    reportTitle: tmp.name,
-                    image: tmp.image,
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreateReportPage(
-                          template: tmp,
+                Expanded(
+                  child: ListView(
+                    children: [
+                      for (Template tmp in state.templates) ...{
+                        ReportCard(
+                          reportTitle: tmp.name,
+                          image: tmp.image,
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CreateReportPage(
+                                template: tmp,
+                              ),
+                            ));
+                          },
+                          onEdit: () {
+                            if (user.role == Role.admin.value || user.role == Role.wart.value) {
+                              context
+                                  .read<EditTemplateBloc>()
+                                  .add(EditTemplateLoad(template: tmp));
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => EditTemplatePage(
+                                          template: tmp,
+                                          templateExists: true,
+                                        )),
+                              );
+                            }
+                          },
+                          onDelete: () {
+                            if (user.role == Role.admin.value || user.role == Role.wart.value) {
+                              context
+                                  .read<TemplateBloc>()
+                                  .add(DeleteTemplate(template: tmp));
+                            }
+                          },
+                          pickImage: () {
+                            if(user.role == Role.admin.value || user.role == Role.wart.value){
+                              chooseImageSource(tmp);
+                            }
+
+                          },
                         ),
-                      ));
-                    },
-                    onEdit: () {
-                      context
-                          .read<EditTemplateBloc>()
-                          .add(EditTemplateLoad(template: tmp));
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => EditTemplatePage(
-                                  template: tmp,
-                                  templateExists: true,
-                                )),
-                      );
-                    },
-                    onDelete: () {
-                      context
-                          .read<TemplateBloc>()
-                          .add(DeleteTemplate(template: tmp));
-                    },
-                    pickImage: () {
-                      chooseImageSource(tmp);
-                    },
+                      }
+                    ],
                   ),
-                }
+                ),
+                const SizedBox(height: 70,)
               ],
             ),
           );

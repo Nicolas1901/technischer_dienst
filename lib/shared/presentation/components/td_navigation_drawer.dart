@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technischer_dienst/features/admin/presentation/user_details.dart';
 import 'package:technischer_dienst/features/templates/presentation/show_templates.dart';
 import 'package:technischer_dienst/shared/presentation/components/td_circle_avatar.dart';
 
@@ -35,6 +36,13 @@ class TdNavigationDrawer extends StatelessWidget {
             accountEmail: Text(currentUser?.email ?? ""),
             currentAccountPicture:
                 TdCircleAvatar(url: currentUser?.profileImage ?? ""),
+            onDetailsPressed: () {
+              if (currentUser != null) {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        UserDetails(user: currentUser!)));
+              }
+            },
           ),
           ListTile(
               tileColor: selectedIndex == 0 ? activeColor : null,
@@ -59,18 +67,18 @@ class TdNavigationDrawer extends StatelessWidget {
                       builder: (context) => const ReportList()));
                 }
               }),
-          if(currentUser != null && currentUser?.role == Role.admin.value)
-          ListTile(
-              tileColor: selectedIndex == 2 ? activeColor : null,
-              title: const Text("Benutzerverwaltung"),
-              leading: const Icon(Icons.group),
-              onTap: () {
-                if (selectedIndex != 2) {
-                  Navigator.pop(context);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const UserList()));
-                }
-              }),
+          if (currentUser != null && currentUser?.role == Role.admin.value)
+            ListTile(
+                tileColor: selectedIndex == 2 ? activeColor : null,
+                title: const Text("Benutzerverwaltung"),
+                leading: const Icon(Icons.group),
+                onTap: () {
+                  if (selectedIndex != 2) {
+                    Navigator.pop(context);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const UserList()));
+                  }
+                }),
           ListTile(
               tileColor: selectedIndex == -1 ? activeColor : null,
               title: const Text("Abmelden"),

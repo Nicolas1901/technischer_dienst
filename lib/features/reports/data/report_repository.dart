@@ -57,4 +57,12 @@ class ReportRepository {
       rethrow;
     }
   }
+
+  changeLockState(String uid, bool isLocked){
+    try{
+      _reportsRef.doc(uid).update({"isLocked": isLocked});
+    } on Exception{
+      rethrow;
+    }
+  }
 }

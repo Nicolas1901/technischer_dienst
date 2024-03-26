@@ -6,7 +6,10 @@ import '../../authentication/domain/Appuser.dart';
 class UserDetails extends StatefulWidget {
   final AppUser user;
 
-  const UserDetails({super.key, required this.user,});
+  const UserDetails({
+    super.key,
+    required this.user,
+  });
 
   @override
   State<UserDetails> createState() => _UserDetailsState();
@@ -16,6 +19,7 @@ class _UserDetailsState extends State<UserDetails> {
   final TextEditingController username = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController uid = TextEditingController();
+  final TextEditingController role = TextEditingController();
   bool isEditingMode = false;
 
   final formKey = GlobalKey<FormState>();
@@ -26,6 +30,7 @@ class _UserDetailsState extends State<UserDetails> {
     username.text = widget.user.username;
     email.text = widget.user.email;
     uid.text = widget.user.uid;
+    role.text = widget.user.role;
   }
 
   @override
@@ -56,18 +61,18 @@ class _UserDetailsState extends State<UserDetails> {
                     radius: 110,
                   ),
                   Positioned(
-                      right: 0,
-                      top: 0,
-                      child: MaterialButton(
-                        onPressed: () {},
-                        color: Colors.grey,
-                        padding: const EdgeInsets.all(16),
-                        shape: const CircleBorder(),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 24,
-                        ),
+                    right: 0,
+                    top: 0,
+                    child: MaterialButton(
+                      onPressed: () {},
+                      color: Colors.grey,
+                      padding: const EdgeInsets.all(16),
+                      shape: const CircleBorder(),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        size: 24,
                       ),
+                    ),
                   ),
                 ],
               ),
@@ -85,6 +90,10 @@ class _UserDetailsState extends State<UserDetails> {
                       readOnly: !isEditingMode,
                     ),
                     TextField(
+                      controller: role,
+                      readOnly: true,
+                    ),
+                    TextField(
                       controller: uid,
                       readOnly: true,
                     ),
@@ -95,7 +104,8 @@ class _UserDetailsState extends State<UserDetails> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+
+      /* floatingActionButton: FloatingActionButton(
           backgroundColor: isEditingMode
               ? Colors.lightGreen
               : Theme.of(context).primaryColor,
@@ -112,8 +122,7 @@ class _UserDetailsState extends State<UserDetails> {
             }
           },
           child:
-              isEditingMode ? const Icon(Icons.check) : const Icon(Icons.edit)),
+              isEditingMode ? const Icon(Icons.check) : const Icon(Icons.edit)),*/
     );
   }
-
 }
