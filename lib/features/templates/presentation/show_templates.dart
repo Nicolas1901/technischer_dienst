@@ -122,41 +122,48 @@ class _ShowTemplatesState extends State<ShowTemplates> {
           }
 
           return Center(
-            child: ListView(
+            child: Column(
               children: [
-                for (Template tmp in state.templates) ...{
-                  ReportCard(
-                    reportTitle: tmp.name,
-                    image: tmp.image,
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CreateReportPage(
-                          template: tmp,
+                Expanded(
+                  child: ListView(
+                    children: [
+                      for (Template tmp in state.templates) ...{
+                        ReportCard(
+                          reportTitle: tmp.name,
+                          image: tmp.image,
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CreateReportPage(
+                                template: tmp,
+                              ),
+                            ));
+                          },
+                          onEdit: () {
+                            context
+                                .read<EditTemplateBloc>()
+                                .add(EditTemplateLoad(template: tmp));
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => EditTemplatePage(
+                                        template: tmp,
+                                        templateExists: true,
+                                      )),
+                            );
+                          },
+                          onDelete: () {
+                            context
+                                .read<TemplateBloc>()
+                                .add(DeleteTemplate(template: tmp));
+                          },
+                          pickImage: () {
+                            chooseImageSource(tmp);
+                          },
                         ),
-                      ));
-                    },
-                    onEdit: () {
-                      context
-                          .read<EditTemplateBloc>()
-                          .add(EditTemplateLoad(template: tmp));
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => EditTemplatePage(
-                                  template: tmp,
-                                  templateExists: true,
-                                )),
-                      );
-                    },
-                    onDelete: () {
-                      context
-                          .read<TemplateBloc>()
-                          .add(DeleteTemplate(template: tmp));
-                    },
-                    pickImage: () {
-                      chooseImageSource(tmp);
-                    },
+                      }
+                    ],
                   ),
-                }
+                ),
+                const SizedBox(height: 70,)
               ],
             ),
           );

@@ -121,7 +121,7 @@ class _ReportDetailsState extends State<ReportDetails> {
               //SendMail.send(file.path);
             },
             tooltip: 'Berichtsvorlage erstellen',
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.email),
           ),
         ),
       ),
