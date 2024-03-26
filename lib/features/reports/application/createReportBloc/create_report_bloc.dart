@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 
 import '../../../templates/domain/template.dart';
@@ -24,15 +21,17 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
   FutureOr<void> _onLoadReportFromTemplate(
       LoadReportFromTemplate event, Emitter<CreateReportState> emit) {
     final Report report = Report(
-        id: "",
-        reportName: "",
-        inspector: "",
-        ofTemplate: event.template.name,
-        from: DateTime.now(),
-        categories: List.from(event.template.categories)
-            .map((e) =>
-                ReportCategory(categoryName: e.categoryName, itemData: e.items))
-            .toList());
+      id: "",
+      reportName: "",
+      inspector: "",
+      ofTemplate: event.template.name,
+      from: DateTime.now(),
+      categories: List.from(event.template.categories)
+          .map((e) =>
+              ReportCategory(categoryName: e.categoryName, itemData: e.items))
+          .toList(),
+      isLocked: false,
+    );
 
     emit(TemplateLoaded(report: report));
   }
@@ -55,7 +54,6 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
 
     if (state is TemplateLoaded) {
       emit(SavedReport(report: event.report));
-
     }
   }
 

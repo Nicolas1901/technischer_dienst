@@ -30,3 +30,13 @@ class SendReportPerMail extends ReportsEvent{
   @override
   List<Object> get props => [report];
 }
+
+class ChangeLockStatus extends ReportsEvent{
+  final int index;
+  final bool isLocked;
+
+  const ChangeLockStatus({required this.isLocked, required this.index});
+
+  @override
+  List<Object> get props => [isLocked];
+}

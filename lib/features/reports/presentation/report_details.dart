@@ -5,14 +5,14 @@ import 'package:technischer_dienst/features/reports/presentation/components/repo
 import 'package:technischer_dienst/Helper/mailer.dart';
 import 'package:technischer_dienst/features/reports/domain/report_category.dart';
 import '../../../Helper/pdf_helper.dart';
-import '../../../shared/presentation/components/dialog.dart';
 import '../domain/report.dart';
 
 class ReportDetails extends StatefulWidget {
   final Report report;
   final String title;
+  final bool isLocked;
 
-  const ReportDetails({super.key, required this.report, required this.title});
+  const ReportDetails({super.key, required this.report, required this.title, required this.isLocked});
 
   @override
   State<ReportDetails> createState() => _ReportDetailsState();
@@ -107,7 +107,7 @@ class _ReportDetailsState extends State<ReportDetails> {
                 ReportChecklist(
                   items: c.items,
                   valueChanged: (int index, CategoryItem item) {},
-                  readonly: true,
+                  readonly: widget.isLocked,
                   onTapped: (int index, CategoryItem item) {
                     _commentaryDialog(item);
                   },
@@ -118,7 +118,7 @@ class _ReportDetailsState extends State<ReportDetails> {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               File file = await PdfHelper.createPdfFromReport(widget.report);
-              //SendMail.send(file.path);
+              SendMail.send(file.path);
             },
             tooltip: 'Berichtsvorlage erstellen',
             child: const Icon(Icons.email),
