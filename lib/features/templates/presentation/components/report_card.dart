@@ -15,6 +15,8 @@ class ReportCard extends StatelessWidget {
   final double height;
   final double width;
 
+  final String placeholder = AssetImages.noImageTemplate;
+
   const ReportCard({
     super.key,
     required this.reportTitle,
@@ -43,12 +45,14 @@ class ReportCard extends StatelessWidget {
               children: [
                 CachedNetworkImage(
                   fit: BoxFit.cover,
+                  memCacheHeight: 700,
+                  memCacheWidth: 1050,
                   imageUrl: image,
-                  placeholder: (context, url) => Image.asset(
+                  placeholder: (context, placeholder) => Image.asset(
                     AssetImages.noImageTemplate,
                     fit: BoxFit.cover,
                   ),
-                  errorWidget: (context, url, error) => Image.asset(
+                  errorWidget: (context, placeholder, error) => Image.asset(
                     AssetImages.noImageTemplate,
                     fit: BoxFit.cover,
                   ),
