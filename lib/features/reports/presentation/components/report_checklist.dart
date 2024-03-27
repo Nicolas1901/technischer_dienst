@@ -47,7 +47,6 @@ class _ReportChecklistState extends State<ReportChecklist> {
                 }
               },
               onTap: () {
-                debugPrint("Tapped");
                 widget.onTapped(index, widget.items[index]);
               },
             );

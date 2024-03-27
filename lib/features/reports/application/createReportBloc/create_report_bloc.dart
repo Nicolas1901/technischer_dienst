@@ -13,6 +13,7 @@ part 'create_report_state.dart';
 class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
   CreateReportBloc() : super(CreateReportLoading()) {
     on<LoadReportFromTemplate>(_onLoadReportFromTemplate);
+    on<LoadReport>(_onLoadReport);
     on<UpdateItemState>(_onUpdateItemState);
     on<SaveReport>(_onSaveReport);
     on<ResetReport>(_onResetReport);
@@ -36,6 +37,11 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
     emit(TemplateLoaded(report: report));
   }
 
+  FutureOr<void> _onLoadReport(
+      LoadReport event, Emitter<CreateReportState> emit) {
+    emit(TemplateLoaded(report: event.report));
+  }
+
   FutureOr<void> _onUpdateItemState(
       UpdateItemState event, Emitter<CreateReportState> emit) {
     final state = this.state;
@@ -53,7 +59,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
     final state = this.state;
 
     if (state is TemplateLoaded) {
-      emit(SavedReport(report: event.report));
+      emit(SavedReport(report: event.report, isNew: event.isNew));
     }
   }
 

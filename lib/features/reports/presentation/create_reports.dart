@@ -12,9 +12,10 @@ import '../../templates/domain/template.dart';
 
 //TODO add Support for Maps from existing reports
 class CreateReportPage extends StatefulWidget {
-  const CreateReportPage({super.key, required this.template});
+  const CreateReportPage({super.key, this.template, this.report});
 
-  final Template template;
+  final Template? template;
+  final Report? report;
 
   @override
   State<StatefulWidget> createState() => _CreateReportPageState();
@@ -30,10 +31,15 @@ class _CreateReportPageState extends State<CreateReportPage> {
     super.initState();
     isConnected = context.read<NetworkBloc>().state is Connected;
 
-    debugPrint("init");
-    context
-        .read<CreateReportBloc>()
-        .add(LoadReportFromTemplate(template: widget.template));
+    if (widget.template != null) {
+      context
+          .read<CreateReportBloc>()
+          .add(LoadReportFromTemplate(template: widget.template!));
+    } else if(widget.report != null){
+      context
+          .read<CreateReportBloc>()
+          .add(LoadReport(report: widget.report!));
+    }
   }
 
   @override
@@ -43,8 +49,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   Future<void> buildDialog(Report report) {
-    TextEditingController reportNameController = TextEditingController();
-    TextEditingController inspectorNameController = TextEditingController();
+    TextEditingController reportNameController = TextEditingController(text: report.reportName);
+    TextEditingController inspectorNameController = TextEditingController(text: report.inspector);
 
     return showDialog<void>(
         context: context,

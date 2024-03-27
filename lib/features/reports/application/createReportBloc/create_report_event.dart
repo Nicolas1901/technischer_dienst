@@ -13,6 +13,12 @@ class LoadReportFromTemplate extends CreateReportEvent{
   const LoadReportFromTemplate({required this.template});
 }
 
+class LoadReport extends CreateReportEvent{
+  final Report report;
+
+  const LoadReport({required this.report});
+}
+
 class UpdateItemState extends CreateReportEvent{
   final int categoryIndex;
   final int itemIndex;
@@ -23,8 +29,9 @@ class UpdateItemState extends CreateReportEvent{
 
 class SaveReport extends CreateReportEvent{
   final Report report;
+  final isNew;
 
-  const SaveReport({required this.report});
+  const SaveReport({required this.report, this.isNew = true});
 }
 
 class ResetReport extends CreateReportEvent{

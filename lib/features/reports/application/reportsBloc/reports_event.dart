@@ -22,6 +22,15 @@ class AddReport extends ReportsEvent{
   List<Object> get props => [report];
 }
 
+class UpdateReport extends ReportsEvent{
+  final Report report;
+
+  const UpdateReport({required this.report});
+
+  @override
+  List<Object> get props => [report];
+}
+
 class SendReportPerMail extends ReportsEvent{
   final Report report;
 

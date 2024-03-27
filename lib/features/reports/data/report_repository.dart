@@ -39,7 +39,11 @@ class ReportRepository {
   }
 
   update(Report report) {
-    _reportsRef.doc(report.id).set(report);
+    try {
+      _reportsRef.doc(report.id).set(report);
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 
   Future<DocumentReference> add(Report report) async {

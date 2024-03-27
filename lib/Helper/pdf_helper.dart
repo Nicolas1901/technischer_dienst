@@ -14,7 +14,8 @@ class PdfHelper {
   );
 
   static const categoryTitleStyle = pw.TextStyle(fontSize: 20);
-  static final tableHeaderTextStyle = pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold );
+  static final tableHeaderTextStyle =
+      pw.TextStyle(fontSize: 15, fontWeight: pw.FontWeight.bold);
 
   static Future<File> createPdfFromReport(Report report) async {
     final pdf = pw.Document();
@@ -27,7 +28,7 @@ class PdfHelper {
               child: pw.Column(children: [
             _createHeader(report.reportName, report.ofTemplate.split(".")[0],
                 report.from.toString(), report.inspector),
-           pw.SizedBox(height: 10),
+            pw.SizedBox(height: 10),
             for (ReportCategory c in categories) ...{
               pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -35,18 +36,20 @@ class PdfHelper {
                     pw.Text(c.categoryName, style: categoryTitleStyle),
                     pw.SizedBox(height: 5),
                     pw.Table(border: pw.TableBorder.all(), children: [
-                      pw.TableRow(
-
-                          children: [pw.Text("Name", style: tableHeaderTextStyle), pw.Text("Status", style: tableHeaderTextStyle)]),
+                      pw.TableRow(children: [
+                        pw.Text("Name", style: tableHeaderTextStyle),
+                        pw.Text("Status", style: tableHeaderTextStyle),
+                        pw.Text("Bemerkung", style: tableHeaderTextStyle)
+                      ]),
                       for (CategoryItem item in c.items) ...{
                         pw.TableRow(children: [
                           pw.Text(item.itemName),
-                          if(item.isChecked == null)
+                          if (item.isChecked == null)
                             pw.Text("nicht OK", style: disapprovedStyle)
                           else if (item.isChecked!)
                             pw.Text("OK", style: approvedStyle)
                           else if (!item.isChecked!)
-                              pw.Text("-"),
+                            pw.Text("-"),
                           pw.Text(item.comment)
                         ]),
                       }
@@ -63,32 +66,31 @@ class PdfHelper {
   static pw.Widget _createHeader(
       String name, String templateName, String date, String inspector) {
     return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-      pw.Column(children: [
-        pw.Table(
-          children: [
-            pw.TableRow(
-              children: [pw.Text("Bericht: "), pw.Text(name)],
-            ),
-            pw.TableRow(
-              children: [pw.Text("Vorlage: "), pw.Text(templateName)],
-            ),
-            pw.TableRow(
-              children: [pw.Text("Prüfer: "), pw.Text(inspector)],
-            ),
-          ],
-        )
-      ]),
-      pw.Column(
-          mainAxisAlignment: pw.MainAxisAlignment.start,
-          children: [
-        pw.Table(children: [
-          pw.TableRow(children: [pw.Text("Datum: "), pw.Text(date.split(" ")[0])]),
-        ])
-      ]),
-    ]);
+          pw.Column(children: [
+            pw.Table(
+              children: [
+                pw.TableRow(
+                  children: [pw.Text("Bericht: "), pw.Text(name)],
+                ),
+                pw.TableRow(
+                  children: [pw.Text("Vorlage: "), pw.Text(templateName)],
+                ),
+                pw.TableRow(
+                  children: [pw.Text("Prüfer: "), pw.Text(inspector)],
+                ),
+              ],
+            )
+          ]),
+          pw.Column(mainAxisAlignment: pw.MainAxisAlignment.start, children: [
+            pw.Table(children: [
+              pw.TableRow(
+                  children: [pw.Text("Datum: "), pw.Text(date.split(" ")[0])]),
+            ])
+          ]),
+        ]);
   }
 
   static Future<File> _savePdf(pw.Document pdf, String pdfName) async {

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/reports/data/report_repository.dart';
 
 import '../../../../Helper/mailer.dart';
@@ -25,10 +26,15 @@ class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
     on<AddReport>(_onAddReport);
     on<SendReportPerMail>(_onSendReportPerMail);
     on<ChangeLockStatus>(_onChangeLockStatus);
+    on<UpdateReport>(_onUpdateReport);
 
     _createReportsSub = createReportBloc.stream.listen((state) {
       if (state is SavedReport) {
-        add(AddReport(report: state.report));
+        if(state.isNew){
+          add(AddReport(report: state.report));
+        } else{
+          add(UpdateReport(report: state.report));
+        }
       }
     });
   }
@@ -117,6 +123,17 @@ class ReportsBloc extends Bloc<ReportsEvent, ReportsState> {
       } on Exception catch (e) {
         // TODO
       }
+    }
+  }
+
+
+
+  FutureOr<void> _onUpdateReport(UpdateReport event, Emitter<ReportsState> emit) {
+    try{
+      debugPrint("updated");
+      reportRepository.update(event.report);
+    } on Exception{
+      //TODO
     }
   }
 }

@@ -32,9 +32,10 @@ class FailedLoading extends CreateReportState{
 
 class SavedReport extends CreateReportState{
   final Report report;
+  final bool isNew;
 
-  const SavedReport({required this.report});
+  const SavedReport({required this.report, this.isNew = true});
 
   @override
-  List<Object> get props => [report];
+  List<Object> get props => [report, isNew];
 }
