@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:technischer_dienst/features/admin/data/create_user_repository.dart';
 
 import '../domain/Appuser.dart';
@@ -42,8 +40,12 @@ class UserRepository {
       }
   }
 
-  resetPassword() {
-    //TODO implement resetPassword
+  resetPassword(String email) {
+    try {
+      fireAuth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<DocumentSnapshot> loadUserData(String uid) async {
@@ -69,8 +71,6 @@ class UserRepository {
   }
 
   Future<AppUser?> createNewUser(AppUser user, String tmpPassword) async {
-    FirebaseApp app = await Firebase.initializeApp(
-        name: 'Secondary', options: Firebase.app().options);
 
     try {
       final credentials = await CreateUserRepository.createNewUser(user: user, tmpPassword: tmpPassword);
@@ -79,7 +79,7 @@ class UserRepository {
       await _usersRef.doc(newUser.uid).set(newUser);
       return (await _usersRef.doc(newUser.uid).get()).data();
 
-    } on Exception catch (e) {
+    } on Exception{
       rethrow;
     }
   }

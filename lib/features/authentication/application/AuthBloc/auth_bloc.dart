@@ -17,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({required this.userRepository}) : super(AuthInit()) {
     on<Authentication>(_onAuthentication);
     on<Logout>(_onLogout);
+    on<ResetPassword>(_onResetPassword);
 
     userRepository.fireAuth.authStateChanges().listen((user) async {
       if(user != null){
@@ -58,5 +59,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onLogout(Logout event, Emitter<AuthState> emit) {
     userRepository.signOut();
     emit(LoggedOut());
+  }
+
+  FutureOr<void> _onResetPassword(ResetPassword event, Emitter<AuthState> emit) {
+
+    try {
+      userRepository.resetPassword(event.email);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }
