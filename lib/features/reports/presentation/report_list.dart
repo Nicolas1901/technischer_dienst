@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technischer_dienst/Helper/mailer.dart';
+import 'package:technischer_dienst/Helper/pdf_helper.dart';
 import 'package:technischer_dienst/features/reports/application/reportsBloc/reports_bloc.dart';
-import 'package:technischer_dienst/features/reports/presentation/create_reports.dart';
+import 'package:technischer_dienst/features/reports/presentation/components/report_list_tile.dart';
 import 'package:technischer_dienst/features/reports/presentation/report_details.dart';
 import '../../../enums/roles.dart';
 import '../../../shared/presentation/components/td_navigation_drawer.dart';
@@ -21,7 +25,9 @@ class _ReportListState extends State<ReportList> {
   @override
   void initState() {
     super.initState();
-    final state = context.read<AuthBloc>().state;
+    final state = context
+        .read<AuthBloc>()
+        .state;
 
     if (state is Authenticated) {
       user = state.user;
@@ -33,7 +39,10 @@ class _ReportListState extends State<ReportList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Theme
+              .of(context)
+              .colorScheme
+              .inversePrimary,
           title: const Text("Berichte"),
         ),
         drawer: BlocBuilder<AuthBloc, AuthState>(
@@ -64,15 +73,20 @@ class _ReportListState extends State<ReportList> {
                 return ListView.builder(
                   itemCount: state.reports.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(state.reports[index].reportName),
-                      subtitle: Text(state.reports[index].from
-                          .toString()
-                          .replaceRange(19, null, "")),
-                      leading: const Icon(Icons.file_copy),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          if (user.role == Role.admin.value ||
+                    return ReportListTile(
+                        title: state.reports[index].reportName,
+                        subtitle: state.reports[index].from
+                            .toString()
+                            .replaceRange(19, null, ""),
+                        isLocked: state.reports[index].isLocked,
+                        onTapPdf: (){},
+                        onTapEmail: () async{
+                          final File pdf = await PdfHelper.createPdfFromReport(state.reports[index]);
+                          SendMail.send(pdf.path);
+                        },
+                        onTapLock: (){
+                          if (
+                          user.role == Role.admin.value ||
                               user.role == Role.wart.value) {
                             context.read<ReportsBloc>().add(ChangeLockStatus(
                                 isLocked: !state.reports[index].isLocked,
@@ -80,17 +94,14 @@ class _ReportListState extends State<ReportList> {
                             setState(() {});
                           }
                         },
-                        child: state.reports[index].isLocked
-                            ? const Icon(Icons.lock)
-                            : const Icon(Icons.lock_open),
-                      ),
-                      onTap: () {
+                      onTapTile: () {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ReportDetails(
-                                  report: state.reports[index],
-                                  title: state.reports[index].reportName,
-                                  isLocked: state.reports[index].isLocked,
-                                )));
+                              report: state.reports[index],
+                              title: state.reports[index].reportName,
+                              isLocked: state.reports[index].isLocked,
+                            ),
+                        ));
                       },
                     );
                   },
